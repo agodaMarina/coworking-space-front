@@ -1,7 +1,5 @@
-import {  CommonModule,  NgOptimizedImage } from '@angular/common';
+import {  CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { AccordionModule } from 'primeng/accordion';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { CarouselModule } from 'primeng/carousel';
@@ -13,14 +11,11 @@ import { HeaderComponent } from '../../shared/components/header/header.component
   selector: 'app-home-page',
   imports: [
     CommonModule,
-    RouterLink,
-    NgOptimizedImage,
     HeaderComponent,
     FooterComponent,
     ButtonModule,
     CardModule,
     CarouselModule,
-    AccordionModule,
   ],
   template: `
     <div class="page-shell">
@@ -542,7 +537,7 @@ import { HeaderComponent } from '../../shared/components/header/header.component
     `,
   ],
 })
-export class HomeComponent {
+export class HomePageComponent {
   galleryImages = [
     { title: 'Modern Office Spaces', description: 'Bright and spacious offices designed for collaboration' },
     { title: 'Meeting Rooms', description: 'Well-equipped meeting rooms for brainstorming sessions' },
