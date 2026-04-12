@@ -1,10 +1,10 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { TableModule } from 'primeng/table';
-import { DialogModule } from 'primeng/dialog';
 import { CardModule } from 'primeng/card';
+import { DialogModule } from 'primeng/dialog';
+import { TableModule } from 'primeng/table';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 
@@ -51,14 +51,14 @@ interface Space {
               <option *ngFor="let opt of typeOptions" [value]="opt.value">{{ opt.label }}</option>
             </select>
           </div>
-          
+
           <div class="filter-group">
             <label for="capacity-filter">Capacity: {{ capacityRange()[0] }} - {{ capacityRange()[1] }} persons</label>
-            <input 
+            <input
               id="capacity-filter"
-              type="range" 
-              [(ngModel)]="capacityRangeMin" 
-              [min]="0" 
+              type="range"
+              [(ngModel)]="capacityRangeMin"
+              [min]="0"
               [max]="100"
               class="filter-range"
               (change)="updateCapacityRange()">
@@ -199,7 +199,7 @@ interface Space {
           flex: 1;
           width: 100%;
         }
-        
+
         /* Hero Section */
         .listing-hero {
           margin-bottom: 3rem;
@@ -594,7 +594,7 @@ interface Space {
           .btn-reset {
             width: 100%;
           }
-          
+
           /* Hide table, show cards on mobile */
           .table-container-desktop {
             display: none;
