@@ -16,6 +16,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/register.component').then((m) => m.RegisterPageComponent),
   },
   {
+    path: 'profile',
+    loadComponent: () => import('./features/auth/profile.component').then((m) => m.ProfilePageComponent),
+    canActivate: [authGuard],
+  },
+  {
     path: 'spaces',
     loadComponent: () => import('./features/spaces/space-list.component').then((m) => m.SpaceListPageComponent),
   },

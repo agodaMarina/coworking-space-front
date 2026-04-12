@@ -1,7 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, tap } from 'rxjs';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface AuthTokens {
+  access: string;
+  refresh: string;
+}
 
 export interface LoginPayload {
   email: string;
@@ -15,55 +25,113 @@ export interface RegisterPayload {
 }
 
 export interface AuthResponse {
-  token: string;
-  user: { id: string; name: string; email: string };
+  message: string;
+  user: User;
+  tokens: AuthTokens;
+}
+
+function readStorageUser(): User | null {
+  const raw = localStorage.getItem('coworking_user');
+  if (!raw) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(raw) as User;
+  } catch {
+    return null;
+  }
 }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
 
-  private readonly tokenSignal = signal<string | null>(localStorage.getItem('coworking_token'));
-  private readonly userSignal = signal<AuthResponse['user'] | null>(null);
+  private readonly accessTokenSignal = signal<string | null>(localStorage.getItem('coworking_access_token'));
+  private readonly refreshTokenSignal = signal<string | null>(localStorage.getItem('coworking_refresh_token'));
+  private readonly userSignal = signal<User | null>(readStorageUser());
 
-  readonly isAuthenticated = computed(() => !!this.tokenSignal());
-  readonly token = computed(() => this.tokenSignal());
+  readonly isAuthenticated = computed(() => !!this.accessTokenSignal());
+  readonly token = computed(() => this.accessTokenSignal());
+  readonly user = this.userSignal;
 
   constructor() {
     effect(() => {
-      const token = this.tokenSignal();
-      if (token) {
-        localStorage.setItem('coworking_token', token);
+      const accessToken = this.accessTokenSignal();
+      if (accessToken) {
+        localStorage.setItem('coworking_access_token', accessToken);
       } else {
-        localStorage.removeItem('coworking_token');
+        localStorage.removeItem('coworking_access_token');
+      }
+
+      const refreshToken = this.refreshTokenSignal();
+      if (refreshToken) {
+        localStorage.setItem('coworking_refresh_token', refreshToken);
+      } else {
+        localStorage.removeItem('coworking_refresh_token');
       }
     });
+
+    effect(() => {
+      const user = this.userSignal();
+      if (user) {
+        localStorage.setItem('coworking_user', JSON.stringify(user));
+      } else {
+        localStorage.removeItem('coworking_user');
+      }
+    });
+
+    if (this.accessTokenSignal() && !this.userSignal()) {
+      this.loadProfile().subscribe({
+        error: () => this.logout(),
+      });
+    }
   }
 
   login(payload: LoginPayload): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>('/api/auth/login', payload).pipe(
-      tap((response) => {
-        this.tokenSignal.set(response.token);
-        this.userSignal.set(response.user);
-      })
+    return this.http.post<AuthResponse>('/api/auth/login/', payload).pipe(
+      tap((response) => this.setAuthPayload(response))
     );
   }
 
   register(payload: RegisterPayload): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>('/api/auth/register', payload).pipe(
-      tap((response) => {
-        this.tokenSignal.set(response.token);
-        this.userSignal.set(response.user);
-      })
+    return this.http.post<AuthResponse>('/api/auth/register/', payload).pipe(
+      tap((response) => this.setAuthPayload(response))
     );
   }
 
   logout(): void {
-    this.tokenSignal.set(null);
+    const refreshToken = this.refreshTokenSignal();
+    if (refreshToken) {
+      this.http.post('/api/auth/logout/', { refresh: refreshToken }).subscribe({
+        next: () => {},
+        error: () => {},
+      });
+    }
+
+    this.accessTokenSignal.set(null);
+    this.refreshTokenSignal.set(null);
     this.userSignal.set(null);
   }
 
-  get user() {
-    return this.userSignal;
+  refreshAccessToken(): Observable<{ access: string }> {
+    const refreshToken = this.refreshTokenSignal();
+    return this.http.post<{ access: string }>('/api/auth/token/refresh/', { refresh: refreshToken }).pipe(
+      tap((data) => {
+        this.accessTokenSignal.set(data.access);
+      })
+    );
+  }
+
+  loadProfile(): Observable<User> {
+    return this.http.get<User>('/api/auth/profile/').pipe(
+      tap((user) => this.userSignal.set(user))
+    );
+  }
+
+  private setAuthPayload(response: AuthResponse): void {
+    this.accessTokenSignal.set(response.tokens.access);
+    this.refreshTokenSignal.set(response.tokens.refresh);
+    this.userSignal.set(response.user);
   }
 }

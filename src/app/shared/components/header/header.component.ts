@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../../core/auth.service';
 
 @Component({
   standalone: true,
   selector: 'app-header',
-  imports: [RouterLink],
+  imports: [CommonModule, RouterLink],
   template: `
     <header class="header-shell">
       <div class="header-brand">
@@ -13,7 +15,13 @@ import { RouterLink } from '@angular/router';
       <nav class="header-nav">
         <a routerLink="/spaces">Espaces</a>
         <a routerLink="/booking">Réservation</a>
-        <a routerLink="/login" class="header-action">Connexion</a>
+        <ng-container *ngIf="authService.isAuthenticated(); else authLinks">
+          <a routerLink="/profile">Mon compte</a>
+          <button type="button" class="header-action" (click)="logout()">Déconnexion</button>
+        </ng-container>
+        <ng-template #authLinks>
+          <a routerLink="/login" class="header-action">Connexion</a>
+        </ng-template>
       </nav>
     </header>
   `,
@@ -60,4 +68,13 @@ import { RouterLink } from '@angular/router';
     `,
   ]
 })
-export class HeaderComponent {}
+export class HeaderComponent {
+  readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/home']);
+  }
+}
+
