@@ -1,16 +1,22 @@
-import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
+import { Component, OnInit, signal } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Button } from 'primeng/button';
+import { Checkbox } from 'primeng/checkbox';
+import { DatePicker } from 'primeng/datepicker';
+import { RadioButton } from 'primeng/radiobutton';
+import { Select } from 'primeng/select';
+import { Textarea } from 'primeng/textarea';
+import { ReservationsService } from '../../core/services/reservations.service';
+import { Space, SpacesService } from '../../core/services/spaces.service';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 
 interface BookingSpace {
   id: number;
   name: string;
-  type: string;
-  price: number;
+  space_type: string;
+  price_per_day: number;
   capacity: number;
 }
 
@@ -23,8 +29,11 @@ interface BookingSpace {
     ReactiveFormsModule,
     HeaderComponent,
     FooterComponent,
-    ButtonModule,
-    CardModule,
+    Button,
+    DatePicker,
+    RadioButton,
+    Checkbox,
+    Select,
   ],
   template: `
     <div class="page-shell">
@@ -40,19 +49,21 @@ interface BookingSpace {
         <section class="booking-form-container">
           <div class="form-card">
             <h2>Booking Details</h2>
-            
+
             <form [formGroup]="bookingForm" (ngSubmit)="submitBooking()">
               <!-- Step 1: Select Space -->
               <div class="form-section">
                 <h3>1. Select Space</h3>
                 <div class="form-group">
-                  <label for="space-select">Choose a Workspace</label>
-                  <select id="space-select" formControlName="spaceId" class="form-control">
-                    <option value="">-- Select Space --</option>
-                    <option *ngFor="let space of availableSpaces()" [value]="space.id">
-                      {{ space.name }} - {{ '$' + space.price }}/day (Capacity: {{ space.capacity }})
-                    </option>
-                  </select>
+                  <label>Choose a Workspace</label>
+                  <p-select
+                    [options]="availableSpaces()"
+                    formControlName="spaceId"
+                    optionLabel="name"
+                    optionValue="id"
+                    placeholder="-- Select Space --"
+                    class="form-control">
+                  </p-select>
                   <small class="error-text" *ngIf="isFieldInvalid('spaceId')">Please select a space</small>
                 </div>
               </div>
@@ -62,23 +73,23 @@ interface BookingSpace {
                 <h3>2. Select Dates</h3>
                 <div class="form-row">
                   <div class="form-group form-col">
-                    <label for="start-date">Start Date</label>
-                    <input 
-                      id="start-date"
-                      type="date"
+                    <label>Start Date</label>
+                    <p-datepicker
                       formControlName="startDate"
-                      class="form-control"
-                      [min]="minDate">
+                      [minDate]="minDateObj"
+                      dateFormat="yy-mm-dd"
+                      placeholder="Select start date">
+                    </p-datepicker>
                     <small class="error-text" *ngIf="isFieldInvalid('startDate')">Start date is required</small>
                   </div>
                   <div class="form-group form-col">
-                    <label for="end-date">End Date</label>
-                    <input 
-                      id="end-date"
-                      type="date"
+                    <label>End Date</label>
+                    <p-datepicker
                       formControlName="endDate"
-                      class="form-control"
-                      [min]="getStartDate()">
+                      [minDate]="getStartDateObj()"
+                      dateFormat="yy-mm-dd"
+                      placeholder="Select end date">
+                    </p-datepicker>
                     <small class="error-text" *ngIf="isFieldInvalid('endDate')">End date is required</small>
                   </div>
                 </div>
@@ -89,18 +100,9 @@ interface BookingSpace {
                 <h3>3. Booking Type</h3>
                 <div class="form-group">
                   <div class="radio-group">
-                    <label class="radio-label">
-                      <input type="radio" formControlName="billingType" value="hourly">
-                      <span>Hourly Rate</span>
-                    </label>
-                    <label class="radio-label">
-                      <input type="radio" formControlName="billingType" value="daily">
-                      <span>Daily Rate</span>
-                    </label>
-                    <label class="radio-label">
-                      <input type="radio" formControlName="billingType" value="monthly">
-                      <span>Monthly Rate</span>
-                    </label>
+                    <p-radioButton formControlName="billingType" value="hourly" label="Hourly Rate"></p-radioButton>
+                    <p-radioButton formControlName="billingType" value="daily" label="Daily Rate"></p-radioButton>
+                    <p-radioButton formControlName="billingType" value="monthly" label="Monthly Rate"></p-radioButton>
                   </div>
                 </div>
               </div>
@@ -110,20 +112,22 @@ interface BookingSpace {
                 <h3>4. Time Selection</h3>
                 <div class="form-row">
                   <div class="form-group form-col">
-                    <label for="start-time">Start Time</label>
-                    <input 
-                      id="start-time"
-                      type="time"
+                    <label>Start Time</label>
+                    <p-datepicker
                       formControlName="startTime"
-                      class="form-control">
+                      [timeOnly]="true"
+                      hourFormat="24"
+                      placeholder="Select start time">
+                    </p-datepicker>
                   </div>
                   <div class="form-group form-col">
-                    <label for="end-time">End Time</label>
-                    <input 
-                      id="end-time"
-                      type="time"
+                    <label>End Time</label>
+                    <p-datepicker
                       formControlName="endTime"
-                      class="form-control">
+                      [timeOnly]="true"
+                      hourFormat="24"
+                      placeholder="Select end time">
+                    </p-datepicker>
                   </div>
                 </div>
               </div>
@@ -132,33 +136,32 @@ interface BookingSpace {
               <div class="form-section">
                 <h3>5. Recurrence (Optional)</h3>
                 <div class="form-group">
-                  <label class="checkbox-label">
-                    <input 
-                      type="checkbox" 
-                      formControlName="isRecurring"
-                      (change)="onRecurringChange()">
-                    <span>Make this a recurring booking</span>
-                  </label>
+                  <p-checkbox
+                    formControlName="isRecurring"
+                    label="Make this a recurring booking"
+                    (onChange)="onRecurringChange()">
+                  </p-checkbox>
                 </div>
 
                 <div *ngIf="bookingForm.get('isRecurring')?.value" class="recurrence-options">
                   <div class="form-group">
-                    <label for="recurrence-pattern">Repeat Pattern</label>
-                    <select id="recurrence-pattern" formControlName="recurrencePattern" class="form-control">
-                      <option value="daily">Daily</option>
-                      <option value="weekly">Weekly</option>
-                      <option value="biweekly">Every 2 Weeks</option>
-                      <option value="monthly">Monthly</option>
-                    </select>
+                    <label>Repeat Pattern</label>
+                    <p-select
+                      [options]="recurrenceOptions"
+                      formControlName="recurrencePattern"
+                      optionLabel="label"
+                      optionValue="value"
+                      placeholder="Select pattern">
+                    </p-select>
                   </div>
                   <div class="form-group">
-                    <label for="recurrence-end">Repeat Until</label>
-                    <input 
-                      id="recurrence-end"
-                      type="date"
+                    <label>Repeat Until</label>
+                    <p-datepicker
                       formControlName="recurrenceEnd"
-                      class="form-control"
-                      [min]="getEndDate()">
+                      [minDate]="getEndDateObj()"
+                      dateFormat="yy-mm-dd"
+                      placeholder="Select end date">
+                    </p-datepicker>
                   </div>
                 </div>
               </div>
@@ -167,13 +170,13 @@ interface BookingSpace {
               <div class="form-section">
                 <h3>6. Special Requests (Optional)</h3>
                 <div class="form-group">
-                  <label for="requests">Additional Notes</label>
-                  <textarea 
-                    id="requests"
+                  <label>Additional Notes</label>
+                  <p-textarea
                     formControlName="specialRequests"
-                    class="form-control"
                     placeholder="E.g., need parking, specific equipment, etc."
-                    rows="3"></textarea>
+                    rows="3"
+                    class="form-control">
+                  </p-textarea>
                 </div>
               </div>
 
@@ -186,11 +189,11 @@ interface BookingSpace {
                 </div>
                 <div class="summary-row">
                   <span>Type:</span>
-                  <strong>{{ selectedSpace.type }}</strong>
+                  <strong>{{ selectedSpace.space_type }}</strong>
                 </div>
                 <div class="summary-row">
                   <span>Rate:</span>
-                  <strong>{{ '$' + selectedSpace.price }}/day</strong>
+                  <strong>{{ '$' + selectedSpace.price_per_day }}/day</strong>
                 </div>
                 <div class="summary-row">
                   <span>Duration:</span>
@@ -204,14 +207,14 @@ interface BookingSpace {
 
               <!-- Action Buttons -->
               <div class="form-actions">
-                <button type="button" class="btn-secondary" (click)="resetForm()">Reset Form</button>
-                <button 
-                  type="submit" 
-                  class="btn-primary btn-success"
+                <p-button type="button" (click)="resetForm()">Reset Form</p-button>
+                <p-button
+                  type="submit"
+                  severity="success"
                   [disabled]="bookingForm.invalid">
                   <i class="pi pi-check"></i>
                   Confirm Booking
-                </button>
+                </p-button>
               </div>
             </form>
 
@@ -219,7 +222,7 @@ interface BookingSpace {
             <div class="success-message" *ngIf="bookingSuccess">
               <i class="pi pi-check-circle"></i>
               <p>Your booking has been submitted successfully! You will receive a confirmation email shortly.</p>
-              <button type="button" class="btn-primary" (click)="resetForm()">Book Another Space</button>
+              <p-button type="button" (click)="resetForm()">Book Another Space</p-button>
             </div>
           </div>
 
@@ -593,27 +596,33 @@ export class BookingPageComponent implements OnInit {
   bookingForm!: FormGroup;
   bookingSuccess = false;
   minDate = this.getTodayString();
+  minDateObj = new Date();
 
-  availableSpaces = signal<BookingSpace[]>([
-    { id: 1, name: 'Downtown Desk #1', type: 'Desk', price: 25, capacity: 1 },
-    { id: 2, name: 'Collaborative Space', type: 'Open Space', price: 150, capacity: 10 },
-    { id: 3, name: 'Executive Meeting Room', type: 'Meeting Room', price: 75, capacity: 8 },
-    { id: 4, name: 'Private Office Suite', type: 'Private Office', price: 120, capacity: 5 },
-    { id: 5, name: 'Conference Hall', type: 'Conference', price: 300, capacity: 50 },
-    { id: 6, name: 'Tech Startup Hub', type: 'Open Space', price: 200, capacity: 15 },
-  ]);
+  availableSpaces = signal<BookingSpace[]>([]);
 
-  constructor(private fb: FormBuilder) {}
+  recurrenceOptions = [
+    { label: 'Daily', value: 'daily' },
+    { label: 'Weekly', value: 'weekly' },
+    { label: 'Every 2 Weeks', value: 'biweekly' },
+    { label: 'Monthly', value: 'monthly' },
+  ];
+
+  constructor(
+    private fb: FormBuilder,
+    private spacesService: SpacesService,
+    private reservationsService: ReservationsService
+  ) {}
 
   ngOnInit() {
     this.initializeForm();
+    this.loadSpaces();
   }
 
   initializeForm() {
     this.bookingForm = this.fb.group({
       spaceId: ['', Validators.required],
-      startDate: ['', Validators.required],
-      endDate: ['', Validators.required],
+      startDate: [new Date(), Validators.required],
+      endDate: [new Date(), Validators.required],
       billingType: ['daily', Validators.required],
       startTime: ['09:00'],
       endTime: ['17:00'],
@@ -621,6 +630,22 @@ export class BookingPageComponent implements OnInit {
       recurrencePattern: ['weekly'],
       recurrenceEnd: [''],
       specialRequests: [''],
+    });
+  }
+
+  loadSpaces() {
+    this.spacesService.getAvailableSpaces().subscribe({
+      next: (spaces) => {
+        const bookingSpaces: BookingSpace[] = spaces.map(space => ({
+          id: space.id,
+          name: space.name,
+          space_type: space.space_type,
+          price_per_day: space.price_per_day,
+          capacity: space.capacity
+        }));
+        this.availableSpaces.set(bookingSpaces);
+      },
+      error: (error) => console.error('Error loading spaces:', error)
     });
   }
 
@@ -632,7 +657,7 @@ export class BookingPageComponent implements OnInit {
   onRecurringChange() {
     const isRecurring = this.bookingForm.get('isRecurring')?.value;
     const recurrenceEnd = this.bookingForm.get('recurrenceEnd');
-    
+
     if (isRecurring) {
       recurrenceEnd?.setValidators([Validators.required]);
     } else {
@@ -641,25 +666,27 @@ export class BookingPageComponent implements OnInit {
     recurrenceEnd?.updateValueAndValidity();
   }
 
-  getStartDate(): string {
-    return this.bookingForm.get('startDate')?.value || this.minDate;
+  getStartDateObj(): Date {
+    const start = this.bookingForm.get('startDate')?.value;
+    return start ? new Date(start) : new Date();
   }
 
-  getEndDate(): string {
-    return this.bookingForm.get('endDate')?.value || this.minDate;
+  getEndDateObj(): Date {
+    const end = this.bookingForm.get('endDate')?.value;
+    return end ? new Date(end) : new Date();
   }
 
   getDurationDays(): number {
     const start = this.bookingForm.get('startDate')?.value;
     const end = this.bookingForm.get('endDate')?.value;
-    
+
     if (!start || !end) return 0;
-    
+
     const startDate = new Date(start);
     const endDate = new Date(end);
     const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-    
+
     return diffDays;
   }
 
@@ -672,9 +699,9 @@ export class BookingPageComponent implements OnInit {
   calculateTotal(): number {
     const space = this.getSelectedSpace();
     if (!space) return 0;
-    
+
     const days = this.getDurationDays();
-    return space.price * days;
+    return space.price_per_day * days;
   }
 
   submitBooking() {
@@ -684,15 +711,40 @@ export class BookingPageComponent implements OnInit {
     }
 
     const formData = this.bookingForm.value;
-    console.log('Booking submitted:', formData);
-    
-    // Show success message
-    this.bookingSuccess = true;
-    
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      this.resetForm();
-    }, 3000);
+    const startDateTime = new Date(formData.startDate);
+    const endDateTime = new Date(formData.endDate);
+
+    if (formData.startTime) {
+      const [hours, minutes] = formData.startTime.split(':');
+      startDateTime.setHours(parseInt(hours), parseInt(minutes));
+    }
+    if (formData.endTime) {
+      const [hours, minutes] = formData.endTime.split(':');
+      endDateTime.setHours(parseInt(hours), parseInt(minutes));
+    }
+
+    const reservationData = {
+      space_id: formData.spaceId,
+      start_datetime: startDateTime.toISOString(),
+      end_datetime: endDateTime.toISOString(),
+      billing_type: formData.billingType,
+      is_recurring: formData.isRecurring,
+      recurrence_rule: formData.isRecurring ? formData.recurrencePattern : 'none',
+      notes: formData.specialRequests
+    };
+
+    this.reservationsService.createReservation(reservationData).subscribe({
+      next: (reservation) => {
+        console.log('Booking created:', reservation);
+        this.bookingSuccess = true;
+        setTimeout(() => {
+          this.resetForm();
+        }, 3000);
+      },
+      error: (error) => {
+        console.error('Error creating booking:', error);
+      }
+    });
   }
 
   resetForm() {

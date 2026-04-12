@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Observable, of, tap, throwError } from 'rxjs';
 
 export interface User {
   id: string;
@@ -46,6 +46,7 @@ function readStorageUser(): User | null {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
+  private readonly useMocks = signal(false); // Variable pour switcher entre mocks et API
 
   private readonly accessTokenSignal = signal<string | null>(localStorage.getItem('coworking_access_token'));
   private readonly refreshTokenSignal = signal<string | null>(localStorage.getItem('coworking_refresh_token'));
@@ -54,6 +55,10 @@ export class AuthService {
   readonly isAuthenticated = computed(() => !!this.accessTokenSignal());
   readonly token = computed(() => this.accessTokenSignal());
   readonly user = this.userSignal;
+
+  toggleMocks(): void {
+    this.useMocks.set(!this.useMocks());
+  }
 
   constructor() {
     effect(() => {
@@ -89,12 +94,36 @@ export class AuthService {
   }
 
   login(payload: LoginPayload): Observable<AuthResponse> {
+    if (this.useMocks()) {
+      // Mock login
+      if (payload.email === 'admin@coworking.com' && payload.password === 'admin1234') {
+        const mockResponse: AuthResponse = {
+          message: 'Login successful',
+          user: { id: '1', name: 'Admin User', email: payload.email },
+          tokens: { access: 'mock_access_token', refresh: 'mock_refresh_token' }
+        };
+        this.setAuthPayload(mockResponse);
+        return of(mockResponse);
+      } else {
+        return throwError(() => new Error('Invalid credentials'));
+      }
+    }
     return this.http.post<AuthResponse>('/api/auth/login/', payload).pipe(
       tap((response) => this.setAuthPayload(response))
     );
   }
 
   register(payload: RegisterPayload): Observable<AuthResponse> {
+    if (this.useMocks()) {
+      // Mock register
+      const mockResponse: AuthResponse = {
+        message: 'Registration successful',
+        user: { id: Date.now().toString(), name: payload.name, email: payload.email },
+        tokens: { access: 'mock_access_token', refresh: 'mock_refresh_token' }
+      };
+      this.setAuthPayload(mockResponse);
+      return of(mockResponse);
+    }
     return this.http.post<AuthResponse>('/api/auth/register/', payload).pipe(
       tap((response) => this.setAuthPayload(response))
     );

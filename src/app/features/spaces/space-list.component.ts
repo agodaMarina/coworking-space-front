@@ -1,38 +1,53 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { DialogModule } from 'primeng/dialog';
+import { Button } from 'primeng/button';
+import { Dialog } from 'primeng/dialog';
+import { Select } from 'primeng/select';
+import { Slider } from 'primeng/slider';
 import { TableModule } from 'primeng/table';
+import { Space, SpacesService } from '../../core/services/spaces.service';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 
-interface Space {
-  id: number;
-  name: string;
-  type: string;
-  description: string;
-  capacity: number;
-  price: number;
-  currency: string;
-  amenities: string[];
+// interface Space {
+//   id: number;
+//   name: string;
+//   space_type: string;
+//   space_type_display: string;
+//   description: string;
+//   capacity: number;
+//   price_per_hour: number;
+//   price_per_day: number;
+//   address: string;
+//   is_available: boolean;
+//   photo?: string;
+//   photos: any[];
+//   amenities: Amenity[];
+//   created_at: string;
+// }
+
+interface Amenity {
+    id: number;
+    name: string;
+    icon: string;
 }
 
 @Component({
-  standalone: true,
-  selector: 'app-space-list-page',
-  imports: [
-    CommonModule,
-    FormsModule,
-    HeaderComponent,
-    FooterComponent,
-    ButtonModule,
-    TableModule,
-    DialogModule,
-    CardModule,
-  ],
-  template: `
+    standalone: true,
+    selector: 'app-space-list-page',
+    imports: [
+        CommonModule,
+        FormsModule,
+        HeaderComponent,
+        FooterComponent,
+        Button,
+        TableModule,
+        Dialog,
+        Select,
+        Slider,
+    ],
+    template: `
     <div class="page-shell">
       <app-header></app-header>
       <main class="content-shell">
@@ -45,23 +60,26 @@ interface Space {
         <!-- Filters Section -->
         <section class="filters-section">
           <div class="filter-group">
-            <label for="type-filter">Space Type</label>
-            <select id="type-filter" [(ngModel)]="selectedType" class="filter-select">
-              <option [value]="null">All Types</option>
-              <option *ngFor="let opt of typeOptions" [value]="opt.value">{{ opt.label }}</option>
-            </select>
+            <label>Space Type</label>
+            <p-select
+              [options]="typeOptions"
+              [(ngModel)]="selectedType"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="All Types"
+              class="filter-dropdown">
+            </p-select>
           </div>
 
           <div class="filter-group">
-            <label for="capacity-filter">Capacity: {{ capacityRange()[0] }} - {{ capacityRange()[1] }} persons</label>
-            <input
-              id="capacity-filter"
-              type="range"
+            <label>Capacity: {{ capacityRange()[0] }} - {{ capacityRange()[1] }} persons</label>
+            <p-slider
               [(ngModel)]="capacityRangeMin"
               [min]="0"
               [max]="100"
-              class="filter-range"
-              (change)="updateCapacityRange()">
+              (onChange)="updateCapacityRange()"
+              class="filter-slider">
+            </p-slider>
           </div>
 
           <div class="filter-actions">
@@ -74,8 +92,8 @@ interface Space {
 
         <!-- Desktop DataTable View -->
         <section class="table-container-desktop">
-          <table class="spaces-table">
-            <thead>
+          <p-table [value]="filteredSpaces()" class="spaces-table">
+            <ng-template pTemplate="header">
               <tr>
                 <th>Name</th>
                 <th>Type</th>
@@ -83,30 +101,32 @@ interface Space {
                 <th>Price</th>
                 <th style="width: 13rem">Actions</th>
               </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let space of filteredSpaces()">
+            </ng-template>
+            <ng-template pTemplate="body" let-space>
+              <tr>
                 <td><strong>{{ space.name }}</strong></td>
-                <td><span class="type-badge" [ngClass]="'type-' + space.type">{{ space.type }}</span></td>
+                <td><span class="type-badge" [ngClass]="'type-' + space.space_type">{{ space.space_type_display }}</span></td>
                 <td>{{ space.capacity }}</td>
-                <td><strong>{{ '$' + space.price }}/day</strong></td>
+                <td><strong>{{ '$' + space.price_per_day }}/day</strong></td>
                 <td class="actions-cell">
-                  <button type="button" (click)="openDetail(space)" class="btn-small btn-info" pButton icon="pi pi-eye">View</button>
-                  <button type="button" (click)="goToBooking(space)" class="btn-small btn-success" pButton icon="pi pi-calendar">Book</button>
+                  <p-button type="button" (click)="openDetail(space)" icon="pi pi-eye">View</p-button>
+                  <p-button type="button" (click)="goToBooking(space)" icon="pi pi-calendar">Book</p-button>
                 </td>
               </tr>
-            </tbody>
-          </table>
-          <div class="empty-state" *ngIf="filteredSpaces().length === 0">
-            <p>No spaces found matching your filters.</p>
-          </div>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="5" class="empty-state">No spaces found matching your filters.</td>
+              </tr>
+            </ng-template>
+          </p-table>
         </section>
 
         <!-- Mobile Card View -->
         <section class="space-grid-mobile">
           <article class="space-card" *ngFor="let space of filteredSpaces()">
             <div class="card-header">
-              <span class="type-badge" [ngClass]="'type-' + space.type">{{ space.type }}</span>
+              <span class="type-badge" [ngClass]="'type-' + space.space_type">{{ space.space_type_display }}</span>
               <h2>{{ space.name }}</h2>
             </div>
             <p class="card-description">{{ space.description }}</p>
@@ -117,74 +137,75 @@ interface Space {
               </span>
               <span class="price-info">
                 <i class="pi pi-tag"></i>
-                {{ '$' + space.price }}/day
+                {{ '$' + space.price_per_day }}/day
               </span>
             </div>
             <div class="card-actions">
-              <button type="button" (click)="openDetail(space)" class="btn-card" pButton icon="pi pi-eye">View Details</button>
-              <button type="button" (click)="goToBooking(space)" class="btn-card btn-success" pButton icon="pi pi-calendar">Book Now</button>
+              <p-button type="button" (click)="openDetail(space)" icon="pi pi-eye">View Details</p-button>
+              <p-button type="button" (click)="goToBooking(space)" severity="success" icon="pi pi-calendar">Book Now</p-button>
             </div>
           </article>
         </section>
       </main>
 
       <!-- Detail Modal Dialog -->
-      <div [class.active]="showDetailModal()" class="modal-overlay" (click)="closeDetail()">
-        <div class="modal-dialog" (click)="$event.stopPropagation()" *ngIf="selectedSpace()">
-          <div class="modal-header">
-            <h2>{{ selectedSpace()?.name }}</h2>
-            <button type="button" (click)="closeDetail()" class="btn-close">&times;</button>
+    <p-dialog
+        [visible]="showDetailModal()"
+        (visibleChange)="showDetailModal.set($event)"
+        [modal]="true"
+        [style]="{width: '600px'}"
+        [closable]="true"
+        header="Space Details"
+        (onHide)="closeDetail()">
+        <div class="modal-content" *ngIf="selectedSpace()">
+          <div class="detail-section">
+            <h3>Description</h3>
+            <p>{{ selectedSpace()?.description }}</p>
           </div>
-          <div class="modal-content">
-            <div class="detail-section">
-              <h3>Description</h3>
-              <p>{{ selectedSpace()!.description }}</p>
-            </div>
 
-            <div class="detail-section">
-              <h3>Details</h3>
-              <div class="detail-grid">
-                <div class="detail-item">
-                  <span class="label">Type:</span>
-                  <span class="type-badge" [ngClass]="'type-' + selectedSpace()!.type">{{ selectedSpace()!.type }}</span>
-                </div>
-                <div class="detail-item">
-                  <span class="label">Capacity:</span>
-                  <span class="value">{{ selectedSpace()!.capacity }} persons</span>
-                </div>
-                <div class="detail-item">
-                  <span class="label">Price:</span>
-                  <span class="value">{{ '$' + selectedSpace()!.price }}/day</span>
-                </div>
-                <div class="detail-item">
-                  <span class="label">Currency:</span>
-                  <span class="value">{{ selectedSpace()!.currency }}</span>
-                </div>
+          <div class="detail-section">
+            <h3>Details</h3>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="label">Type:</span>
+                  <span class="type-badge" [ngClass]="'type-' + selectedSpace()!.space_type">{{ selectedSpace()!.space_type_display }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">Capacity:</span>
+                <span class="value">{{ selectedSpace()!.capacity }} persons</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">Price:</span>
+                <span class="value">{{ '$' + selectedSpace()!.price_per_day }}/day</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">Currency:</span>
+                <span class="value">{{ selectedSpace()!.price_per_hour }}</span>
               </div>
             </div>
+          </div>
 
-            <div class="detail-section">
-              <h3>Amenities</h3>
-              <ul class="amenities-list">
-                <li *ngFor="let amenity of selectedSpace()!.amenities">
-                  <i class="pi pi-check"></i>
-                  {{ amenity }}
-                </li>
-              </ul>
-            </div>
+          <div class="detail-section">
+            <h3>Amenities</h3>
+            <ul class="amenities-list">
+              <li *ngFor="let amenity of selectedSpace()!.amenities">
+                <i class="{{ amenity.icon }}"></i>
+                {{ amenity.name }}
+              </li>
+            </ul>
+          </div>
 
-            <div class="modal-footer">
-              <button type="button" (click)="closeDetail()" class="btn-secondary">Cancel</button>
-              <button type="button" (click)="goToBooking(selectedSpace()!)" class="btn-primary btn-success">Book This Space</button>
-            </div>
+          <div class="modal-footer">
+            <p-button type="button" (click)="closeDetail()">Cancel</p-button>
+            <p-button type="button" (click)="goToBooking(selectedSpace()!)" severity="success">Book This Space</p-button>
           </div>
         </div>
-      </div>
+      </p-dialog>
       <app-footer></app-footer>
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       :host ::ng-deep {
         .page-shell {
           min-height: 100vh;
@@ -238,7 +259,9 @@ interface Space {
           font-size: 0.9rem;
         }
         .filter-select,
-        .filter-range {
+        .filter-range,
+        .filter-dropdown,
+        .filter-slider {
           width: 100%;
           padding: 0.6rem;
           border: 1px solid #e2e8f0;
@@ -448,55 +471,7 @@ interface Space {
         }
 
         /* Modal */
-        .modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.5);
-          z-index: 1000;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          opacity: 0;
-          visibility: hidden;
-          transition: opacity 0.3s, visibility 0.3s;
-        }
-        .modal-overlay.active {
-          opacity: 1;
-          visibility: visible;
-        }
-        .modal-dialog {
-          background: white;
-          border-radius: 1.25rem;
-          max-width: 600px;
-          width: 90%;
-          max-height: 90vh;
-          overflow-y: auto;
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-        .modal-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1.5rem;
-          border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-        }
-        .modal-header h2 {
-          margin: 0;
-          color: #0f172a;
-        }
-        .btn-close {
-          background: none;
-          border: none;
-          font-size: 1.5rem;
-          color: #64748b;
-          cursor: pointer;
-          padding: 0;
-        }
         .modal-content {
-          padding: 1.5rem;
           display: flex;
           flex-direction: column;
           gap: 1.5rem;
@@ -615,155 +590,78 @@ interface Space {
         }
       }
     `,
-  ],
+    ],
 })
 export class SpaceListPageComponent implements OnInit {
-  // State signals
-  spaces = signal<Space[]>([]);
-  selectedSpace = signal<Space | null>(null);
-  showDetailModal = signal(false);
-  selectedType = signal<string | null>(null);
-  capacityRange = signal<[number, number]>([0, 100]);
-  capacityRangeMin = 0;
-  capacityRangeMax = 100;
+    // State signals
+    spaces = signal<Space[]>([]);
+    selectedSpace = signal<Space | null>(null);
+    showDetailModal = signal(false);
+    selectedType = signal<string | null>(null);
+    capacityRange = signal<[number, number]>([0, 100]);
+    capacityRangeMin = 0;
+    capacityRangeMax = 100;
 
-  // Filter options
-  typeOptions = [
-    { label: 'Desk', value: 'desk' },
-    { label: 'Open Space', value: 'open_space' },
-    { label: 'Meeting Room', value: 'meeting_room' },
-    { label: 'Private Office', value: 'private' },
-    { label: 'Conference Room', value: 'conference' },
-  ];
-
-  // Computed filtered spaces
-  filteredSpaces = computed(() => {
-    const type = this.selectedType();
-    const [minCap, maxCap] = this.capacityRange();
-
-    return this.spaces().filter(space => {
-      const typeMatch = !type || space.type === type;
-      const capacityMatch = space.capacity >= minCap && space.capacity <= maxCap;
-      return typeMatch && capacityMatch;
-    });
-  });
-
-  ngOnInit() {
-    this.loadSpaces();
-  }
-
-  loadSpaces() {
-    const mock: Space[] = [
-      {
-        id: 1,
-        name: 'Downtown Desk #1',
-        type: 'desk',
-        description: 'Modern dedicated desk with high-speed internet and natural light',
-        capacity: 1,
-        price: 25,
-        currency: 'USD',
-        amenities: ['Wi-Fi 5G', 'Standing Desk', 'Monitor', 'Coffee Machine', 'Parking'],
-      },
-      {
-        id: 2,
-        name: 'Collaborative Space',
-        type: 'open_space',
-        description: 'Open layout perfect for team collaboration and creative work',
-        capacity: 10,
-        price: 150,
-        currency: 'USD',
-        amenities: ['Wi-Fi 5G', 'Whiteboard', 'Printer', 'Kitchen', 'Lounge Area'],
-      },
-      {
-        id: 3,
-        name: 'Executive Meeting Room',
-        type: 'meeting_room',
-        description: 'Premium room with video conferencing and professional setup',
-        capacity: 8,
-        price: 75,
-        currency: 'USD',
-        amenities: ['Video Conference', 'Projector', 'Smart Board', 'Coffee Service', 'Catering'],
-      },
-      {
-        id: 4,
-        name: 'Private Office Suite',
-        type: 'private',
-        description: 'Fully furnished private office with dedicated entrance and utilities',
-        capacity: 5,
-        price: 120,
-        currency: 'USD',
-        amenities: ['Dedicated Entrance', 'Phone Line', 'Wi-Fi', 'Utilities Included', 'Receptionist'],
-      },
-      {
-        id: 5,
-        name: 'Conference Hall',
-        type: 'conference',
-        description: 'Large conference room suitable for presentations and large meetings',
-        capacity: 50,
-        price: 300,
-        currency: 'USD',
-        amenities: ['AV System', 'Stadium Seating', 'Simultaneous Translation', 'Catering', 'Recording'],
-      },
-      {
-        id: 6,
-        name: 'Tech Startup Hub',
-        type: 'open_space',
-        description: 'Vibrant space designed for tech teams and startups',
-        capacity: 15,
-        price: 200,
-        currency: 'USD',
-        amenities: ['High-Speed Wi-Fi', 'Server Rack', 'Networking Events', 'Mentorship', 'Pitch Deck Room'],
-      },
-      {
-        id: 7,
-        name: 'Creative Studio Desk',
-        type: 'desk',
-        description: 'Bright creative workspace perfect for designers and artists',
-        capacity: 1,
-        price: 35,
-        currency: 'USD',
-        amenities: ['Monitor', 'Ergonomic Chair', 'Drafting Table', 'Natural Light', 'Art Supplies'],
-      },
-      {
-        id: 8,
-        name: 'Boardroom Premium',
-        type: 'meeting_room',
-        description: 'Luxury boardroom with executive amenities and catering service',
-        capacity: 12,
-        price: 150,
-        currency: 'USD',
-        amenities: ['Executive Catering', 'Luxury Furniture', 'Video Wall', 'Recording Studio', 'PA System'],
-      },
+    // Filter options
+    typeOptions = [
+        { label: 'Desk', value: 'desk' },
+        { label: 'Open Space', value: 'open_space' },
+        { label: 'Meeting Room', value: 'meeting_room' },
+        { label: 'Private Office', value: 'private' },
+        { label: 'Conference Room', value: 'conference' },
     ];
-    this.spaces.set(mock);
-  }
 
-  openDetail(space: Space) {
-    this.selectedSpace.set(space);
-    this.showDetailModal.set(true);
-  }
+    // Computed filtered spaces
+    filteredSpaces = computed(() => {
+        const type = this.selectedType();
+        const [minCap, maxCap] = this.capacityRange();
 
-  closeDetail() {
-    this.showDetailModal.set(false);
-    this.selectedSpace.set(null);
-  }
+        return this.spaces().filter(space => {
+            const typeMatch = !type || space.space_type === type;
+            const capacityMatch = space.capacity >= minCap && space.capacity <= maxCap;
+            return typeMatch && capacityMatch;
+        });
+    });
 
-  updateCapacityRange() {
-    this.capacityRange.set([this.capacityRangeMin, this.capacityRangeMax]);
-  }
+    constructor(private spacesService: SpacesService) { }
 
-  resetFilters() {
-    this.selectedType.set(null);
-    this.capacityRange.set([0, 100]);
-    this.capacityRangeMin = 0;
-    this.capacityRangeMax = 100;
-  }
+    ngOnInit() {
+        this.loadSpaces();
+    }
 
-  goToBooking(space: Space) {
-    // Will be implemented with router in Phase 3
-    console.log('Navigate to booking for space:', space.name);
-    // this.router.navigate(['/booking'], { queryParams: { spaceId: space.id } });
-  }
+    loadSpaces() {
+        this.spacesService.getSpaces().subscribe({
+            next: (spaces) => this.spaces.set(spaces),
+            error: (error) => console.error('Error loading spaces:', error)
+        });
+    }
+
+    openDetail(space: Space) {
+        this.selectedSpace.set(space);
+        this.showDetailModal.set(true);
+    }
+
+    closeDetail() {
+        this.showDetailModal.set(false);
+        this.selectedSpace.set(null);
+    }
+
+    updateCapacityRange() {
+        this.capacityRange.set([this.capacityRangeMin, this.capacityRangeMax]);
+    }
+
+    resetFilters() {
+        this.selectedType.set(null);
+        this.capacityRange.set([0, 100]);
+        this.capacityRangeMin = 0;
+        this.capacityRangeMax = 100;
+    }
+
+    goToBooking(space: Space) {
+        // Will be implemented with router in Phase 3
+        console.log('Navigate to booking for space:', space.name);
+        // this.router.navigate(['/booking'], { queryParams: { spaceId: space.id } });
+    }
 }
 // import { HeaderComponent } from '../../shared/components/header/header.component';
 

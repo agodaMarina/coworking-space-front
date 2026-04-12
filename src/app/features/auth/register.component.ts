@@ -2,31 +2,38 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { Button } from 'primeng/button';
+import { Password } from 'primeng/password';
 import { AuthService } from '../../core/auth.service';
 
 @Component({
   standalone: true,
   selector: 'app-register-page',
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, Button, Password],
   template: `
     <main class="auth-shell">
       <section class="auth-panel">
         <h1>Créer un compte</h1>
         <p>Inscrivez-vous et commencez à réserver des espaces en quelques clics.</p>
         <form [formGroup]="registerForm" (ngSubmit)="submit()">
-          <label>
-            Nom complet
-            <input type="text" formControlName="name" placeholder="Jean Dupont" />
-          </label>
-          <label>
-            Email
-            <input type="email" formControlName="email" placeholder="votre@email.com" />
-          </label>
-          <label>
-            Mot de passe
-            <input type="password" formControlName="password" placeholder="••••••••" />
-          </label>
-          <button type="submit" [disabled]="submitting()">Créer mon compte</button>
+          <div class="form-group">
+            <label>Nom complet</label>
+            <p-inputText type="text" formControlName="name" placeholder="Jean Dupont" class="w-full" />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <p-inputText type="email" formControlName="email" placeholder="votre@email.com" class="w-full" />
+          </div>
+          <div class="form-group">
+            <label>Mot de passe</label>
+            <p-password
+              formControlName="password"
+              placeholder="••••••••"
+              [toggleMask]="true"
+              styleClass="w-full">
+            </p-password>
+          </div>
+          <p-button type="submit" label="Créer mon compte" [loading]="submitting()" styleClass="w-full" />
           <p class="form-error" *ngIf="error()">{{ error() }}</p>
         </form>
         <p class="auth-footer">
@@ -66,33 +73,16 @@ import { AuthService } from '../../core/auth.service';
         display: grid;
         gap: 1rem;
       }
-      label {
+      .form-group {
         display: grid;
         gap: 0.5rem;
+      }
+      label {
         font-weight: 600;
         color: #334155;
       }
-      input {
+      .w-full {
         width: 100%;
-        border: 1px solid #cbd5e1;
-        border-radius: 0.85rem;
-        padding: 0.95rem 1rem;
-        font-size: 1rem;
-        color: #0f172a;
-      }
-      button {
-        width: 100%;
-        border: none;
-        border-radius: 0.95rem;
-        padding: 0.95rem 1rem;
-        background: #2563eb;
-        color: white;
-        font-weight: 700;
-        cursor: pointer;
-      }
-      button:disabled {
-        opacity: 0.65;
-        cursor: not-allowed;
       }
       .form-error {
         color: #b91c1c;

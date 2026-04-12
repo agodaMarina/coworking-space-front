@@ -28,10 +28,15 @@ export const routes: Routes = [
     path: 'spaces/:id',
     loadComponent: () => import('./features/spaces/space-detail.component').then((m) => m.SpaceDetailPageComponent),
   },
-  {
-    path: 'booking',
+//   {
+//     path: 'booking',
+//     loadComponent: () => import('./features/booking/booking.component').then((m) => m.BookingPageComponent),
+//     canActivate: [authGuard],
+//   },
+{
+    path:'booking',
     loadComponent: () => import('./features/booking/booking.component').then((m) => m.BookingPageComponent),
     canActivate: [authGuard],
-  },
+},
   { path: '**', redirectTo: 'home' },
 ];
