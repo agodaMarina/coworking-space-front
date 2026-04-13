@@ -69,7 +69,7 @@ import { AuthService } from '../../../core/auth.service';
   ]
 })
 export class HeaderComponent {
-  readonly authService = inject(AuthService);
+  public readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
   logout(): void {

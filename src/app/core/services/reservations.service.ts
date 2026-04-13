@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { finalize, Observable, of, tap } from 'rxjs';
 import { ApiService } from '../api.service';
 
 export interface Reservation {
@@ -36,6 +36,7 @@ export interface CreateReservation {
 })
 export class ReservationsService extends ApiService {
   private readonly useMocks = signal(false);
+  readonly isLoading = signal(false);
 
   // Mock data
   private mockReservations: Reservation[] = [
@@ -64,55 +65,76 @@ export class ReservationsService extends ApiService {
   }
 
   getReservations(): Observable<Reservation[]> {
-    if (this.useMocks()) {
-      return of(this.mockReservations);
-    }
-    return this.get<Reservation[]>('/reservations/');
+    return (this.useMocks()
+      ? of(this.mockReservations)
+      : this.get<Reservation[]>('/reservations/')).pipe(
+      tap(() => this.isLoading.set(true)),
+      finalize(() => this.isLoading.set(false))
+    );
   }
 
   createReservation(data: CreateReservation): Observable<Reservation> {
-    if (this.useMocks()) {
-      const newReservation: Reservation = {
-        id: Date.now(),
-        user_detail: { id: 1, email: 'user@example.com' },
-        space_detail: { id: data.space_id, name: 'Mock Space' },
-        start_datetime: data.start_datetime,
-        end_datetime: data.end_datetime,
-        status: 'pending',
-        status_display: 'En attente',
-        total_price: 100, // Mock calculation
-        billing_type: data.billing_type,
-        billing_type_display: data.billing_type === 'hourly' ? 'Par heure' : 'Par jour',
-        duration_hours: 8,
-        is_recurring: data.is_recurring || false,
-        recurrence_rule: data.recurrence_rule || 'none',
-        notes: data.notes || '',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-      this.mockReservations.push(newReservation);
-      return of(newReservation);
-    }
-    return this.post<Reservation>('/reservations/create/', data);
+    const source = this.useMocks()
+      ? of(this.createMockReservation(data))
+      : this.post<Reservation>('/reservations/create/', data);
+
+    return source.pipe(
+      tap(() => this.isLoading.set(true)),
+      finalize(() => this.isLoading.set(false))
+    );
   }
 
   getReservation(id: number): Observable<Reservation> {
-    if (this.useMocks()) {
-      const reservation = this.mockReservations.find(r => r.id === id);
-      return reservation ? of(reservation) : of({} as Reservation);
-    }
-    return this.get<Reservation>(`/reservations/${id}/`);
+    const source = this.useMocks()
+      ? of(this.mockReservations.find(r => r.id === id) || ({} as Reservation))
+      : this.get<Reservation>(`/reservations/${id}/`);
+
+    return source.pipe(
+      tap(() => this.isLoading.set(true)),
+      finalize(() => this.isLoading.set(false))
+    );
   }
 
   cancelReservation(id: number): Observable<any> {
-    if (this.useMocks()) {
-      const index = this.mockReservations.findIndex(r => r.id === id);
-      if (index > -1) {
-        this.mockReservations[index].status = 'cancelled';
-        this.mockReservations[index].status_display = 'Annulée';
-      }
-      return of({ success: true });
+    const source = this.useMocks()
+      ? this.cancelMockReservation(id)
+      : this.post(`/reservations/${id}/cancel/`, {});
+
+    return source.pipe(
+      tap(() => this.isLoading.set(true)),
+      finalize(() => this.isLoading.set(false))
+    );
+  }
+
+  private createMockReservation(data: CreateReservation): Reservation {
+    const newReservation: Reservation = {
+      id: Date.now(),
+      user_detail: { id: 1, email: 'user@example.com' },
+      space_detail: { id: data.space_id, name: 'Mock Space' },
+      start_datetime: data.start_datetime,
+      end_datetime: data.end_datetime,
+      status: 'pending',
+      status_display: 'En attente',
+      total_price: 100, // Mock calculation
+      billing_type: data.billing_type,
+      billing_type_display: data.billing_type === 'hourly' ? 'Par heure' : 'Par jour',
+      duration_hours: 8,
+      is_recurring: data.is_recurring || false,
+      recurrence_rule: data.recurrence_rule || 'none',
+      notes: data.notes || '',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    this.mockReservations.push(newReservation);
+    return newReservation;
+  }
+
+  private cancelMockReservation(id: number): Observable<any> {
+    const index = this.mockReservations.findIndex(r => r.id === id);
+    if (index > -1) {
+      this.mockReservations[index].status = 'cancelled';
+      this.mockReservations[index].status_display = 'Annulée';
     }
-    return this.post(`/reservations/${id}/cancel/`, {});
+    return of({ success: true });
   }
 }

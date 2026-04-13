@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { finalize, Observable, of, tap } from 'rxjs';
 import { ApiService } from '../api.service';
 
 export interface Space {
@@ -30,6 +30,7 @@ export interface Amenity {
 })
 export class SpacesService extends ApiService {
   private readonly useMocks = signal(false); // Variable pour switcher entre mocks et API
+  readonly isLoading = signal(false); // Loading state
 
   // Mock data
   private mockSpaces: Space[] = [
@@ -94,37 +95,46 @@ export class SpacesService extends ApiService {
   }
 
   getSpaces(): Observable<Space[]> {
-    if (this.useMocks()) {
-      return of(this.mockSpaces);
-    }
-    return this.get<Space[]>('/spaces/');
+    return (this.useMocks()
+      ? of(this.mockSpaces)
+      : this.get<Space[]>('/spaces/')).pipe(
+      tap(() => this.isLoading.set(true)),
+      finalize(() => this.isLoading.set(false))
+    );
   }
 
   getAvailableSpaces(): Observable<Space[]> {
-    if (this.useMocks()) {
-      return of(this.mockSpaces.filter(s => s.is_available));
-    }
-    return this.get<Space[]>('/spaces/available/');
+    return (this.useMocks()
+      ? of(this.mockSpaces.filter(s => s.is_available))
+      : this.get<Space[]>('/spaces/available/')).pipe(
+      tap(() => this.isLoading.set(true)),
+      finalize(() => this.isLoading.set(false))
+    );
   }
 
   getSpace(id: number): Observable<Space> {
-    if (this.useMocks()) {
-      const space = this.mockSpaces.find(s => s.id === id);
-      return space ? of(space) : of({} as Space);
-    }
-    return this.get<Space>(`/spaces/${id}/`);
+    const source = this.useMocks()
+      ? of(this.mockSpaces.find(s => s.id === id) || ({} as Space))
+      : this.get<Space>(`/spaces/${id}/`);
+
+    return source.pipe(
+      tap(() => this.isLoading.set(true)),
+      finalize(() => this.isLoading.set(false))
+    );
   }
 
   getAmenities(): Observable<Amenity[]> {
-    if (this.useMocks()) {
-      return of([
-        { id: 1, name: 'Wi-Fi 5G', icon: 'pi pi-wifi' },
-        { id: 2, name: 'Standing Desk', icon: 'pi pi-desktop' },
-        { id: 3, name: 'Whiteboard', icon: 'pi pi-palette' },
-        { id: 4, name: 'Video Conference', icon: 'pi pi-video' },
-        { id: 5, name: 'Projector', icon: 'pi pi-play' }
-      ]);
-    }
-    return this.get<Amenity[]>('/spaces/amenities/');
+    return (this.useMocks()
+      ? of([
+          { id: 1, name: 'Wi-Fi 5G', icon: 'pi pi-wifi' },
+          { id: 2, name: 'Standing Desk', icon: 'pi pi-desktop' },
+          { id: 3, name: 'Whiteboard', icon: 'pi pi-palette' },
+          { id: 4, name: 'Video Conference', icon: 'pi pi-video' },
+          { id: 5, name: 'Projector', icon: 'pi pi-play' }
+        ])
+      : this.get<Amenity[]>('/spaces/amenities/')).pipe(
+      tap(() => this.isLoading.set(true)),
+      finalize(() => this.isLoading.set(false))
+    );
   }
 }

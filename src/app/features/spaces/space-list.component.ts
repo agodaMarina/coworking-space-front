@@ -3,6 +3,7 @@ import { Component, computed, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { Select } from 'primeng/select';
 import { Slider } from 'primeng/slider';
 import { TableModule } from 'primeng/table';
@@ -46,6 +47,7 @@ interface Amenity {
         Dialog,
         Select,
         Slider,
+        ProgressSpinnerModule,
     ],
     template: `
     <div class="page-shell">
@@ -91,8 +93,11 @@ interface Amenity {
         </section>
 
         <!-- Desktop DataTable View -->
-        <section class="table-container-desktop">
-          <p-table [value]="filteredSpaces()" class="spaces-table">
+        <section class="table-container-desktop" [style.position]="'relative'">
+          <div *ngIf="spacesService.isLoading()" class="loading-overlay">
+            <p-progressSpinner></p-progressSpinner>
+          </div>
+          <p-table [value]="filteredSpaces()" class="spaces-table" [loading]="spacesService.isLoading()">
             <ng-template pTemplate="header">
               <tr>
                 <th>Name</th>
@@ -307,6 +312,20 @@ interface Amenity {
         .table-container-desktop {
           display: block;
           margin-bottom: 2rem;
+          position: relative;
+        }
+        .loading-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.7);
+          border-radius: 1.25rem;
+          z-index: 10;
         }
         .spaces-table {
           width: 100%;
@@ -623,7 +642,7 @@ export class SpaceListPageComponent implements OnInit {
         });
     });
 
-    constructor(private spacesService: SpacesService) { }
+    constructor(public spacesService: SpacesService) { }
 
     ngOnInit() {
         this.loadSpaces();

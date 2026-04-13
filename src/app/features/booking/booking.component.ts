@@ -207,11 +207,12 @@ interface BookingSpace {
 
               <!-- Action Buttons -->
               <div class="form-actions">
-                <p-button type="button" (click)="resetForm()">Reset Form</p-button>
+                <p-button type="button" (click)="resetForm()" [disabled]="reservationsService.isLoading()">Reset Form</p-button>
                 <p-button
                   type="submit"
                   severity="success"
-                  [disabled]="bookingForm.invalid">
+                  [disabled]="bookingForm.invalid || reservationsService.isLoading()"
+                  [loading]="reservationsService.isLoading()">
                   <i class="pi pi-check"></i>
                   Confirm Booking
                 </p-button>
@@ -609,8 +610,8 @@ export class BookingPageComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private spacesService: SpacesService,
-    private reservationsService: ReservationsService
+    public spacesService: SpacesService,
+    public reservationsService: ReservationsService
   ) {}
 
   ngOnInit() {
