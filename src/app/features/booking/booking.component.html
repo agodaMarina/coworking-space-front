@@ -1,0 +1,236 @@
+  <div class="page-shell">
+      <app-header></app-header>
+      <main class="content-shell">
+        <!-- Hero Section -->
+        <section class="booking-hero">
+          <h1>Book Your Workspace</h1>
+          <p>Select your ideal space and schedule your booking in just a few steps.</p>
+        </section>
+
+        <!-- Booking Form -->
+        <section class="booking-form-container">
+          <div class="form-card">
+            <h2>Booking Details</h2>
+
+            <form [formGroup]="bookingForm" (ngSubmit)="submitBooking()">
+              <!-- Step 1: Select Space -->
+              <div class="form-section">
+                <h3>1. Select Space</h3>
+                <div class="form-group">
+                  <label>Choose a Workspace</label>
+                  <p-select
+                    [options]="availableSpaces()"
+                    formControlName="spaceId"
+                    optionLabel="name"
+                    optionValue="id"
+                    placeholder="-- Select Space --"
+                    class="form-control">
+                  </p-select>
+                  <small class="error-text" *ngIf="isFieldInvalid('spaceId')">Please select a space</small>
+                </div>
+              </div>
+
+              <!-- Step 2: Select Dates -->
+              <div class="form-section">
+                <h3>2. Select Dates</h3>
+                <div class="form-row">
+                  <div class="form-group form-col">
+                    <label>Start Date</label>
+                    <p-datepicker
+                      formControlName="startDate"
+                      [minDate]="minDateObj"
+                      dateFormat="yy-mm-dd"
+                      placeholder="Select start date">
+                    </p-datepicker>
+                    <small class="error-text" *ngIf="isFieldInvalid('startDate')">Start date is required</small>
+                  </div>
+                  <div class="form-group form-col">
+                    <label>End Date</label>
+                    <p-datepicker
+                      formControlName="endDate"
+                      [minDate]="getStartDateObj()"
+                      dateFormat="yy-mm-dd"
+                      placeholder="Select end date">
+                    </p-datepicker>
+                    <small class="error-text" *ngIf="isFieldInvalid('endDate')">End date is required</small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 3: Booking Type -->
+              <div class="form-section">
+                <h3>3. Booking Type</h3>
+                <div class="form-group">
+                  <div class="radio-group">
+                    <p-radioButton formControlName="billingType" value="hourly" label="Hourly Rate"></p-radioButton>
+                    <p-radioButton formControlName="billingType" value="daily" label="Daily Rate"></p-radioButton>
+                    <p-radioButton formControlName="billingType" value="monthly" label="Monthly Rate"></p-radioButton>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 4: Time Selection (if hourly) -->
+              <div class="form-section" *ngIf="bookingForm.get('billingType')?.value === 'hourly'">
+                <h3>4. Time Selection</h3>
+                <div class="form-row">
+                  <div class="form-group form-col">
+                    <label>Start Time</label>
+                    <p-datepicker
+                      formControlName="startTime"
+                      [timeOnly]="true"
+                      hourFormat="24"
+                      placeholder="Select start time">
+                    </p-datepicker>
+                  </div>
+                  <div class="form-group form-col">
+                    <label>End Time</label>
+                    <p-datepicker
+                      formControlName="endTime"
+                      [timeOnly]="true"
+                      hourFormat="24"
+                      placeholder="Select end time">
+                    </p-datepicker>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 5: Recurrence -->
+              <div class="form-section">
+                <h3>5. Recurrence (Optional)</h3>
+                <div class="form-group">
+                  <p-checkbox
+                    formControlName="isRecurring"
+                    label="Make this a recurring booking"
+                    (onChange)="onRecurringChange()">
+                  </p-checkbox>
+                </div>
+
+                <div *ngIf="bookingForm.get('isRecurring')?.value" class="recurrence-options">
+                  <div class="form-group">
+                    <label>Repeat Pattern</label>
+                    <p-select
+                      [options]="recurrenceOptions"
+                      formControlName="recurrencePattern"
+                      optionLabel="label"
+                      optionValue="value"
+                      placeholder="Select pattern">
+                    </p-select>
+                  </div>
+                  <div class="form-group">
+                    <label>Repeat Until</label>
+                    <p-datepicker
+                      formControlName="recurrenceEnd"
+                      [minDate]="getEndDateObj()"
+                      dateFormat="yy-mm-dd"
+                      placeholder="Select end date">
+                    </p-datepicker>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 6: Special Requests -->
+              <div class="form-section">
+                <h3>6. Special Requests (Optional)</h3>
+                <div class="form-group">
+                  <label>Additional Notes</label>
+                  <p-textarea
+                    formControlName="specialRequests"
+                    placeholder="E.g., need parking, specific equipment, etc."
+                    rows="3"
+                    class="form-control">
+                  </p-textarea>
+                </div>
+              </div>
+
+              <!-- Summary -->
+              <div class="booking-summary" *ngIf="getSelectedSpace() as selectedSpace">
+                <h3>Booking Summary</h3>
+                <div class="summary-row">
+                  <span>Space:</span>
+                  <strong>{{ selectedSpace.name }}</strong>
+                </div>
+                <div class="summary-row">
+                  <span>Type:</span>
+                  <strong>{{ selectedSpace.space_type }}</strong>
+                </div>
+                <div class="summary-row">
+                  <span>Rate:</span>
+                  <strong>{{ '$' + selectedSpace.price_per_day }}/day</strong>
+                </div>
+                <div class="summary-row">
+                  <span>Duration:</span>
+                  <strong>{{ getDurationDays() }} day(s)</strong>
+                </div>
+                <div class="summary-row total">
+                  <span>Estimated Total:</span>
+                  <strong>{{ '$' + calculateTotal() }}</strong>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="form-actions">
+                <p-button type="button" (click)="resetForm()" [disabled]="reservationsService.isLoading()">Reset Form</p-button>
+                <p-button
+                  type="submit"
+                  severity="success"
+                  [disabled]="bookingForm.invalid || reservationsService.isLoading()"
+                  [loading]="reservationsService.isLoading()">
+                  <i class="pi pi-check"></i>
+                  Confirm Booking
+                </p-button>
+              </div>
+            </form>
+
+            <!-- Success Message -->
+            <div class="success-message" *ngIf="bookingSuccess">
+              <i class="pi pi-check-circle"></i>
+              <p>Your booking has been submitted successfully! You will receive a confirmation email shortly.</p>
+              <p-button type="button" (click)="resetForm()">Book Another Space</p-button>
+            </div>
+          </div>
+
+          <!-- Booking Info Card -->
+          <aside class="booking-info">
+            <h3>Booking Information</h3>
+            <div class="info-card">
+              <h4>💡 How It Works</h4>
+              <ol>
+                <li>Select the workspace that fits your needs</li>
+                <li>Choose your preferred dates</li>
+                <li>Select hourly, daily, or monthly billing</li>
+                <li>Set up recurrence if needed</li>
+                <li>Add any special requests</li>
+                <li>Confirm your booking</li>
+              </ol>
+            </div>
+
+            <div class="info-card">
+              <h4>📋 Important Notes</h4>
+              <ul>
+                <li>Minimum booking: 1 hour for hourly, 1 day for daily</li>
+                <li>Cancellations must be made 24 hours in advance</li>
+                <li>You can modify or cancel anytime from your account</li>
+                <li>Payment is secured & PCI compliant</li>
+              </ul>
+            </div>
+
+            <div class="info-card pricing">
+              <h4>💰 Pricing Tiers</h4>
+              <div class="price-tier">
+                <span>Hourly:</span>
+                <strong>$10-20</strong>
+              </div>
+              <div class="price-tier">
+                <span>Daily:</span>
+                <strong>$50-300</strong>
+              </div>
+              <div class="price-tier">
+                <span>Monthly:</span>
+                <strong>$500-2000</strong>
+              </div>
+            </div>
+          </aside>
+        </section>
+      </main>
+      <app-footer></app-footer>
+    </div>
