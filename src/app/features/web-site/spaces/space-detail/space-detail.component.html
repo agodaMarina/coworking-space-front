@@ -1,0 +1,138 @@
+<div class="min-h-screen bg-white flex flex-col">
+  <app-header></app-header>
+
+  <main class="flex-grow pt-28 pb-32">
+
+    @if (loading()) {
+      <div class="flex items-center justify-center min-h-[60vh]">
+        <p-progressSpinner strokeWidth="4" fill="transparent" animationDuration=".5s"></p-progressSpinner>
+      </div>
+    }
+
+    @if (!loading() && space(); as s) {
+
+      <!-- Back -->
+      <div class="max-w-7xl mx-auto px-6 lg:px-10 mb-8">
+        <button (click)="goBack()"
+          class="inline-flex items-center gap-2 text-sm font-semibold text-zinc-400 hover:text-black transition-colors duration-200">
+          <span class="iconify" data-icon="lucide:arrow-left" data-width="15"></span>
+          Spaces
+        </button>
+      </div>
+
+      <!-- Hero image -->
+      <div class="max-w-7xl mx-auto px-6 lg:px-10 mb-16">
+        <div class="rounded-[28px] overflow-hidden aspect-[16/7] relative bg-zinc-100">
+            <img [src]="s.photo || (s.photos && s.photos.length ? s.photos[0] : getImageUrl(s.name, 1100, 700))" alt="{{ s.name }}" class="w-full h-full object-cover">
+          <div class="absolute top-5 left-5 flex gap-2">
+            <span class="px-2.5 py-1 rounded-md bg-white/90 backdrop-blur-md text-black text-xs font-bold">
+              {{ s.space_type_display }}
+            </span>
+            @if (s.is_available) {
+              <span class="px-2.5 py-1 rounded-md bg-[#4ADE80]/90 backdrop-blur-md text-black text-xs font-bold flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-green-700 inline-block"></span>
+                Available
+              </span>
+            } @else {
+              <span class="px-2.5 py-1 rounded-md bg-black/70 backdrop-blur-md text-white text-xs font-bold flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-zinc-400 inline-block"></span>
+                Unavailable
+              </span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="max-w-7xl mx-auto px-6 lg:px-10">
+        <div class="grid lg:grid-cols-[1fr_360px] gap-16 xl:gap-24 items-start">
+
+          <!-- Left -->
+          <div>
+            <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-black mb-10 leading-[1.05]">
+              {{ s.name }}
+            </h1>
+
+            <p class="text-base text-zinc-500 leading-relaxed font-general max-w-xl mb-14">
+              {{ s.description || 'A modern, fully-equipped workspace designed to inspire your best work.' }}
+            </p>
+
+            @if (s.amenities.length) {
+              <div>
+                <span class="text-xs font-bold uppercase tracking-[.2em] text-zinc-400 mb-5 block">Amenities</span>
+                <div class="flex flex-wrap gap-2">
+                  @for (a of s.amenities; track a.id) {
+                    <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-50 border border-zinc-100 text-sm font-medium text-black">
+                      <span class="w-1 h-1 rounded-full bg-zinc-400 inline-block"></span>
+                      {{ a.name }}
+                    </span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Right: booking card -->
+          <div class="lg:sticky lg:top-28">
+            <div class="rounded-[24px] border border-zinc-100 overflow-hidden">
+
+              <div class="bg-black px-7 py-7">
+                <div class="flex items-end gap-1.5 mb-1">
+                  <span class="text-4xl font-bold tracking-tight text-white">${{ s.price_per_day }}</span>
+                  <span class="text-zinc-500 font-medium mb-1">/day</span>
+                </div>
+                <p class="text-zinc-500 text-sm font-general">
+                  ${{ s.price_per_hour }}<span class="text-zinc-600">/hour</span>
+                </p>
+              </div>
+
+              <div class="px-7 py-6 space-y-3.5 border-b border-zinc-100">
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-zinc-400 font-general">Capacity</span>
+                  <span class="text-sm font-semibold text-black">{{ s.capacity }} people</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-zinc-400 font-general">Location</span>
+                  <span class="text-sm font-semibold text-black">{{ s.address }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-zinc-400 font-general">Status</span>
+                  <span class="text-sm font-semibold flex items-center gap-1.5"
+                    [ngClass]="s.is_available ? 'text-green-600' : 'text-zinc-400'">
+                    <span class="w-1.5 h-1.5 rounded-full inline-block"
+                      [ngClass]="s.is_available ? 'bg-green-500' : 'bg-zinc-300'"></span>
+                    {{ s.is_available ? 'Available' : 'Unavailable' }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="px-7 py-6">
+                <button
+                  (click)="goToBooking()"
+                  [disabled]="!s.is_available"
+                  class="w-full py-3.5 rounded-full bg-black text-white text-sm font-bold hover:bg-zinc-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+                  Book this space
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    }
+
+    @if (!loading() && !space()) {
+      <div class="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-center px-5">
+        <p class="text-zinc-400 text-sm font-general">This space could not be found.</p>
+        <button (click)="goBack()" class="text-sm font-semibold text-black hover:text-zinc-500 transition-colors">
+          ← Back to spaces
+        </button>
+      </div>
+    }
+
+  </main>
+
+  <app-footer></app-footer>
+</div>

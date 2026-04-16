@@ -1,0 +1,122 @@
+<div class="min-h-screen flex">
+
+  <!-- Left: brand panel -->
+  <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-black flex-col">
+    <img
+      src="https://picsum.photos/seed/cowork-register/900/1200.jpg"
+      alt=""
+      class="absolute inset-0 w-full h-full object-cover opacity-40">
+    <div class="relative z-10 flex flex-col h-full p-12">
+      <a routerLink="/home" class="text-white font-bold text-xl tracking-tight">Cowork</a>
+      <div class="mt-auto">
+        <p class="text-white/80 text-lg font-medium leading-relaxed max-w-sm font-general mb-6">
+          "Since joining Cowork I've tripled my productivity. The spaces just feel right."
+        </p>
+        <div class="flex items-center gap-3">
+          <img
+            src="https://picsum.photos/seed/auth-face2/40/40.jpg"
+            class="w-10 h-10 rounded-full object-cover flex-shrink-0"
+            alt="">
+          <div>
+            <p class="text-white text-sm font-semibold">Marcus T.</p>
+            <p class="text-white/50 text-xs font-general">Startup Founder, Lomé</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: form -->
+  <div class="flex-1 flex flex-col items-center justify-center px-6 py-12 lg:px-16 xl:px-24 bg-white">
+    <div class="w-full max-w-md">
+
+      <!-- Mobile logo -->
+      <a routerLink="/home" class="lg:hidden inline-block mb-10 text-black font-bold text-xl tracking-tight">
+        Cowork
+      </a>
+
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-black mb-3">Create your account</h1>
+      <p class="text-zinc-500 text-sm font-general mb-10">
+        Join Cowork and start booking your perfect workspace in minutes.
+      </p>
+
+      <form [formGroup]="registerForm" (ngSubmit)="submit()" class="flex flex-col gap-5">
+
+        <!-- Full name -->
+        <div class="flex flex-col gap-2">
+          <label class="text-xs font-bold uppercase tracking-[.15em] text-zinc-500">Full name</label>
+          <input
+            type="text"
+            formControlName="name"
+            placeholder="Jane Dupont"
+            class="w-full px-4 py-3.5 rounded-xl border text-sm font-medium text-black placeholder:text-zinc-300 focus:outline-none transition-colors bg-white"
+            [class.border-red-300]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched"
+            [class.border-zinc-200]="!(registerForm.get('name')?.invalid && registerForm.get('name')?.touched)">
+        </div>
+
+        <!-- Email -->
+        <div class="flex flex-col gap-2">
+          <label class="text-xs font-bold uppercase tracking-[.15em] text-zinc-500">Email</label>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="your@email.com"
+            class="w-full px-4 py-3.5 rounded-xl border text-sm font-medium text-black placeholder:text-zinc-300 focus:outline-none transition-colors bg-white"
+            [class.border-red-300]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+            [class.border-zinc-200]="!(registerForm.get('email')?.invalid && registerForm.get('email')?.touched)">
+        </div>
+
+        <!-- Password -->
+        <div class="flex flex-col gap-2">
+          <label class="text-xs font-bold uppercase tracking-[.15em] text-zinc-500">Password</label>
+          <div class="relative">
+            <input
+              [type]="showPassword() ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="••••••••"
+              class="w-full px-4 py-3.5 pr-12 rounded-xl border text-sm font-medium text-black placeholder:text-zinc-300 focus:outline-none transition-colors bg-white"
+              [class.border-red-300]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+              [class.border-zinc-200]="!(registerForm.get('password')?.invalid && registerForm.get('password')?.touched)">
+            <button
+              type="button"
+              (click)="showPassword.set(!showPassword())"
+              class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-black transition-colors">
+              <span class="iconify"
+                [attr.data-icon]="showPassword() ? 'lucide:eye-off' : 'lucide:eye'"
+                data-width="16"></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Error message -->
+        @if (error()) {
+          <p class="text-sm text-red-600 font-medium font-general -mt-1">{{ error() }}</p>
+        }
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          [disabled]="submitting()"
+          class="w-full py-4 rounded-full bg-black text-white text-sm font-bold hover:bg-zinc-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-1">
+          @if (submitting()) {
+            <span class="iconify animate-spin" data-icon="lucide:loader-2" data-width="16"></span>
+          }
+          {{ submitting() ? 'Creating account…' : 'Create account' }}
+        </button>
+
+        <p class="text-xs text-zinc-400 text-center font-general">
+          By creating an account you agree to our
+          <span class="underline cursor-pointer hover:text-black transition-colors">Terms of Service</span>
+        </p>
+
+      </form>
+
+      <p class="text-sm text-zinc-500 font-general mt-8 text-center">
+        Already have an account?
+        <a routerLink="/login" class="font-semibold text-black hover:underline">Sign in</a>
+      </p>
+
+    </div>
+  </div>
+
+</div>

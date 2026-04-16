@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, HostListener, OnInit } from '@angular/core';
-import { FooterComponent } from '../../shared/components/footer/footer.component';
-import { HeaderComponent } from '../../shared/components/header/header.component';
+import { FooterComponent } from '../../../shared/components/footer/footer.component';
+import { HeaderComponent } from '../../../shared/components/header/header.component';
 
 @Component({
   standalone: true,
@@ -27,10 +27,10 @@ export class HomePageComponent implements OnInit, AfterViewInit {
   ];
 
   stats = [
-    { target: 240, suffix: '%', label: 'Community Growth', color: 'bg-[#d9f99d]', delay: '0s' },
-    { target: 99, suffix: '%', label: 'Technology Uptime', color: 'bg-[#bae6fd]', delay: '.1s' },
-    { target: 50, suffix: '+', label: 'Happy Members', color: 'bg-[#fbcfe8]', delay: '.2s' },
-    { target: 100, suffix: '%', label: 'Renewable Energy Sources', color: 'bg-[#fed7aa]', delay: '.3s' }
+    { target: 240, suffix: '%', label: 'Community Growth', color: '#d9f99d', delay: '0s' },
+    { target: 99, suffix: '%', label: 'Technology Uptime', color: '#bae6fd', delay: '.1s' },
+    { target: 50, suffix: '+', label: 'Happy Members', color: '#fbcfe8', delay: '.2s' },
+    { target: 100, suffix: '%', label: 'Renewable Energy Sources', color: '#fed7aa', delay: '.3s' }
   ];
 
   // Séparé en deux pour gérer le design asymétrique (Masonry)
@@ -71,6 +71,23 @@ export class HomePageComponent implements OnInit, AfterViewInit {
     this.setupStatCounter();
     this.setupNewsletterSubscribe();
   }
+
+//   // Gestion du Header au scroll (Remplace l'ancien addEventListener)
+//   @HostListener('window:scroll', [])
+//   onWindowScroll() {
+//     const nav = document.querySelector('nav');
+//     if (nav) {
+//       if (window.scrollY > 50) {
+//         nav.classList.add('border-white/10');
+//         nav.classList.remove('border-white/5');
+//         nav.style.backgroundColor = 'rgba(0,0,0,0.8)';
+//       } else {
+//         nav.classList.remove('border-white/10');
+//         nav.classList.add('border-white/5');
+//         nav.style.backgroundColor = 'rgba(0,0,0,0.6)';
+//       }
+//     }
+//   }
 
   // Gestion de l'ouverture/fermeture des FAQ (Remplace l'ancien addEventListener)
   toggleFaq(index: number): void {

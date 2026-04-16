@@ -48,9 +48,9 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly useMocks = signal(false); // Variable pour switcher entre mocks et API
 
-  private readonly accessTokenSignal = signal<string | null>(localStorage.getItem('coworking_access_token'));
-  private readonly refreshTokenSignal = signal<string | null>(localStorage.getItem('coworking_refresh_token'));
-  private readonly userSignal = signal<User | null>(readStorageUser());
+  private readonly accessTokenSignal = signal<string | null>(localStorage.getItem('coworking_access_token') ?? 'mock_token');
+  private readonly refreshTokenSignal = signal<string | null>(localStorage.getItem('coworking_refresh_token') ?? 'mock_refresh');
+  private readonly userSignal = signal<User | null>(readStorageUser() ?? { id: '1', name: 'Demo User', email: 'demo@coworking.com' });
 
   readonly isAuthenticated = computed(() => !!this.accessTokenSignal());
   readonly token = computed(() => this.accessTokenSignal());

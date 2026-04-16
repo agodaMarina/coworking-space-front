@@ -1,30 +1,23 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 
 @Component({
   standalone: true,
   selector: 'app-header',
-  imports: [CommonModule],
+  imports: [RouterLink],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
 })
 export class HeaderComponent {
-  // Variable d'état pour le menu mobile
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
+  readonly isAuthenticated = this.authService.isAuthenticated;
   isMobileMenuOpen = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
-
-  // Méthode pour ouvrir/fermer le menu
-  toggleMenu() {
-    this.isMobileMenuOpen = !this.isMobileMenuOpen;
-  }
-
-  // Méthode pour fermer le menu quand on clique sur un lien
-  closeMenu() {
-    this.isMobileMenuOpen = false;
-  }
+  toggleMenu() { this.isMobileMenuOpen = !this.isMobileMenuOpen; }
+  closeMenu()  { this.isMobileMenuOpen = false; }
 
   logout(): void {
     this.authService.logout();

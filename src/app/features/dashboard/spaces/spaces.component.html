@@ -1,0 +1,122 @@
+<div class="min-h-full bg-white">
+
+  <!-- Header -->
+  <div class="px-8 pt-10 pb-8 border-b border-zinc-100">
+    <p class="text-xs font-medium text-zinc-400 mb-1">Dashboard</p>
+    <div class="flex items-end justify-between gap-4">
+      <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Spaces</h1>
+      <div class="flex items-center gap-2 mb-0.5">
+        <div class="relative">
+          <span class="iconify absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" data-icon="lucide:search" data-width="13"></span>
+          <input
+            type="text"
+            placeholder="Search…"
+            [value]="search()"
+            (input)="search.set($any($event.target).value)"
+            class="pl-8 pr-3 py-2 text-sm bg-white border border-zinc-200 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition-colors w-48">
+        </div>
+        <select
+          [value]="filterType()"
+          (change)="filterType.set($any($event.target).value || null)"
+          class="text-sm bg-white border border-zinc-200 rounded-lg px-3 py-2 text-zinc-600 focus:outline-none focus:border-zinc-400 transition-colors">
+          @for (opt of typeOptions; track opt.value) {
+            <option [value]="opt.value ?? ''">{{ opt.label }}</option>
+          }
+        </select>
+        <a routerLink="/spaces"
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-zinc-200 text-sm font-medium text-zinc-600 hover:border-zinc-400 hover:text-zinc-900 transition-colors">
+          <span class="iconify" data-icon="lucide:external-link" data-width="13"></span>
+          Public
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="px-8 py-8">
+
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-px bg-zinc-100 rounded-xl overflow-hidden border border-zinc-100 mb-8">
+      <div class="bg-white px-6 py-5">
+        <p class="text-xs text-zinc-400 mb-3">Total spaces</p>
+        <p class="text-3xl font-semibold text-zinc-900 tracking-tight">{{ stats().total }}</p>
+      </div>
+      <div class="bg-white px-6 py-5">
+        <p class="text-xs text-zinc-400 mb-3">Available</p>
+        <div class="flex items-baseline gap-2">
+          <p class="text-3xl font-semibold text-zinc-900 tracking-tight">{{ stats().available }}</p>
+          <span class="text-xs text-zinc-400">open</span>
+        </div>
+      </div>
+      <div class="bg-white px-6 py-5">
+        <p class="text-xs text-zinc-400 mb-3">Unavailable</p>
+        <p class="text-3xl font-semibold text-zinc-900 tracking-tight">{{ stats().unavailable }}</p>
+      </div>
+    </div>
+
+    <!-- Table -->
+    @if (isLoading()) {
+      <div class="border border-zinc-100 rounded-xl overflow-hidden divide-y divide-zinc-100">
+        @for (_ of [1,2,3,4,5]; track $index) {
+          <div class="flex items-center gap-4 px-5 py-4">
+            <div class="w-40 h-3 bg-zinc-100 rounded animate-pulse"></div>
+            <div class="w-20 h-3 bg-zinc-100 rounded animate-pulse ml-auto"></div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="border border-zinc-100 rounded-xl overflow-hidden">
+
+        <!-- Head -->
+        <div class="grid grid-cols-[1fr_130px_80px_90px_70px_70px] px-5 py-2.5 bg-zinc-50 border-b border-zinc-100">
+          <p class="text-[11px] font-medium text-zinc-400">Name</p>
+          <p class="text-[11px] font-medium text-zinc-400">Type</p>
+          <p class="text-[11px] font-medium text-zinc-400">Capacity</p>
+          <p class="text-[11px] font-medium text-zinc-400">Price / day</p>
+          <p class="text-[11px] font-medium text-zinc-400">Status</p>
+          <p class="text-[11px] font-medium text-zinc-400 text-right">Action</p>
+        </div>
+
+        @if (filtered().length === 0) {
+          <div class="py-16 text-center">
+            <p class="text-sm text-zinc-400">No spaces match your search.</p>
+          </div>
+        }
+
+        @for (space of filtered(); track space.id; let last = $last) {
+          <div class="grid grid-cols-[1fr_130px_80px_90px_70px_70px] px-5 py-3.5 items-center hover:bg-zinc-50/50 transition-colors"
+            [class.border-b]="!last" [class.border-zinc-100]="!last">
+
+            <div class="min-w-0 pr-4">
+              <p class="text-sm font-medium text-zinc-900 truncate">{{ space.name }}</p>
+              <p class="text-xs text-zinc-400 truncate">{{ space.address }}</p>
+            </div>
+
+            <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium" [ngClass]="typeBadge(space.space_type)">
+              {{ space.space_type_display }}
+            </span>
+
+            <p class="text-sm text-zinc-500">{{ space.capacity }} pax</p>
+
+            <p class="text-sm font-medium text-zinc-900">${{ space.price_per_day }}</p>
+
+            <div class="flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                [ngClass]="space.is_available ? 'bg-emerald-400' : 'bg-zinc-300'"></span>
+              <span class="text-sm text-zinc-500">{{ space.is_available ? 'Open' : 'Closed' }}</span>
+            </div>
+
+            <div class="flex justify-end">
+              <button
+                (click)="toggleAvailability(space)"
+                class="text-xs font-medium text-zinc-400 hover:text-zinc-900 transition-colors">
+                {{ space.is_available ? 'Close' : 'Open' }}
+              </button>
+            </div>
+
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</div>
