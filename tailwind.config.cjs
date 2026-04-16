@@ -1,6 +1,8 @@
-import type { Config } from 'tailwindcss';
-
-export default {
+/**
+ * CommonJS Tailwind config for VS Code Tailwind IntelliSense compatibility.
+ * Keep `tailwind.config.ts` for types, this file is used by the extension/CLI.
+ */
+module.exports = {
   content: ['./src/**/*.{html,ts}'],
   theme: {
     extend: {
@@ -40,4 +42,4 @@ export default {
     },
   },
   plugins: [],
-} as Config;
+};

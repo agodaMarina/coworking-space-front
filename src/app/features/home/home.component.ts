@@ -1,9 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { CarouselModule } from 'primeng/carousel';
+import { AfterViewInit, Component, HostListener, OnInit } from '@angular/core';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 
@@ -14,35 +10,93 @@ import { HeaderComponent } from '../../shared/components/header/header.component
     CommonModule,
     HeaderComponent,
     FooterComponent,
-    ButtonModule,
-    CardModule,
-    CarouselModule,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
 export class HomePageComponent implements OnInit, AfterViewInit {
-  galleryImages = [
-    { title: 'Modern Office Spaces', description: 'Bright and spacious offices designed for collaboration' },
-    { title: 'Meeting Rooms', description: 'Well-equipped meeting rooms for brainstorming sessions' },
-    { title: 'Collaborative Zones', description: 'Open spaces perfect for team projects and networking' },
-    { title: 'Quiet Focus Areas', description: 'Dedicated zones for concentrated work' },
+  
+  // =========================================
+  // DONNÉES DE LA PAGE (Principe DRY)
+  // =========================================
+
+  features = [
+    { title: 'Flexible Spaces', desc: "Whether you're a solopreneur, startup, or an established enterprise, our flexible office solutions cater to your evolving needs." },
+    { title: 'Transparent Pricing', desc: "Choose a plan that suits your budget and business objectives, and experience the value of a premium coworking space without breaking the bank." },
+    { title: 'Tailored Memberships', desc: "Whether you prefer the flexibility of a hot desk or the exclusivity of a private office, Cowork offers tailored solutions to suit every working style." }
   ];
 
-  ngOnInit(): void {
-    this.setupNavScrollListener();
-  }
+  stats = [
+    { target: 240, suffix: '%', label: 'Community Growth', color: 'bg-[#d9f99d]', delay: '0s' },
+    { target: 99, suffix: '%', label: 'Technology Uptime', color: 'bg-[#bae6fd]', delay: '.1s' },
+    { target: 50, suffix: '+', label: 'Happy Members', color: 'bg-[#fbcfe8]', delay: '.2s' },
+    { target: 100, suffix: '%', label: 'Renewable Energy Sources', color: 'bg-[#fed7aa]', delay: '.3s' }
+  ];
+
+  // Séparé en deux pour gérer le design asymétrique (Masonry)
+  testimonialsTop = [
+    { name: 'Liam Brown', role: 'Software Engineer, TechStartup Innovations', quote: "The 24/7 access and secure facilities have been incredibly convenient for my team's flexible schedules. We love the coworking space!", img: 'face1', bg: 'bg-[#E2F89C]', isOffset: false },
+    { name: 'Michael Rodriguez', role: 'Creative Director, DesignCraft Studio', quote: "The aesthetics of Cowork are inspiring. The attention to detail in the design creates an atmosphere that sparks creativity. It's a place where ideas flow effortlessly, and collaboration happens organically.", img: 'face2', bg: 'bg-[#F4F4F4]', isOffset: true },
+    { name: 'Michael Thompson', role: 'Graphic Designer, DesignCo', quote: "As a freelance designer, I was getting tired of working from home or coffee shops. The coworking space has provided me with a productive and professional environment to focus on my work.", img: 'face3', bg: 'bg-[#BDE8F4]', isOffset: false }
+  ];
+
+  testimonialsBottom = [
+    { name: 'David Wilson', role: 'Project Manager, SoftwareSolutions LLC', quote: "The coworking space has been a wonderful resource for my team. The open floor plan and dedicated private offices allow us to collaborate and concentrate as needed.", img: 'face4', bg: 'bg-[#FBCBE3]' },
+    { name: 'Alex Nguyen', role: 'Marketing Consultant, Maverick Marketing', quote: "The flexible membership options and amenities like high-speed internet, printers, and meeting rooms have made this coworking space a perfect fit for my small business.", img: 'face5', bg: 'bg-[#FDD5AB]' }
+  ];
+
+  faqs = [
+    { question: "How flexible are Cowork's membership plans?", answer: "Frequently asked questions ordered by popularity. Remember that if the visitor has not committed to the call to action, they may still have questions (doubts) that can be answered.", isOpen: true },
+    { question: "What kind of events and networking opportunities does Cowork provide?", answer: "We host weekly networking events, guest speakers, and skill-sharing workshops for all members.", isOpen: false },
+    { question: "Can I tour the Cowork space before committing to a membership?", answer: "Absolutely! You can book a free 30-minute guided tour through our website.", isOpen: false },
+    { question: "Is Cowork suitable for remote teams and distributed workforces?", answer: "Yes, we offer enterprise plans tailored for distributed teams with private access options.", isOpen: false },
+    { question: "What measures does Cowork take for environmental sustainability?", answer: "We use 100% renewable energy and enforce a strict zero-single-use-plastic policy.", isOpen: false },
+    { question: "Still has questions?", answer: "Contact our support team directly via email or our live chat widget.", isOpen: false }
+  ];
+
+  blogs = [
+    { badge: 'Trending', badgeColor: 'bg-[#AEE9F4]', time: '7 min read', title: 'Navigating the Future: Trends in Modern Coworking Spaces', img: 'blog-new-1', delay: '0s' },
+    { badge: 'Productivity', badgeColor: 'bg-[#F8C8E1]', time: '5 min read', title: "Mastering Productivity: Tips from Cowork's High Achievers", img: 'blog-new-2', delay: '.1s' },
+    { badge: 'Talk', badgeColor: 'bg-[#CEF09D]', time: '10 min read', title: "Tech Talk: The Backbone of Cowork's Seamless Experience", img: 'blog-new-3', delay: '.2s' }
+  ];
+
+  // =========================================
+  // LOGIQUE ANGULAR
+  // =========================================
+
+  ngOnInit(): void {}
 
   ngAfterViewInit(): void {
     this.setupRevealAnimation();
     this.setupStatCounter();
-    this.setupFAQAccordion();
     this.setupNewsletterSubscribe();
   }
 
-  /**
-   * Setup scroll reveal animation - adds 'visible' class to elements when they enter viewport
-   */
+  // Gestion du Header au scroll (Remplace l'ancien addEventListener)
+  @HostListener('window:scroll', [])
+  onWindowScroll() {
+    const nav = document.querySelector('nav');
+    if (nav) {
+      if (window.scrollY > 50) {
+        nav.classList.add('border-white/10');
+        nav.classList.remove('border-white/5');
+        nav.style.backgroundColor = 'rgba(0,0,0,0.8)';
+      } else {
+        nav.classList.remove('border-white/10');
+        nav.classList.add('border-white/5');
+        nav.style.backgroundColor = 'rgba(0,0,0,0.6)';
+      }
+    }
+  }
+
+  // Gestion de l'ouverture/fermeture des FAQ (Remplace l'ancien addEventListener)
+  toggleFaq(index: number): void {
+    this.faqs.forEach((faq, i) => {
+      faq.isOpen = i === index ? !faq.isOpen : false;
+    });
+  }
+
+  // Animations d'apparition (Intersection Observer)
   private setupRevealAnimation(): void {
     const revealElements = document.querySelectorAll('.reveal');
     const revealObserver = new IntersectionObserver((entries) => {
@@ -57,9 +111,7 @@ export class HomePageComponent implements OnInit, AfterViewInit {
     revealElements.forEach(el => revealObserver.observe(el));
   }
 
-  /**
-   * Setup animated stat counter - counts from 0 to target number
-   */
+  // Animation des compteurs statistiques
   private setupStatCounter(): void {
     const statElements = document.querySelectorAll('.stat-num');
     let statsCounted = false;
@@ -69,8 +121,9 @@ export class HomePageComponent implements OnInit, AfterViewInit {
         if (entry.isIntersecting && !statsCounted) {
           statsCounted = true;
           statElements.forEach(el => {
-            const target = parseInt((el as HTMLElement).dataset['target'] || '0');
-            const suffix = (el as HTMLElement).dataset['suffix'] || '';
+            const htmlEl = el as HTMLElement;
+            const target = parseInt(htmlEl.dataset['target'] || '0');
+            const suffix = htmlEl.dataset['suffix'] || '';
             const duration = 2000;
             const step = target / (duration / 16);
             let current = 0;
@@ -81,7 +134,7 @@ export class HomePageComponent implements OnInit, AfterViewInit {
                 current = target;
                 clearInterval(timer);
               }
-              el.textContent = Math.floor(current) + suffix;
+              htmlEl.textContent = Math.floor(current) + suffix;
             }, 16);
           });
         }
@@ -91,90 +144,37 @@ export class HomePageComponent implements OnInit, AfterViewInit {
     statElements.forEach(el => statObserver.observe(el));
   }
 
-  /**
-   * Setup FAQ accordion - toggle open/close on click
-   */
-  private setupFAQAccordion(): void {
-    document.querySelectorAll('.faq-toggle').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const item = btn.parentElement;
-        if (!item) return;
-
-        const answer = item.querySelector('.faq-ans');
-        const icon = btn.querySelector('.faq-icon');
-
-        if (!answer || !icon) return;
-
-        const isOpen = answer.classList.contains('open');
-
-        // Close all FAQs
-        document.querySelectorAll('.faq-ans').forEach(a => a.classList.remove('open'));
-        document.querySelectorAll('.faq-icon').forEach(i => {
-          (i as any).setAttribute('data-icon', 'mdi:plus');
-          (i as HTMLElement).style.transform = 'rotate(0deg)';
-        });
-
-        // Open clicked FAQ if it was closed
-        if (!isOpen) {
-          answer.classList.add('open');
-          (icon as any).setAttribute('data-icon', 'mdi:minus');
-          (icon as HTMLElement).style.transform = 'rotate(180deg)';
-        }
-      });
-    });
-  }
-
-  /**
-   * Setup newsletter subscribe feedback
-   */
+  // Gestion de la Newsletter (Si celle-ci n'a pas été déplacée dans l'app-footer)
   private setupNewsletterSubscribe(): void {
     const subscribeBtn = document.querySelector('footer button');
     if (!subscribeBtn) return;
 
-    subscribeBtn.addEventListener('click', function(this: HTMLElement) {
-      const input = this.previousElementSibling as HTMLInputElement;
+    subscribeBtn.addEventListener('click', function(this: HTMLElement, e: Event) {
+      e.preventDefault(); // Empêcher le rechargement de la page
+      const input = this.previousElementSibling?.querySelector('input') as HTMLInputElement;
       if (!input) return;
 
       if (input.value && input.value.includes('@')) {
         const original = this.textContent;
         this.textContent = 'Subscribed!';
-        this.classList.remove('bg-brand-green');
-        this.classList.add('bg-emerald-600');
+        this.classList.remove('text-black');
+        this.classList.add('bg-emerald-600', 'text-white');
         input.value = '';
 
         setTimeout(() => {
           this.textContent = original;
-          this.classList.remove('bg-emerald-600');
-          this.classList.add('bg-brand-green');
+          this.classList.remove('bg-emerald-600', 'text-white');
+          this.classList.add('text-black');
         }, 2500);
       } else {
-        input.style.borderColor = 'rgba(239,68,68,0.5)';
+        const inputParent = input.parentElement;
+        if(inputParent) inputParent.style.borderColor = 'rgba(239,68,68,0.5)';
         input.placeholder = 'Enter a valid email';
 
         setTimeout(() => {
-          input.style.borderColor = '';
-          input.placeholder = 'your@email.com';
+          if(inputParent) inputParent.style.borderColor = '';
+          input.placeholder = 'Enter your email';
         }, 2000);
-      }
-    });
-  }
-
-  /**
-   * Setup nav background on scroll
-   */
-  private setupNavScrollListener(): void {
-    const nav = document.querySelector('nav');
-    if (!nav) return;
-
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 50) {
-        nav.classList.add('border-white/10');
-        nav.classList.remove('border-white/5');
-        (nav as HTMLElement).style.backgroundColor = 'rgba(0,0,0,0.8)';
-      } else {
-        nav.classList.remove('border-white/10');
-        nav.classList.add('border-white/5');
-        (nav as HTMLElement).style.backgroundColor = 'rgba(0,0,0,0.6)';
       }
     });
   }
