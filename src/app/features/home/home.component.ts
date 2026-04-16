@@ -12,7 +12,6 @@ import { HeaderComponent } from '../../shared/components/header/header.component
   selector: 'app-home-page',
   imports: [
     CommonModule,
-    RouterLink,
     HeaderComponent,
     FooterComponent,
     ButtonModule,

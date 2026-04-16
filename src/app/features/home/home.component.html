@@ -1,194 +1,814 @@
-<div class="page-shell">
-  <app-header></app-header>
-
-  <!-- HERO SECTION -->
-  <section class="hero-section">
-    <div class="hero-container">
-      <div class="hero-content">
-        <p class="hero-eyebrow">Réservez un espace de coworking ou une salle de réunion</p>
-        <h1 class="hero-title">Elevate Your Workspace with Cowork</h1>
-        <p class="hero-description">
-          Découvrez des espaces flexibles, des salles équipées et des services pensés pour vos équipes.
+<!-- HERO SECTION -->
+<app-header></app-header>
+<section class="min-h-screen pt-16 flex items-center relative overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-br "></div>
+  <div class="absolute top-20 right-0 w-[500px] h-[500px] bg-brand-green/5 rounded-full blur-[120px]"></div>
+  <div class="relative z-10 max-w-7xl mx-auto px-5 py-12 md:py-16 w-full">
+    <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+      <div>
+        <span
+          class="anim d1 inline-block text-[10px] font-bold uppercase tracking-[.25em] text-brand-green bg-brand-green/10 px-3 py-1.5 rounded-full mb-5"
+        >Premium Coworking</span>
+        <h1 class="anim d2 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[0.95] tracking-tight mb-5">
+          Elevate Your<br>Workspace with<br><span class="text-grad">Cowork</span>
+        </h1>
+        <p class="anim d3 text-sm md:text-base text-zinc-400 leading-relaxed max-w-md mb-7">
+          Premium coworking spaces designed for professionals who demand more. Flexible, inspiring
+          environments built for peak productivity and meaningful connections.
         </p>
-        <div class="hero-actions">
-          <button pButton type="button" label="Voir les espaces" icon="pi pi-arrow-right"
-                  class="p-button-raised p-button-primary" routerLink="/spaces"></button>
-          <button pButton type="button" label="Faire une réservation" icon="pi pi-calendar"
-                  class="p-button-raised p-button-outlined" routerLink="/booking"></button>
+        <div class="anim d4 flex flex-wrap gap-3">
+          <a
+            href="#book"
+            class="inline-flex items-center gap-2 text-sm font-semibold px-7 py-3.5 rounded-full bg-brand-green text-black hover:brightness-110 transition-all duration-300 glow-green"
+          >
+            Book a Tour
+            <span
+              class="iconify"
+              data-icon="mdi:arrow-right"
+              data-width="18"
+            ></span>
+          </a>
+          <a
+            href="#spaces"
+            class="inline-flex items-center gap-2 text-sm font-semibold px-7 py-3.5 rounded-full border border-white/15 text-white hover:border-white/40 hover:bg-white/5 transition-all duration-300"
+          >
+            View Spaces
+          </a>
         </div>
       </div>
-      <div class="hero-visual">
-        <div class="hero-image-placeholder">
-          <p>Espace moderne, Wi-Fi, café inclus.</p>
+      <div class="anim d5 relative img-hover">
+        <div class="rounded-2xl overflow-hidden border border-white/8 glow-green">
+          <img
+            src="/images/hero-section.png"
+            alt="Modern coworking space"
+            class="w-full aspect-[4/3] object-cover"
+            loading="eager"
+          >
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- LOGO CLOUD -->
-  <section class="logo-cloud-section">
-    <div class="logo-cloud-container">
-      <div class="logo-item"><span class="logo-text">🏢 Enterprise</span></div>
-      <div class="logo-item"><span class="logo-text">🚀 Startups</span></div>
-      <div class="logo-item"><span class="logo-text">👥 Freelancers</span></div>
-      <div class="logo-item"><span class="logo-text">🎯 Teams</span></div>
-      <div class="logo-item"><span class="logo-text">🌍 Global</span></div>
-    </div>
-  </section>
-
-  <!-- WHY CHOOSE COWORK -->
-  <section class="why-choose-section">
-    <h2 class="section-title">Why Choose <span class="highlight">Cowork?</span></h2>
-    <div class="benefits-grid">
-      <p-card class="benefit-card">
-        <ng-template pTemplate="header">
-          <div class="benefit-icon">🏠</div>
-        </ng-template>
-        <h3>Flexible Spaces</h3>
-        <p>Choose from desks, private offices, or meeting rooms that fit your needs.</p>
-      </p-card>
-      <p-card class="benefit-card">
-        <ng-template pTemplate="header">
-          <div class="benefit-icon">💰</div>
-        </ng-template>
-        <h3>Transparent Pricing</h3>
-        <p>No hidden fees. Clear, competitive pricing for all space types.</p>
-      </p-card>
-      <p-card class="benefit-card">
-        <ng-template pTemplate="header">
-          <div class="benefit-icon">🤝</div>
-        </ng-template>
-        <h3>Talented Community</h3>
-        <p>Network with professionals and grow your business in our community.</p>
-      </p-card>
-    </div>
-  </section>
-
-  <!-- GALLERY / CAROUSEL -->
-  <section class="gallery-section">
-    <h2 class="section-title">Explore Cowork Through Our <span class="highlight">Lens</span></h2>
-    <p class="section-subtitle">
-      Visualize your workspace with our curated collection of office environments.
-    </p>
-    <div class="carousel-wrapper">
-      <p-carousel [value]="galleryImages" [numVisible]="1" [circular]="true" [autoplayInterval]="5000">
-        <ng-template pTemplate="item" let-item>
-          <div class="gallery-item">
-            <div class="gallery-image-placeholder">
-              <p>{{ item.title }}</p>
-            </div>
-            <p class="gallery-caption">{{ item.description }}</p>
+        <div
+          class="absolute -bottom-4 -left-4 bg-brand-gray border border-white/10 rounded-xl px-4 py-3 flex items-center gap-3"
+        >
+          <div class="w-10 h-10 rounded-full bg-brand-green/15 flex items-center justify-center">
+            <span
+              class="iconify text-brand-green"
+              data-icon="mdi:account-group"
+              data-width="20"
+            ></span>
           </div>
-        </ng-template>
-      </p-carousel>
-    </div>
-  </section>
-
-  <!-- STATS -->
-  <section class="stats-section">
-    <h2 class="section-title">Transformative Statistics That Speak Volumes</h2>
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-number">240%</div>
-        <p class="stat-label">Productivity Increase</p>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">99%</div>
-        <p class="stat-label">Client Satisfaction</p>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">50+</div>
-        <p class="stat-label">Locations Worldwide</p>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">100%</div>
-        <p class="stat-label">Uptime Guarantee</p>
+          <div>
+            <p class="text-xs font-bold text-white">12,000+</p>
+            <p class="text-[10px] text-zinc-500">Active Members</p>
+          </div>
+        </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- TESTIMONIALS -->
-  <section class="testimonials-section">
-    <h2 class="section-title">Hear it from Our Clients</h2>
-    <div class="testimonials-grid">
-      <div class="testimonial-card bg-green">
-        <p>"Cowork transformed how our team collaborates. The spaces are modern and the community is incredible."</p>
-        <p class="author">— Sarah Johnson, Founder</p>
+<!-- WHY CHOOSE COWORK -->
+<section
+  id="about"
+  class="py-14 md:py-20 relative"
+>
+  <div class="max-w-7xl mx-auto px-5">
+    <div class="reveal flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-10">
+      <div>
+        <span class="text-[10px] font-bold uppercase tracking-[.25em] text-brand-green mb-2 block">Advantages</span>
+        <h2 class="text-3xl md:text-4xl font-bold tracking-tight">Why Choose Cowork?</h2>
       </div>
-      <div class="testimonial-card bg-gray">
-        <p>"Flexible, professional, and affordable. Exactly what we needed for our growing startup."</p>
-        <p class="author">— Marc Chen, CEO</p>
+      <p class="text-sm text-zinc-500 max-w-xs">Everything you need to thrive in one place, designed with
+        intention.</p>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- Card 1 -->
+      <div class="reveal card-h bg-brand-dark border border-white/5 rounded-xl p-6 group">
+        <div
+          class="w-12 h-12 rounded-xl bg-brand-green/10 flex items-center justify-center mb-5 group-hover:bg-brand-green/20 transition-colors duration-300"
+        >
+          <span
+            class="iconify text-brand-green"
+            data-icon="mdi:desk"
+            data-width="24"
+          ></span>
+        </div>
+        <h3 class="text-lg font-bold mb-2 tracking-tight">Flexible Spaces</h3>
+        <p class="text-sm text-zinc-400 leading-relaxed">From hot desks to private offices, find the perfect
+          setup that scales with your needs. No long-term locks.</p>
+        <div class="mt-5 pt-4 border-t border-white/5">
+          <div class="flex items-center gap-4 text-xs text-zinc-500">
+            <span class="flex items-center gap-1"><span
+                class="iconify text-brand-green"
+                data-icon="mdi:check-circle"
+                data-width="14"
+              ></span>Hot Desks</span>
+            <span class="flex items-center gap-1"><span
+                class="iconify text-brand-green"
+                data-icon="mdi:check-circle"
+                data-width="14"
+              ></span>Private Offices</span>
+          </div>
+        </div>
       </div>
-      <div class="testimonial-card bg-blue">
-        <p>"The networking opportunities alone are worth it. I've collaborated with amazing professionals."</p>
-        <p class="author">— Emma Wilson, Consultant</p>
+      <!-- Card 2 -->
+      <div
+        class="reveal card-h bg-brand-dark border border-white/5 rounded-xl p-6 group"
+        style="transition-delay:.1s"
+      >
+        <div
+          class="w-12 h-12 rounded-xl bg-brand-green/10 flex items-center justify-center mb-5 group-hover:bg-brand-green/20 transition-colors duration-300"
+        >
+          <span
+            class="iconify text-brand-green"
+            data-icon="mdi:tag-outline"
+            data-width="24"
+          ></span>
+        </div>
+        <h3 class="text-lg font-bold mb-2 tracking-tight">Transparent Pricing</h3>
+        <p class="text-sm text-zinc-400 leading-relaxed">No hidden fees, no surprises. Clear,
+          straightforward pricing that respects your budget and builds trust.</p>
+        <div class="mt-5 pt-4 border-t border-white/5">
+          <div class="flex items-center gap-4 text-xs text-zinc-500">
+            <span class="flex items-center gap-1"><span
+                class="iconify text-brand-green"
+                data-icon="mdi:check-circle"
+                data-width="14"
+              ></span>No Hidden Fees</span>
+            <span class="flex items-center gap-1"><span
+                class="iconify text-brand-green"
+                data-icon="mdi:check-circle"
+                data-width="14"
+              ></span>Monthly Plans</span>
+          </div>
+        </div>
       </div>
-      <div class="testimonial-card bg-pink">
-        <p>"Best workspace experience. Clean, equipped, and the people are friendly and professional."</p>
-        <p class="author">— David Brown, Developer</p>
-      </div>
-      <div class="testimonial-card bg-orange">
-        <p>"Affordable luxury. Premium amenities without the premium price tag. Highly recommended!"</p>
-        <p class="author">— Lisa Anderson, Designer</p>
+      <!-- Card 3 -->
+      <div
+        class="reveal card-h bg-brand-dark border border-white/5 rounded-xl p-6 group sm:col-span-2 lg:col-span-1"
+        style="transition-delay:.2s"
+      >
+        <div
+          class="w-12 h-12 rounded-xl bg-brand-green/10 flex items-center justify-center mb-5 group-hover:bg-brand-green/20 transition-colors duration-300"
+        >
+          <span
+            class="iconify text-brand-green"
+            data-icon="mdi:account-cog-outline"
+            data-width="24"
+          ></span>
+        </div>
+        <h3 class="text-lg font-bold mb-2 tracking-tight">Tailored Memberships</h3>
+        <p class="text-sm text-zinc-400 leading-relaxed">Custom plans designed around your workflow —
+          whether you're a solo freelancer or a growing enterprise team.</p>
+        <div class="mt-5 pt-4 border-t border-white/5">
+          <div class="flex items-center gap-4 text-xs text-zinc-500">
+            <span class="flex items-center gap-1"><span
+                class="iconify text-brand-green"
+                data-icon="mdi:check-circle"
+                data-width="14"
+              ></span>Custom Plans</span>
+            <span class="flex items-center gap-1"><span
+                class="iconify text-brand-green"
+                data-icon="mdi:check-circle"
+                data-width="14"
+              ></span>Enterprise</span>
+          </div>
+        </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- FAQ -->
-  <section class="faq-section">
-    <h2 class="section-title">Your Roadmap to Cowork Clarity</h2>
-    <div class="faq-container">
-      <div class="faq-item">
-        <h3>What types of spaces do you offer?</h3>
-        <p>We offer dedicated desks, private offices, meeting rooms, and conference spaces tailored to your needs.</p>
+<!-- EXPLORE SPACES / VIDEO -->
+<section
+  id="spaces"
+  class="py-14 md:py-20 relative"
+>
+  <div class="max-w-7xl mx-auto px-5">
+    <div class="reveal text-center mb-10">
+      <span class="text-[10px] font-bold uppercase tracking-[.25em] text-brand-green mb-2 block">Virtual
+        Tour</span>
+      <h2 class="text-3xl md:text-4xl font-bold tracking-tight">Explore Our Spaces</h2>
+    </div>
+    <div class="reveal relative rounded-2xl overflow-hidden border border-white/8 img-hover group cursor-pointer">
+      <img
+        src="https://picsum.photos/seed/cowork-tour-space/1400/560.jpg"
+        alt="Coworking space virtual tour"
+        class="w-full aspect-video object-cover"
+      >
+      <div
+        class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors duration-500 flex items-center justify-center"
+      >
+        <div
+          class="relative play-pulse w-16 h-16 md:w-20 md:h-20 rounded-full bg-brand-green flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
+        >
+          <span
+            class="iconify text-black ml-1"
+            data-icon="mdi:play"
+            data-width="32"
+          ></span>
+        </div>
       </div>
-      <div class="faq-item">
-        <h3>How flexible are the booking terms?</h3>
-        <p>Very flexible! Choose from hourly, daily, weekly, or monthly plans. Cancel or modify anytime.</p>
-      </div>
-      <div class="faq-item">
-        <h3>What's included in the pricing?</h3>
-        <p>All spaces include Wi-Fi, utilities, furniture, and access to common areas with complimentary coffee.</p>
-      </div>
-      <div class="faq-item">
-        <h3>Do you offer membership discounts?</h3>
-        <p>Yes! Monthly memberships get automatic discounts and priority access to new spaces.</p>
-      </div>
-      <div class="faq-item">
-        <h3>How do I manage my bookings?</h3>
-        <p>Use our intuitive dashboard to view, modify, and cancel bookings anytime.</p>
+      <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 md:p-8">
+        <p class="text-xs font-bold uppercase tracking-widest text-brand-green mb-1">Take a Look Inside</p>
+        <p class="text-lg md:text-xl font-semibold">Designed for Focus, Built for Collaboration</p>
       </div>
     </div>
-  </section>
-
-  <!-- BLOG -->
-  <section class="blog-section">
-    <h2 class="section-title">Insights, Innovation, and <span class="highlight">Inspiration</span></h2>
-    <div class="blog-grid">
-      <div class="blog-card">
-        <div class="blog-image">📊</div>
-        <h3>Emerging Remote Work Trends in 2025</h3>
-        <p>Strategic insights on the future of workspace</p>
+    <!-- Space thumbnails -->
+    <div class="grid grid-cols-3 gap-3 mt-3">
+      <div class="reveal img-hover rounded-xl overflow-hidden border border-white/5 cursor-pointer">
+        <img
+          src="https://picsum.photos/seed/cowork-desk-area/500/280.jpg"
+          alt="Desk area"
+          class="w-full aspect-video object-cover"
+        >
       </div>
-      <div class="blog-card">
-        <div class="blog-image">📱</div>
-        <h3>Maximizing Productivity: Tips from Cowork Members</h3>
-        <p>Expert advice to boost your workflow</p>
+      <div
+        class="reveal img-hover rounded-xl overflow-hidden border border-white/5 cursor-pointer"
+        style="transition-delay:.1s"
+      >
+        <img
+          src="https://picsum.photos/seed/cowork-lounge-zone/500/280.jpg"
+          alt="Lounge zone"
+          class="w-full aspect-video object-cover"
+        >
       </div>
-      <div class="blog-card">
-        <div class="blog-image">🚀</div>
-        <h3>Tech Stack: The Backbone of Modern Workspaces</h3>
-        <p>How technology powers productive collaboration</p>
+      <div
+        class="reveal img-hover rounded-xl overflow-hidden border border-white/5 cursor-pointer"
+        style="transition-delay:.2s"
+      >
+        <img
+          src="https://picsum.photos/seed/cowork-meeting-room/500/280.jpg"
+          alt="Meeting room"
+          class="w-full aspect-video object-cover"
+        >
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- CTA -->
-  <section class="cta-section">
-    <h2>Seize 🎨 The Moment – Join Cowork Today!</h2>
-    <p>Find your perfect workspace and start collaborating with like-minded professionals.</p>
-    <button pButton type="button" label="Get Started Now" icon="pi pi-check" class="p-button-primary p-button-lg"></button>
-  </section>
+<!-- STATISTICS -->
+<section class="py-14 md:py-20 relative border-y border-white/5">
+  <div class="absolute inset-0 bg-gradient-to-r from-brand-green/[.02] via-transparent to-brand-green/[.02]">
+  </div>
+  <div class="relative max-w-7xl mx-auto px-5">
+    <div class="reveal text-center mb-10">
+      <span class="text-[10px] font-bold uppercase tracking-[.25em] text-brand-green mb-2 block">Impact</span>
+      <h2 class="text-3xl md:text-4xl font-bold tracking-tight">Transformative Statistics That<br
+          class="hidden sm:block"
+        > Speak Volumes</h2>
+    </div>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+      <div class="reveal text-center p-5 md:p-6 rounded-xl bg-brand-dark/60 border border-white/5">
+        <p
+          class="stat-num text-4xl md:text-5xl font-bold text-brand-green mb-2"
+          data-target="240"
+          data-suffix="%"
+        >0%</p>
+        <p class="text-xs font-semibold uppercase tracking-widest text-zinc-400">Productivity Boost</p>
+      </div>
+      <div
+        class="reveal text-center p-5 md:p-6 rounded-xl bg-brand-dark/60 border border-white/5"
+        style="transition-delay:.1s"
+      >
+        <p
+          class="stat-num text-4xl md:text-5xl font-bold text-brand-green mb-2"
+          data-target="99"
+          data-suffix="%"
+        >0%</p>
+        <p class="text-xs font-semibold uppercase tracking-widest text-zinc-400">Member Satisfaction</p>
+      </div>
+      <div
+        class="reveal text-center p-5 md:p-6 rounded-xl bg-brand-dark/60 border border-white/5"
+        style="transition-delay:.2s"
+      >
+        <p
+          class="stat-num text-4xl md:text-5xl font-bold text-white mb-2"
+          data-target="50"
+          data-suffix="+"
+        >0+</p>
+        <p class="text-xs font-semibold uppercase tracking-widest text-zinc-400">Locations Worldwide</p>
+      </div>
+      <div
+        class="reveal text-center p-5 md:p-6 rounded-xl bg-brand-dark/60 border border-white/5"
+        style="transition-delay:.3s"
+      >
+        <p
+          class="stat-num text-4xl md:text-5xl font-bold text-white mb-2"
+          data-target="12"
+          data-suffix="K+"
+        >0K+</p>
+        <p class="text-xs font-semibold uppercase tracking-widest text-zinc-400">Active Members</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <app-footer></app-footer>
-</div>
+<!-- MEMBER STORIES -->
+<section class="py-14 md:py-20 relative">
+  <div class="max-w-7xl mx-auto px-5">
+    <div class="reveal flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-10">
+      <div>
+        <span class="text-[10px] font-bold uppercase tracking-[.25em] text-brand-green mb-2 block">Community</span>
+        <h2 class="text-3xl md:text-4xl font-bold tracking-tight">Member Stories</h2>
+      </div>
+      <a
+        href="#"
+        class="text-sm text-brand-green hover:underline flex items-center gap-1"
+      >View All <span
+          class="iconify"
+          data-icon="mdi:arrow-right"
+          data-width="16"
+        ></span></a>
+    </div>
+    <div class="grid md:grid-cols-3 gap-4">
+      <!-- Testimonial 1 - Green -->
+      <div
+        class="reveal card-h rounded-xl border-l-4 border-l-brand-green bg-brand-dark border-r border-t border-b border-white/5 p-6"
+      >
+        <div class="flex items-center gap-1 mb-4">
+          <span
+            class="iconify text-brand-green"
+            data-icon="mdi:star"
+            data-width="16"
+          ></span>
+          <span
+            class="iconify text-brand-green"
+            data-icon="mdi:star"
+            data-width="16"
+          ></span>
+          <span
+            class="iconify text-brand-green"
+            data-icon="mdi:star"
+            data-width="16"
+          ></span>
+          <span
+            class="iconify text-brand-green"
+            data-icon="mdi:star"
+            data-width="16"
+          ></span>
+          <span
+            class="iconify text-brand-green"
+            data-icon="mdi:star"
+            data-width="16"
+          ></span>
+        </div>
+        <p class="text-sm text-zinc-300 leading-relaxed mb-5">"Cowork completely transformed how I work. The
+          energy here is unmatched — I've doubled my client base since joining. The community alone is
+          worth the membership."</p>
+        <div class="flex items-center gap-3">
+          <img
+            src="https://picsum.photos/seed/person-sarah/80/80.jpg"
+            alt="Sarah Chen"
+            class="w-10 h-10 rounded-full object-cover border-2 border-brand-green/30"
+          >
+          <div>
+            <p class="text-sm font-bold">Sarah Chen</p>
+            <p class="text-xs text-zinc-500">Freelance Designer</p>
+          </div>
+        </div>
+      </div>
+      <!-- Testimonial 2 - Orange -->
+      <div
+        class="reveal card-h rounded-xl border-l-4 border-l-orange-400 bg-brand-dark border-r border-t border-b border-white/5 p-6"
+        style="transition-delay:.1s"
+      >
+        <div class="flex items-center gap-1 mb-4">
+          <span
+            class="iconify text-orange-400"
+            data-icon="mdi:star"
+            data-width="16"
+          ></span>
+          <span
+            class="iconify text-orange-400"
+            data-icon="mdi:star"
+            data-width="16"
+          ></span>
+          <span
+            class="iconify text-orange-400"
+            data-icon="mdi:star"
+            data-width="16"
+          ></span>
+          <span
+            class="iconify text-orange-400"
+            data-icon="mdi:star"
+            data-width="16"
+          ></span>
+          <span
+            class="iconify text-orange-400"
+            data-icon="mdi:star"
+            data-width="16"
+          ></span>
+        </div>
+        <p class="text-sm text-zinc-300 leading-relaxed mb-5">"We moved our entire team of 15 here. The
+          flexible plans, meeting rooms, and high-speed infrastructure made it a no-brainer. Best decision
+          we've made this year."</p>
+        <div class="flex items-center gap-3">
+          <img
+            src="https://picsum.photos/seed/person-marcus/80/80.jpg"
+            alt="Marcus Rivera"
+            class="w-10 h-10 rounded-full object-cover border-2 border-orange-400/30"
+          >
+          <div>
+            <p class="text-sm font-bold">Marcus Rivera</p>
+            <p class="text-xs text-zinc-500">CEO, TechVault</p>
+          </div>
+        </div>
+      </div>
+      <!-- Testimonial 3 - Blue -->
+      <div
+        class="reveal card-h rounded-xl border-l-4 border-l-sky-400 bg-brand-dark border-r border-t border-b border-white/5 p-6"
+        style="transition-delay:.2s"
+      >
+        <div class="flex items-center gap-1 mb-4">
+          <span
+            class="iconify text-sky-400"
+            data-icon="mdi:star"
+            data-width="16"
+          ></span>
+          <span
+            class="iconify text-sky-400"
+            data-icon="mdi:star"
+            data-width="16"
+          ></span>
+          <span
+            class="iconify text-sky-400"
+            data-icon="mdi:star"
+            data-width="16"
+          ></span>
+          <span
+            class="iconify text-sky-400"
+            data-icon="mdi:star"
+            data-width="16"
+          ></span>
+          <span
+            class="iconify text-sky-400"
+            data-icon="mdi:star-half-full"
+            data-width="16"
+          ></span>
+        </div>
+        <p class="text-sm text-zinc-300 leading-relaxed mb-5">"As a remote worker, isolation was my biggest
+          challenge. Cowork gave me a professional environment and a network of like-minded people I now
+          call friends."</p>
+        <div class="flex items-center gap-3">
+          <img
+            src="https://picsum.photos/seed/person-emily/80/80.jpg"
+            alt="Emily Nakamura"
+            class="w-10 h-10 rounded-full object-cover border-2 border-sky-400/30"
+          >
+          <div>
+            <p class="text-sm font-bold">Emily Nakamura</p>
+            <p class="text-xs text-zinc-500">Remote Developer</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ SECTION -->
+<section class="py-14 md:py-20 border-t border-white/5 relative">
+  <div class="max-w-3xl mx-auto px-5">
+    <div class="reveal text-center mb-10">
+      <span class="text-[10px] font-bold uppercase tracking-[.25em] text-brand-green mb-2 block">FAQ</span>
+      <h2 class="text-3xl md:text-4xl font-bold tracking-tight">Frequently Asked Questions</h2>
+    </div>
+    <div class="space-y-3">
+      <div class="reveal faq-item bg-brand-dark border border-white/5 rounded-xl overflow-hidden">
+        <button class="faq-toggle w-full flex items-center justify-between p-5 text-left">
+          <span class="text-sm font-semibold pr-4">What types of memberships do you offer?</span>
+          <span
+            class="iconify faq-icon text-brand-green flex-shrink-0 transition-transform duration-300"
+            data-icon="mdi:plus"
+            data-width="20"
+          ></span>
+        </button>
+        <div class="faq-ans px-5">
+          <p class="text-sm text-zinc-400 leading-relaxed pb-5">We offer Hot Desk, Dedicated Desk, Private
+            Office, and Enterprise plans. Each can be customized with add-ons like meeting room credits,
+            mailing addresses, and event access.</p>
+        </div>
+      </div>
+      <div
+        class="reveal faq-item bg-brand-dark border border-white/5 rounded-xl overflow-hidden"
+        style="transition-delay:.05s"
+      >
+        <button class="faq-toggle w-full flex items-center justify-between p-5 text-left">
+          <span class="text-sm font-semibold pr-4">Can I scale my plan up or down?</span>
+          <span
+            class="iconify faq-icon text-brand-green flex-shrink-0 transition-transform duration-300"
+            data-icon="mdi:plus"
+            data-width="20"
+          ></span>
+        </button>
+        <div class="faq-ans px-5">
+          <p class="text-sm text-zinc-400 leading-relaxed pb-5">Absolutely. Our memberships are designed
+            to grow with you. Upgrade or downgrade with just 30 days' notice — no penalties, no hassle.
+          </p>
+        </div>
+      </div>
+      <div
+        class="reveal faq-item bg-brand-dark border border-white/5 rounded-xl overflow-hidden"
+        style="transition-delay:.1s"
+      >
+        <button class="faq-toggle w-full flex items-center justify-between p-5 text-left">
+          <span class="text-sm font-semibold pr-4">Is there a minimum commitment?</span>
+          <span
+            class="iconify faq-icon text-brand-green flex-shrink-0 transition-transform duration-300"
+            data-icon="mdi:plus"
+            data-width="20"
+          ></span>
+        </button>
+        <div class="faq-ans px-5">
+          <p class="text-sm text-zinc-400 leading-relaxed pb-5">Hot Desks are available on daily or
+            monthly rolling plans. Dedicated Desks and Private Offices require a minimum 3-month
+            commitment, with discounts for longer terms.</p>
+        </div>
+      </div>
+      <div
+        class="reveal faq-item bg-brand-dark border border-white/5 rounded-xl overflow-hidden"
+        style="transition-delay:.15s"
+      >
+        <button class="faq-toggle w-full flex items-center justify-between p-5 text-left">
+          <span class="text-sm font-semibold pr-4">What amenities are included?</span>
+          <span
+            class="iconify faq-icon text-brand-green flex-shrink-0 transition-transform duration-300"
+            data-icon="mdi:plus"
+            data-width="20"
+          ></span>
+        </button>
+        <div class="faq-ans px-5">
+          <p class="text-sm text-zinc-400 leading-relaxed pb-5">All plans include high-speed WiFi, coffee
+            & tea, printing, access to communal areas, and community events. Private offices also
+            include 24/7 access and meeting room credits.</p>
+        </div>
+      </div>
+      <div
+        class="reveal faq-item bg-brand-dark border border-white/5 rounded-xl overflow-hidden"
+        style="transition-delay:.2s"
+      >
+        <button class="faq-toggle w-full flex items-center justify-between p-5 text-left">
+          <span class="text-sm font-semibold pr-4">Do you offer day passes?</span>
+          <span
+            class="iconify faq-icon text-brand-green flex-shrink-0 transition-transform duration-300"
+            data-icon="mdi:plus"
+            data-width="20"
+          ></span>
+        </button>
+        <div class="faq-ans px-5">
+          <p class="text-sm text-zinc-400 leading-relaxed pb-5">Yes! Our Day Pass gives you full access to
+            hot desks, WiFi, communal areas, and coffee for a single day — perfect for travelers or
+            anyone wanting to try before committing.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA SECTION -->
+<section
+  id="book"
+  class="py-14 md:py-20 relative overflow-hidden"
+>
+  <div class="absolute inset-0 bg-gradient-to-br from-brand-green/10 via-brand-dark to-brand-green/5"></div>
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand-green/10 rounded-full blur-[120px]">
+  </div>
+  <div class="relative max-w-4xl mx-auto px-5 text-center">
+    <div class="reveal">
+      <span class="text-[10px] font-bold uppercase tracking-[.25em] text-brand-green mb-3 block">Get
+        Started</span>
+      <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 leading-[0.95]">
+        Seize The Moment –<br><span class="text-grad">Join Cowork Today!</span>
+      </h2>
+      <p class="text-sm md:text-base text-zinc-400 max-w-lg mx-auto mb-8">Your future workspace is waiting.
+        Book a spot in minutes and become part of a community that's redefining how professionals work.</p>
+      <div class="flex flex-wrap justify-center gap-3">
+        <a
+          href="#"
+          class="inline-flex items-center gap-2 text-sm font-bold px-8 py-4 rounded-full bg-brand-green text-black hover:brightness-110 transition-all duration-300 glow-green green-glow-hover"
+        >
+          Book a Spot
+          <span
+            class="iconify"
+            data-icon="mdi:arrow-right"
+            data-width="18"
+          ></span>
+        </a>
+        <a
+          href="#"
+          class="inline-flex items-center gap-2 text-sm font-semibold px-8 py-4 rounded-full border border-white/15 text-white hover:border-white/40 hover:bg-white/5 transition-all duration-300"
+        >
+          <span
+            class="iconify"
+            data-icon="mdi:phone-outline"
+            data-width="18"
+          ></span>
+          Contact Sales
+        </a>
+      </div>
+      <p class="text-xs text-zinc-600 mt-5">No credit card required · Free tour available · Cancel anytime</p>
+    </div>
+  </div>
+</section>
+
+<!-- BLOG / INSIGHTS -->
+<section
+  id="blog"
+  class="py-14 md:py-20 border-t border-white/5"
+>
+  <div class="max-w-7xl mx-auto px-5">
+    <div class="reveal flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-10">
+      <div>
+        <span class="text-[10px] font-bold uppercase tracking-[.25em] text-brand-green mb-2 block">Insights</span>
+        <h2 class="text-3xl md:text-4xl font-bold tracking-tight">Insights & Resources</h2>
+      </div>
+      <a
+        href="#"
+        class="text-sm text-brand-green hover:underline flex items-center gap-1"
+      >View All Articles <span
+          class="iconify"
+          data-icon="mdi:arrow-right"
+          data-width="16"
+        ></span></a>
+    </div>
+    <div class="grid md:grid-cols-3 gap-4">
+      <!-- Article 1 -->
+      <article
+        class="reveal card-h group bg-brand-dark border border-white/5 rounded-xl overflow-hidden cursor-pointer">
+        <div class="img-hover overflow-hidden">
+          <img
+            src="https://picsum.photos/seed/blog-future-cowork/600/340.jpg"
+            alt="Future of coworking"
+            class="w-full aspect-video object-cover"
+          >
+        </div>
+        <div class="p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-brand-green">Trends</span>
+            <span class="text-[10px] text-zinc-600">Dec 15, 2024</span>
+          </div>
+          <h3
+            class="text-base font-bold tracking-tight mb-2 group-hover:text-brand-green transition-colors duration-300 leading-snug"
+          >
+            Navigating the Future: Trends in Modern Coworking Spaces</h3>
+          <p class="text-xs text-zinc-500 leading-relaxed line-clamp-2">Explore how AI integration,
+            sustainability, and hybrid work models are reshaping the coworking landscape in 2025 and
+            beyond.</p>
+        </div>
+      </article>
+      <!-- Article 2 -->
+      <article
+        class="reveal card-h group bg-brand-dark border border-white/5 rounded-xl overflow-hidden cursor-pointer"
+        style="transition-delay:.1s"
+      >
+        <div class="img-hover overflow-hidden">
+          <img
+            src="https://picsum.photos/seed/blog-productivity-tips/600/340.jpg"
+            alt="Productivity tips"
+            class="w-full aspect-video object-cover"
+          >
+        </div>
+        <div class="p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-orange-400">Productivity</span>
+            <span class="text-[10px] text-zinc-600">Dec 10, 2024</span>
+          </div>
+          <h3
+            class="text-base font-bold tracking-tight mb-2 group-hover:text-brand-green transition-colors duration-300 leading-snug"
+          >
+            10 Proven Strategies to Maximize Your Productivity in Shared Spaces</h3>
+          <p class="text-xs text-zinc-500 leading-relaxed line-clamp-2">From noise management to
+            time-blocking techniques, master the art of deep work in open-plan coworking environments.
+          </p>
+        </div>
+      </article>
+      <!-- Article 3 -->
+      <article
+        class="reveal card-h group bg-brand-dark border border-white/5 rounded-xl overflow-hidden cursor-pointer"
+        style="transition-delay:.2s"
+      >
+        <div class="img-hover overflow-hidden">
+          <img
+            src="https://picsum.photos/seed/blog-community-build/600/340.jpg"
+            alt="Building community"
+            class="w-full aspect-video object-cover"
+          >
+        </div>
+        <div class="p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-sky-400">Community</span>
+            <span class="text-[10px] text-zinc-600">Dec 5, 2024</span>
+          </div>
+          <h3
+            class="text-base font-bold tracking-tight mb-2 group-hover:text-brand-green transition-colors duration-300 leading-snug"
+          >
+            Building Meaningful Professional Connections in Coworking Spaces</h3>
+          <p class="text-xs text-zinc-500 leading-relaxed line-clamp-2">How intentional community design
+            transforms strangers into collaborators, mentors, and long-term professional allies.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+<app-footer></app-footer>
+
+  <script>
+        // Scroll Reveal
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // Stat Counter
+        const statElements = document.querySelectorAll('.stat-num');
+        let statsCounted = false;
+        const statObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !statsCounted) {
+                    statsCounted = true;
+                    statElements.forEach(el => {
+                        const target = parseInt(el.dataset.target);
+                        const suffix = el.dataset.suffix || '';
+                        const duration = 2000;
+                        const step = target / (duration / 16);
+                        let current = 0;
+                        const timer = setInterval(() => {
+                            current += step;
+                            if (current >= target) {
+                                current = target;
+                                clearInterval(timer);
+                            }
+                            el.textContent = Math.floor(current) + suffix;
+                        }, 16);
+                    });
+                }
+            });
+        }, { threshold: 0.3 });
+        statElements.forEach(el => statObserver.observe(el));
+
+        // FAQ Accordion
+        document.querySelectorAll('.faq-toggle').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const item = btn.parentElement;
+                const answer = item.querySelector('.faq-ans');
+                const icon = btn.querySelector('.faq-icon');
+                const isOpen = answer.classList.contains('open');
+
+                // Close all
+                document.querySelectorAll('.faq-ans').forEach(a => a.classList.remove('open'));
+                document.querySelectorAll('.faq-icon').forEach(i => {
+                    i.setAttribute('data-icon', 'mdi:plus');
+                    i.style.transform = 'rotate(0deg)';
+                });
+
+                // Open clicked if it was closed
+                if (!isOpen) {
+                    answer.classList.add('open');
+                    icon.setAttribute('data-icon', 'mdi:minus');
+                    icon.style.transform = 'rotate(180deg)';
+                }
+            });
+        });
+
+        // Newsletter subscribe feedback
+        document.querySelector('footer button').addEventListener('click', function () {
+            const input = this.previousElementSibling;
+            if (input.value && input.value.includes('@')) {
+                const original = this.textContent;
+                this.textContent = 'Subscribed!';
+                this.classList.remove('bg-brand-green');
+                this.classList.add('bg-emerald-600');
+                input.value = '';
+                setTimeout(() => {
+                    this.textContent = original;
+                    this.classList.remove('bg-emerald-600');
+                    this.classList.add('bg-brand-green');
+                }, 2500);
+            } else {
+                input.style.borderColor = 'rgba(239,68,68,0.5)';
+                input.placeholder = 'Enter a valid email';
+                setTimeout(() => {
+                    input.style.borderColor = '';
+                    input.placeholder = 'your@email.com';
+                }, 2000);
+            }
+        });
+
+        // Nav background on scroll
+        const nav = document.querySelector('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('border-white/10');
+                nav.classList.remove('border-white/5');
+                nav.style.backgroundColor = 'rgba(0,0,0,0.8)';
+            } else {
+                nav.classList.remove('border-white/10');
+                nav.classList.add('border-white/5');
+                nav.style.backgroundColor = 'rgba(0,0,0,0.6)';
+            }
+        });
+    </script>
