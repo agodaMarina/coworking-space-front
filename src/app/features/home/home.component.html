@@ -1,814 +1,374 @@
-<!-- HERO SECTION -->
 <app-header></app-header>
-<section class="min-h-screen pt-16 flex items-center relative overflow-hidden">
-  <div class="absolute inset-0 bg-gradient-to-br "></div>
-  <div class="absolute top-20 right-0 w-[500px] h-[500px] bg-brand-green/5 rounded-full blur-[120px]"></div>
-  <div class="relative z-10 max-w-7xl mx-auto px-5 py-12 md:py-16 w-full">
+<section class="pt-24 pb-12 md:pt-32 md:pb-20 flex items-center relative overflow-hidden bg-white">
+  <div class="relative z-10 max-w-7xl mx-auto px-5 w-full">
     <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
       <div>
-        <span
-          class="anim d1 inline-block text-[10px] font-bold uppercase tracking-[.25em] text-brand-green bg-brand-green/10 px-3 py-1.5 rounded-full mb-5"
-        >Premium Coworking</span>
-        <h1 class="anim d2 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[0.95] tracking-tight mb-5">
-          Elevate Your<br>Workspace with<br><span class="text-grad">Cowork</span>
+        <h1 class="anim d2 text-5xl sm:text-6xl md:text-7xl lg:text-[80px] font-bold leading-[0.95] tracking-tight mb-6 text-black">
+          Elevate Your<br>Workspace<br> with <span class="relative inline-block">Cowork<svg class="absolute -bottom-2 left-0 w-full text-brand-green" viewBox="0 0 200 20" fill="none" stroke="currentColor" stroke-width="4"><path d="M5,15 Q100,0 195,15" /></svg></span>
         </h1>
-        <p class="anim d3 text-sm md:text-base text-zinc-400 leading-relaxed max-w-md mb-7">
+        <p class="anim d3 text-sm md:text-base text-zinc-600 leading-relaxed max-w-md mb-8">
           Premium coworking spaces designed for professionals who demand more. Flexible, inspiring
           environments built for peak productivity and meaningful connections.
         </p>
-        <div class="anim d4 flex flex-wrap gap-3">
+        <div class="anim d4 flex flex-wrap gap-4">
           <a
             href="#book"
-            class="inline-flex items-center gap-2 text-sm font-semibold px-7 py-3.5 rounded-full bg-brand-green text-black hover:brightness-110 transition-all duration-300 glow-green"
+            class="inline-flex items-center justify-center gap-2 text-sm font-semibold px-8 py-3.5 rounded-full bg-black text-white hover:bg-zinc-800 transition-all duration-300 shadow-lg shadow-black/10"
           >
             Book a Tour
-            <span
-              class="iconify"
-              data-icon="mdi:arrow-right"
-              data-width="18"
-            ></span>
           </a>
           <a
             href="#spaces"
-            class="inline-flex items-center gap-2 text-sm font-semibold px-7 py-3.5 rounded-full border border-white/15 text-white hover:border-white/40 hover:bg-white/5 transition-all duration-300"
+            class="inline-flex items-center justify-center gap-2 text-sm font-semibold px-8 py-3.5 rounded-full border border-zinc-200 text-black hover:border-zinc-300 hover:bg-zinc-50 transition-all duration-300"
           >
             View Spaces
           </a>
         </div>
       </div>
-      <div class="anim d5 relative img-hover">
-        <div class="rounded-2xl overflow-hidden border border-white/8 glow-green">
+      <div class="anim d5 relative img-hover flex justify-end">
+        <div class="rounded-3xl overflow-hidden w-full max-w-[540px] aspect-[4/5] md:aspect-square">
           <img
-            src="/images/hero-section.png"
+            src="https://picsum.photos/seed/cowork-hero-main/800/800.jpg"
             alt="Modern coworking space"
-            class="w-full aspect-[4/3] object-cover"
+            class="w-full h-full object-cover"
             loading="eager"
           >
         </div>
-        <div
-          class="absolute -bottom-4 -left-4 bg-brand-gray border border-white/10 rounded-xl px-4 py-3 flex items-center gap-3"
-        >
-          <div class="w-10 h-10 rounded-full bg-brand-green/15 flex items-center justify-center">
-            <span
-              class="iconify text-brand-green"
-              data-icon="mdi:account-group"
-              data-width="20"
-            ></span>
-          </div>
-          <div>
-            <p class="text-xs font-bold text-white">12,000+</p>
-            <p class="text-[10px] text-zinc-500">Active Members</p>
-          </div>
-        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- WHY CHOOSE COWORK -->
-<section
-  id="about"
-  class="py-14 md:py-20 relative"
->
-  <div class="max-w-7xl mx-auto px-5">
-    <div class="reveal flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-10">
-      <div>
-        <span class="text-[10px] font-bold uppercase tracking-[.25em] text-brand-green mb-2 block">Advantages</span>
-        <h2 class="text-3xl md:text-4xl font-bold tracking-tight">Why Choose Cowork?</h2>
+<section id="about" class="py-16 md:py-24 relative bg-white">
+  <div class="max-w-7xl mx-auto px-5 text-center mb-16">
+    <div class="reveal flex flex-wrap justify-center items-center gap-3 md:gap-4">
+      <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-black">Why Choose</h2>
+      <div class="w-[120px] h-[40px] md:w-[160px] md:h-[50px] rounded-full bg-zinc-100 overflow-hidden inline-block align-middle">
+        <img src="https://picsum.photos/seed/pill-1/320/100.jpg" alt="" class="w-full h-full object-cover">
       </div>
-      <p class="text-sm text-zinc-500 max-w-xs">Everything you need to thrive in one place, designed with
-        intention.</p>
+      <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-black">Cowork?</h2>
     </div>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      <!-- Card 1 -->
-      <div class="reveal card-h bg-brand-dark border border-white/5 rounded-xl p-6 group">
-        <div
-          class="w-12 h-12 rounded-xl bg-brand-green/10 flex items-center justify-center mb-5 group-hover:bg-brand-green/20 transition-colors duration-300"
-        >
-          <span
-            class="iconify text-brand-green"
-            data-icon="mdi:desk"
-            data-width="24"
-          ></span>
-        </div>
-        <h3 class="text-lg font-bold mb-2 tracking-tight">Flexible Spaces</h3>
-        <p class="text-sm text-zinc-400 leading-relaxed">From hot desks to private offices, find the perfect
-          setup that scales with your needs. No long-term locks.</p>
-        <div class="mt-5 pt-4 border-t border-white/5">
-          <div class="flex items-center gap-4 text-xs text-zinc-500">
-            <span class="flex items-center gap-1"><span
-                class="iconify text-brand-green"
-                data-icon="mdi:check-circle"
-                data-width="14"
-              ></span>Hot Desks</span>
-            <span class="flex items-center gap-1"><span
-                class="iconify text-brand-green"
-                data-icon="mdi:check-circle"
-                data-width="14"
-              ></span>Private Offices</span>
-          </div>
-        </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-5 grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div class="reveal flex flex-col items-center text-center group">
+      <div class="w-14 h-14 rounded-2xl bg-[#E8F5E9] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+        <span class="iconify text-2xl text-green-700" data-icon="mdi:home-city-outline"></span>
       </div>
-      <!-- Card 2 -->
-      <div
-        class="reveal card-h bg-brand-dark border border-white/5 rounded-xl p-6 group"
-        style="transition-delay:.1s"
-      >
-        <div
-          class="w-12 h-12 rounded-xl bg-brand-green/10 flex items-center justify-center mb-5 group-hover:bg-brand-green/20 transition-colors duration-300"
-        >
-          <span
-            class="iconify text-brand-green"
-            data-icon="mdi:tag-outline"
-            data-width="24"
-          ></span>
-        </div>
-        <h3 class="text-lg font-bold mb-2 tracking-tight">Transparent Pricing</h3>
-        <p class="text-sm text-zinc-400 leading-relaxed">No hidden fees, no surprises. Clear,
-          straightforward pricing that respects your budget and builds trust.</p>
-        <div class="mt-5 pt-4 border-t border-white/5">
-          <div class="flex items-center gap-4 text-xs text-zinc-500">
-            <span class="flex items-center gap-1"><span
-                class="iconify text-brand-green"
-                data-icon="mdi:check-circle"
-                data-width="14"
-              ></span>No Hidden Fees</span>
-            <span class="flex items-center gap-1"><span
-                class="iconify text-brand-green"
-                data-icon="mdi:check-circle"
-                data-width="14"
-              ></span>Monthly Plans</span>
-          </div>
-        </div>
+      <h3 class="text-xl font-bold mb-3 tracking-tight text-black">Flexible Spaces</h3>
+      <p class="text-sm text-zinc-500 leading-relaxed max-w-xs">From hot desks to private offices, find the perfect setup that scales with your needs. No long-term locks.</p>
+    </div>
+    <div class="reveal flex flex-col items-center text-center group" style="transition-delay:.1s">
+      <div class="w-14 h-14 rounded-2xl bg-[#E3F2FD] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+        <span class="iconify text-2xl text-blue-600" data-icon="mdi:currency-usd"></span>
       </div>
-      <!-- Card 3 -->
-      <div
-        class="reveal card-h bg-brand-dark border border-white/5 rounded-xl p-6 group sm:col-span-2 lg:col-span-1"
-        style="transition-delay:.2s"
-      >
-        <div
-          class="w-12 h-12 rounded-xl bg-brand-green/10 flex items-center justify-center mb-5 group-hover:bg-brand-green/20 transition-colors duration-300"
-        >
-          <span
-            class="iconify text-brand-green"
-            data-icon="mdi:account-cog-outline"
-            data-width="24"
-          ></span>
-        </div>
-        <h3 class="text-lg font-bold mb-2 tracking-tight">Tailored Memberships</h3>
-        <p class="text-sm text-zinc-400 leading-relaxed">Custom plans designed around your workflow —
-          whether you're a solo freelancer or a growing enterprise team.</p>
-        <div class="mt-5 pt-4 border-t border-white/5">
-          <div class="flex items-center gap-4 text-xs text-zinc-500">
-            <span class="flex items-center gap-1"><span
-                class="iconify text-brand-green"
-                data-icon="mdi:check-circle"
-                data-width="14"
-              ></span>Custom Plans</span>
-            <span class="flex items-center gap-1"><span
-                class="iconify text-brand-green"
-                data-icon="mdi:check-circle"
-                data-width="14"
-              ></span>Enterprise</span>
-          </div>
-        </div>
+      <h3 class="text-xl font-bold mb-3 tracking-tight text-black">Transparent Pricing</h3>
+      <p class="text-sm text-zinc-500 leading-relaxed max-w-xs">No hidden fees, no surprises. Clear, straightforward pricing that respects your budget and builds trust.</p>
+    </div>
+    <div class="reveal flex flex-col items-center text-center group sm:col-span-2 lg:col-span-1" style="transition-delay:.2s">
+      <div class="w-14 h-14 rounded-2xl bg-[#FFF3E0] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+        <span class="iconify text-2xl text-orange-500" data-icon="mdi:account-group-outline"></span>
       </div>
+      <h3 class="text-xl font-bold mb-3 tracking-tight text-black">Tailored Memberships</h3>
+      <p class="text-sm text-zinc-500 leading-relaxed max-w-xs">Custom plans designed around your workflow — whether you're a solo freelancer or a growing enterprise team.</p>
     </div>
   </div>
 </section>
 
-<!-- EXPLORE SPACES / VIDEO -->
-<section
-  id="spaces"
-  class="py-14 md:py-20 relative"
->
-  <div class="max-w-7xl mx-auto px-5">
-    <div class="reveal text-center mb-10">
-      <span class="text-[10px] font-bold uppercase tracking-[.25em] text-brand-green mb-2 block">Virtual
-        Tour</span>
-      <h2 class="text-3xl md:text-4xl font-bold tracking-tight">Explore Our Spaces</h2>
+<section id="spaces" class="py-16 md:py-24 relative bg-white">
+  <div class="max-w-6xl mx-auto px-5">
+    <div class="reveal text-center mb-12">
+      <span class="text-xs font-bold uppercase tracking-[.2em] text-zinc-400 mb-3 block">Virtual Tour</span>
+      <div class="flex flex-wrap justify-center items-center gap-3">
+        <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-black">Explore Cowork Through Our</h2>
+        <div class="w-[100px] h-[36px] md:w-[130px] md:h-[46px] rounded-full bg-brand-green/20 overflow-hidden inline-block align-middle">
+           <img src="https://picsum.photos/seed/pill-2/260/92.jpg" alt="" class="w-full h-full object-cover">
+        </div>
+        <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-black">Lens</h2>
+      </div>
+      <p class="text-zinc-500 text-sm mt-6 max-w-2xl mx-auto">Experience the vibrant atmosphere of our spaces from wherever you are. Designed for focus, built for collaboration.</p>
     </div>
-    <div class="reveal relative rounded-2xl overflow-hidden border border-white/8 img-hover group cursor-pointer">
+
+    <div class="reveal relative rounded-[32px] overflow-hidden img-hover group cursor-pointer shadow-2xl shadow-black/5">
       <img
-        src="https://picsum.photos/seed/cowork-tour-space/1400/560.jpg"
+        src="https://picsum.photos/seed/cowork-video-cover/1200/600.jpg"
         alt="Coworking space virtual tour"
-        class="w-full aspect-video object-cover"
+        class="w-full aspect-[21/9] object-cover"
       >
-      <div
-        class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors duration-500 flex items-center justify-center"
-      >
-        <div
-          class="relative play-pulse w-16 h-16 md:w-20 md:h-20 rounded-full bg-brand-green flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
-        >
-          <span
-            class="iconify text-black ml-1"
-            data-icon="mdi:play"
-            data-width="32"
-          ></span>
+      <div class="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-500 flex items-center justify-center">
+        <div class="relative w-16 h-16 md:w-24 md:h-24 rounded-2xl bg-black/80 backdrop-blur-sm flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+          <span class="iconify text-white" data-icon="mdi:play" data-width="40"></span>
         </div>
       </div>
-      <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 md:p-8">
-        <p class="text-xs font-bold uppercase tracking-widest text-brand-green mb-1">Take a Look Inside</p>
-        <p class="text-lg md:text-xl font-semibold">Designed for Focus, Built for Collaboration</p>
-      </div>
-    </div>
-    <!-- Space thumbnails -->
-    <div class="grid grid-cols-3 gap-3 mt-3">
-      <div class="reveal img-hover rounded-xl overflow-hidden border border-white/5 cursor-pointer">
-        <img
-          src="https://picsum.photos/seed/cowork-desk-area/500/280.jpg"
-          alt="Desk area"
-          class="w-full aspect-video object-cover"
-        >
-      </div>
-      <div
-        class="reveal img-hover rounded-xl overflow-hidden border border-white/5 cursor-pointer"
-        style="transition-delay:.1s"
-      >
-        <img
-          src="https://picsum.photos/seed/cowork-lounge-zone/500/280.jpg"
-          alt="Lounge zone"
-          class="w-full aspect-video object-cover"
-        >
-      </div>
-      <div
-        class="reveal img-hover rounded-xl overflow-hidden border border-white/5 cursor-pointer"
-        style="transition-delay:.2s"
-      >
-        <img
-          src="https://picsum.photos/seed/cowork-meeting-room/500/280.jpg"
-          alt="Meeting room"
-          class="w-full aspect-video object-cover"
-        >
-      </div>
     </div>
   </div>
 </section>
 
-<!-- STATISTICS -->
-<section class="py-14 md:py-20 relative border-y border-white/5">
-  <div class="absolute inset-0 bg-gradient-to-r from-brand-green/[.02] via-transparent to-brand-green/[.02]">
-  </div>
-  <div class="relative max-w-7xl mx-auto px-5">
-    <div class="reveal text-center mb-10">
-      <span class="text-[10px] font-bold uppercase tracking-[.25em] text-brand-green mb-2 block">Impact</span>
-      <h2 class="text-3xl md:text-4xl font-bold tracking-tight">Transformative Statistics That<br
-          class="hidden sm:block"
-        > Speak Volumes</h2>
-    </div>
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-      <div class="reveal text-center p-5 md:p-6 rounded-xl bg-brand-dark/60 border border-white/5">
-        <p
-          class="stat-num text-4xl md:text-5xl font-bold text-brand-green mb-2"
-          data-target="240"
-          data-suffix="%"
-        >0%</p>
-        <p class="text-xs font-semibold uppercase tracking-widest text-zinc-400">Productivity Boost</p>
-      </div>
-      <div
-        class="reveal text-center p-5 md:p-6 rounded-xl bg-brand-dark/60 border border-white/5"
-        style="transition-delay:.1s"
-      >
-        <p
-          class="stat-num text-4xl md:text-5xl font-bold text-brand-green mb-2"
-          data-target="99"
-          data-suffix="%"
-        >0%</p>
-        <p class="text-xs font-semibold uppercase tracking-widest text-zinc-400">Member Satisfaction</p>
-      </div>
-      <div
-        class="reveal text-center p-5 md:p-6 rounded-xl bg-brand-dark/60 border border-white/5"
-        style="transition-delay:.2s"
-      >
-        <p
-          class="stat-num text-4xl md:text-5xl font-bold text-white mb-2"
-          data-target="50"
-          data-suffix="+"
-        >0+</p>
-        <p class="text-xs font-semibold uppercase tracking-widest text-zinc-400">Locations Worldwide</p>
-      </div>
-      <div
-        class="reveal text-center p-5 md:p-6 rounded-xl bg-brand-dark/60 border border-white/5"
-        style="transition-delay:.3s"
-      >
-        <p
-          class="stat-num text-4xl md:text-5xl font-bold text-white mb-2"
-          data-target="12"
-          data-suffix="K+"
-        >0K+</p>
-        <p class="text-xs font-semibold uppercase tracking-widest text-zinc-400">Active Members</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- MEMBER STORIES -->
-<section class="py-14 md:py-20 relative">
+<section class="py-16 md:py-24 relative bg-white">
   <div class="max-w-7xl mx-auto px-5">
-    <div class="reveal flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-10">
-      <div>
-        <span class="text-[10px] font-bold uppercase tracking-[.25em] text-brand-green mb-2 block">Community</span>
-        <h2 class="text-3xl md:text-4xl font-bold tracking-tight">Member Stories</h2>
-      </div>
-      <a
-        href="#"
-        class="text-sm text-brand-green hover:underline flex items-center gap-1"
-      >View All <span
-          class="iconify"
-          data-icon="mdi:arrow-right"
-          data-width="16"
-        ></span></a>
-    </div>
-    <div class="grid md:grid-cols-3 gap-4">
-      <!-- Testimonial 1 - Green -->
-      <div
-        class="reveal card-h rounded-xl border-l-4 border-l-brand-green bg-brand-dark border-r border-t border-b border-white/5 p-6"
-      >
-        <div class="flex items-center gap-1 mb-4">
-          <span
-            class="iconify text-brand-green"
-            data-icon="mdi:star"
-            data-width="16"
-          ></span>
-          <span
-            class="iconify text-brand-green"
-            data-icon="mdi:star"
-            data-width="16"
-          ></span>
-          <span
-            class="iconify text-brand-green"
-            data-icon="mdi:star"
-            data-width="16"
-          ></span>
-          <span
-            class="iconify text-brand-green"
-            data-icon="mdi:star"
-            data-width="16"
-          ></span>
-          <span
-            class="iconify text-brand-green"
-            data-icon="mdi:star"
-            data-width="16"
-          ></span>
-        </div>
-        <p class="text-sm text-zinc-300 leading-relaxed mb-5">"Cowork completely transformed how I work. The
-          energy here is unmatched — I've doubled my client base since joining. The community alone is
-          worth the membership."</p>
-        <div class="flex items-center gap-3">
-          <img
-            src="https://picsum.photos/seed/person-sarah/80/80.jpg"
-            alt="Sarah Chen"
-            class="w-10 h-10 rounded-full object-cover border-2 border-brand-green/30"
-          >
-          <div>
-            <p class="text-sm font-bold">Sarah Chen</p>
-            <p class="text-xs text-zinc-500">Freelance Designer</p>
+    <div class="grid md:grid-cols-12 gap-10 items-center">
+      <div class="md:col-span-5 reveal">
+        <span class="text-xs font-bold uppercase tracking-[.2em] text-zinc-400 mb-3 block">Impact</span>
+        <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-black mb-10 leading-tight">
+          Transformative Statistics That Speak Volumes.
+        </h2>
+
+        <div class="grid grid-cols-2 gap-x-8 gap-y-12">
+          <div class="reveal">
+            <p class="stat-num text-5xl md:text-6xl font-bold text-black mb-2" data-target="240" data-suffix="%">0%</p>
+            <p class="text-sm font-medium text-zinc-500">Productivity Boost</p>
+          </div>
+          <div class="reveal" style="transition-delay:.1s">
+            <p class="stat-num text-5xl md:text-6xl font-bold text-black mb-2" data-target="99" data-suffix="%">0%</p>
+            <p class="text-sm font-medium text-zinc-500">Member Satisfaction</p>
+          </div>
+          <div class="reveal" style="transition-delay:.2s">
+            <p class="stat-num text-5xl md:text-6xl font-bold text-black mb-2" data-target="50" data-suffix="+">0+</p>
+            <p class="text-sm font-medium text-zinc-500">Locations Worldwide</p>
+          </div>
+          <div class="reveal" style="transition-delay:.3s">
+            <p class="stat-num text-5xl md:text-6xl font-bold text-black mb-2" data-target="100" data-suffix="%">0%</p>
+            <p class="text-sm font-medium text-zinc-500">Community Growth</p>
           </div>
         </div>
       </div>
-      <!-- Testimonial 2 - Orange -->
-      <div
-        class="reveal card-h rounded-xl border-l-4 border-l-orange-400 bg-brand-dark border-r border-t border-b border-white/5 p-6"
-        style="transition-delay:.1s"
-      >
-        <div class="flex items-center gap-1 mb-4">
-          <span
-            class="iconify text-orange-400"
-            data-icon="mdi:star"
-            data-width="16"
-          ></span>
-          <span
-            class="iconify text-orange-400"
-            data-icon="mdi:star"
-            data-width="16"
-          ></span>
-          <span
-            class="iconify text-orange-400"
-            data-icon="mdi:star"
-            data-width="16"
-          ></span>
-          <span
-            class="iconify text-orange-400"
-            data-icon="mdi:star"
-            data-width="16"
-          ></span>
-          <span
-            class="iconify text-orange-400"
-            data-icon="mdi:star"
-            data-width="16"
-          ></span>
-        </div>
-        <p class="text-sm text-zinc-300 leading-relaxed mb-5">"We moved our entire team of 15 here. The
-          flexible plans, meeting rooms, and high-speed infrastructure made it a no-brainer. Best decision
-          we've made this year."</p>
-        <div class="flex items-center gap-3">
-          <img
-            src="https://picsum.photos/seed/person-marcus/80/80.jpg"
-            alt="Marcus Rivera"
-            class="w-10 h-10 rounded-full object-cover border-2 border-orange-400/30"
-          >
-          <div>
-            <p class="text-sm font-bold">Marcus Rivera</p>
-            <p class="text-xs text-zinc-500">CEO, TechVault</p>
-          </div>
-        </div>
-      </div>
-      <!-- Testimonial 3 - Blue -->
-      <div
-        class="reveal card-h rounded-xl border-l-4 border-l-sky-400 bg-brand-dark border-r border-t border-b border-white/5 p-6"
-        style="transition-delay:.2s"
-      >
-        <div class="flex items-center gap-1 mb-4">
-          <span
-            class="iconify text-sky-400"
-            data-icon="mdi:star"
-            data-width="16"
-          ></span>
-          <span
-            class="iconify text-sky-400"
-            data-icon="mdi:star"
-            data-width="16"
-          ></span>
-          <span
-            class="iconify text-sky-400"
-            data-icon="mdi:star"
-            data-width="16"
-          ></span>
-          <span
-            class="iconify text-sky-400"
-            data-icon="mdi:star"
-            data-width="16"
-          ></span>
-          <span
-            class="iconify text-sky-400"
-            data-icon="mdi:star-half-full"
-            data-width="16"
-          ></span>
-        </div>
-        <p class="text-sm text-zinc-300 leading-relaxed mb-5">"As a remote worker, isolation was my biggest
-          challenge. Cowork gave me a professional environment and a network of like-minded people I now
-          call friends."</p>
-        <div class="flex items-center gap-3">
-          <img
-            src="https://picsum.photos/seed/person-emily/80/80.jpg"
-            alt="Emily Nakamura"
-            class="w-10 h-10 rounded-full object-cover border-2 border-sky-400/30"
-          >
-          <div>
-            <p class="text-sm font-bold">Emily Nakamura</p>
-            <p class="text-xs text-zinc-500">Remote Developer</p>
-          </div>
+
+      <div class="md:col-span-7 reveal">
+        <div class="rounded-[32px] overflow-hidden aspect-[4/3]">
+           <img src="https://picsum.photos/seed/cowork-stats-img/800/600.jpg" alt="Meeting room" class="w-full h-full object-cover">
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- FAQ SECTION -->
-<section class="py-14 md:py-20 border-t border-white/5 relative">
-  <div class="max-w-3xl mx-auto px-5">
-    <div class="reveal text-center mb-10">
-      <span class="text-[10px] font-bold uppercase tracking-[.25em] text-brand-green mb-2 block">FAQ</span>
-      <h2 class="text-3xl md:text-4xl font-bold tracking-tight">Frequently Asked Questions</h2>
+<section class="py-16 md:py-24 relative bg-white overflow-hidden">
+  <div class="max-w-7xl mx-auto px-5">
+    <div class="reveal text-center mb-16">
+      <span class="text-xs font-bold uppercase tracking-[.2em] text-zinc-400 mb-3 block">Community</span>
+      <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-black">Hear It from Our Clients</h2>
     </div>
-    <div class="space-y-3">
-      <div class="reveal faq-item bg-brand-dark border border-white/5 rounded-xl overflow-hidden">
-        <button class="faq-toggle w-full flex items-center justify-between p-5 text-left">
-          <span class="text-sm font-semibold pr-4">What types of memberships do you offer?</span>
-          <span
-            class="iconify faq-icon text-brand-green flex-shrink-0 transition-transform duration-300"
-            data-icon="mdi:plus"
-            data-width="20"
-          ></span>
-        </button>
-        <div class="faq-ans px-5">
-          <p class="text-sm text-zinc-400 leading-relaxed pb-5">We offer Hot Desk, Dedicated Desk, Private
-            Office, and Enterprise plans. Each can be customized with add-ons like meeting room credits,
-            mailing addresses, and event access.</p>
-        </div>
-      </div>
-      <div
-        class="reveal faq-item bg-brand-dark border border-white/5 rounded-xl overflow-hidden"
-        style="transition-delay:.05s"
-      >
-        <button class="faq-toggle w-full flex items-center justify-between p-5 text-left">
-          <span class="text-sm font-semibold pr-4">Can I scale my plan up or down?</span>
-          <span
-            class="iconify faq-icon text-brand-green flex-shrink-0 transition-transform duration-300"
-            data-icon="mdi:plus"
-            data-width="20"
-          ></span>
-        </button>
-        <div class="faq-ans px-5">
-          <p class="text-sm text-zinc-400 leading-relaxed pb-5">Absolutely. Our memberships are designed
-            to grow with you. Upgrade or downgrade with just 30 days' notice — no penalties, no hassle.
+
+    <div class="flex flex-col md:flex-row gap-6 justify-center items-start">
+
+      <div class="w-full md:w-1/3 flex flex-col gap-6 md:mt-12">
+        <div class="reveal rounded-3xl bg-[#E2F89C] p-8">
+          <div class="flex justify-center mb-4">
+            <img src="https://picsum.photos/seed/face1/64/64.jpg" class="w-12 h-12 rounded-full border-2 border-white object-cover" alt="User">
+          </div>
+          <p class="text-sm md:text-base text-black font-medium leading-relaxed text-center mb-6">
+            "Cowork completely transformed how I work. The energy here is unmatched — I've doubled my client base since joining."
           </p>
+          <div class="text-center">
+            <p class="text-sm font-bold text-black">Sarah Chen</p>
+            <p class="text-xs text-black/60 mt-1">Freelance Designer</p>
+          </div>
+        </div>
+        <div class="reveal rounded-3xl bg-[#FBCBE3] p-8 hidden md:block">
+          <div class="flex justify-center mb-4">
+            <img src="https://picsum.photos/seed/face4/64/64.jpg" class="w-12 h-12 rounded-full border-2 border-white object-cover" alt="User">
+          </div>
+          <p class="text-sm md:text-base text-black font-medium leading-relaxed text-center mb-6">
+            "The community events are fantastic. I've found both friends and business partners here."
+          </p>
+          <div class="text-center">
+            <p class="text-sm font-bold text-black">Elena Rodriguez</p>
+            <p class="text-xs text-black/60 mt-1">Marketing Consultant</p>
+          </div>
         </div>
       </div>
-      <div
-        class="reveal faq-item bg-brand-dark border border-white/5 rounded-xl overflow-hidden"
-        style="transition-delay:.1s"
-      >
-        <button class="faq-toggle w-full flex items-center justify-between p-5 text-left">
-          <span class="text-sm font-semibold pr-4">Is there a minimum commitment?</span>
-          <span
-            class="iconify faq-icon text-brand-green flex-shrink-0 transition-transform duration-300"
-            data-icon="mdi:plus"
-            data-width="20"
-          ></span>
-        </button>
-        <div class="faq-ans px-5">
-          <p class="text-sm text-zinc-400 leading-relaxed pb-5">Hot Desks are available on daily or
-            monthly rolling plans. Dedicated Desks and Private Offices require a minimum 3-month
-            commitment, with discounts for longer terms.</p>
+
+      <div class="w-full md:w-1/3 flex flex-col gap-6">
+        <div class="reveal rounded-3xl bg-[#F4F4F4] p-8">
+          <div class="flex justify-center mb-4">
+            <img src="https://picsum.photos/seed/face2/64/64.jpg" class="w-12 h-12 rounded-full border-2 border-white object-cover" alt="User">
+          </div>
+          <p class="text-sm md:text-base text-black font-medium leading-relaxed text-center mb-6">
+            "We moved our entire team of 15 here. The flexible plans and meeting rooms made it a no-brainer. Best decision we've made this year."
+          </p>
+          <div class="text-center">
+            <p class="text-sm font-bold text-black">Marcus Rivera</p>
+            <p class="text-xs text-black/60 mt-1">CEO, TechVault</p>
+          </div>
+        </div>
+        <div class="reveal rounded-3xl bg-[#FDD5AB] p-8">
+          <div class="flex justify-center mb-4">
+            <img src="https://picsum.photos/seed/face5/64/64.jpg" class="w-12 h-12 rounded-full border-2 border-white object-cover" alt="User">
+          </div>
+          <p class="text-sm md:text-base text-black font-medium leading-relaxed text-center mb-6">
+            "Beautiful spaces, blazing fast internet, and unlimited coffee. What more could a startup ask for?"
+          </p>
+          <div class="text-center">
+            <p class="text-sm font-bold text-black">David Kim</p>
+            <p class="text-xs text-black/60 mt-1">Software Engineer</p>
+          </div>
         </div>
       </div>
-      <div
-        class="reveal faq-item bg-brand-dark border border-white/5 rounded-xl overflow-hidden"
-        style="transition-delay:.15s"
-      >
-        <button class="faq-toggle w-full flex items-center justify-between p-5 text-left">
-          <span class="text-sm font-semibold pr-4">What amenities are included?</span>
-          <span
-            class="iconify faq-icon text-brand-green flex-shrink-0 transition-transform duration-300"
-            data-icon="mdi:plus"
-            data-width="20"
-          ></span>
-        </button>
-        <div class="faq-ans px-5">
-          <p class="text-sm text-zinc-400 leading-relaxed pb-5">All plans include high-speed WiFi, coffee
-            & tea, printing, access to communal areas, and community events. Private offices also
-            include 24/7 access and meeting room credits.</p>
+
+      <div class="w-full md:w-1/3 flex flex-col gap-6 md:mt-16">
+        <div class="reveal rounded-3xl bg-[#BDE8F4] p-8">
+          <div class="flex justify-center mb-4">
+            <img src="https://picsum.photos/seed/face3/64/64.jpg" class="w-12 h-12 rounded-full border-2 border-white object-cover" alt="User">
+          </div>
+          <p class="text-sm md:text-base text-black font-medium leading-relaxed text-center mb-6">
+            "As a remote worker, isolation was my biggest challenge. Cowork gave me a professional environment and a network."
+          </p>
+          <div class="text-center">
+            <p class="text-sm font-bold text-black">Emily Nakamura</p>
+            <p class="text-xs text-black/60 mt-1">Remote Developer</p>
+          </div>
         </div>
       </div>
-      <div
-        class="reveal faq-item bg-brand-dark border border-white/5 rounded-xl overflow-hidden"
-        style="transition-delay:.2s"
-      >
-        <button class="faq-toggle w-full flex items-center justify-between p-5 text-left">
-          <span class="text-sm font-semibold pr-4">Do you offer day passes?</span>
-          <span
-            class="iconify faq-icon text-brand-green flex-shrink-0 transition-transform duration-300"
-            data-icon="mdi:plus"
-            data-width="20"
-          ></span>
-        </button>
-        <div class="faq-ans px-5">
-          <p class="text-sm text-zinc-400 leading-relaxed pb-5">Yes! Our Day Pass gives you full access to
-            hot desks, WiFi, communal areas, and coffee for a single day — perfect for travelers or
-            anyone wanting to try before committing.</p>
-        </div>
-      </div>
+
     </div>
   </div>
 </section>
 
-<!-- CTA SECTION -->
-<section
-  id="book"
-  class="py-14 md:py-20 relative overflow-hidden"
->
-  <div class="absolute inset-0 bg-gradient-to-br from-brand-green/10 via-brand-dark to-brand-green/5"></div>
-  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand-green/10 rounded-full blur-[120px]">
+<section class="py-16 md:py-24 relative bg-white border-t border-zinc-100">
+  <div class="max-w-7xl mx-auto px-5">
+    <div class="grid md:grid-cols-2 gap-12 md:gap-20">
+
+      <div class="reveal">
+        <span class="text-xs font-bold uppercase tracking-[.2em] text-zinc-400 mb-3 block">Questions & Answers</span>
+        <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-black mb-6 leading-tight">
+          Your Roadmap to Coworking Clarity
+        </h2>
+        <p class="text-zinc-500 text-sm leading-relaxed max-w-sm">
+          Everything you need to know about memberships, amenities, and how we can support your best work.
+        </p>
+      </div>
+
+      <div class="space-y-2">
+        <div class="reveal faq-item border-b border-zinc-200 overflow-hidden">
+          <button class="faq-toggle w-full flex items-center justify-between py-5 text-left group">
+            <span class="text-lg font-medium text-black group-hover:text-zinc-600 transition-colors">What types of memberships do you offer?</span>
+            <span class="iconify faq-icon text-black flex-shrink-0 transition-transform duration-300" data-icon="mdi:chevron-down" data-width="24"></span>
+          </button>
+          <div class="faq-ans hidden pb-5">
+            <p class="text-sm text-zinc-500 leading-relaxed max-w-lg">We offer Hot Desk, Dedicated Desk, Private Office, and Enterprise plans. Each can be customized with add-ons like meeting room credits, mailing addresses, and event access.</p>
+          </div>
+        </div>
+
+        <div class="reveal faq-item border-b border-zinc-200 overflow-hidden" style="transition-delay:.05s">
+          <button class="faq-toggle w-full flex items-center justify-between py-5 text-left group">
+            <span class="text-lg font-medium text-black group-hover:text-zinc-600 transition-colors">Can I scale my plan up or down?</span>
+            <span class="iconify faq-icon text-black flex-shrink-0 transition-transform duration-300" data-icon="mdi:chevron-down" data-width="24"></span>
+          </button>
+          <div class="faq-ans hidden pb-5">
+            <p class="text-sm text-zinc-500 leading-relaxed max-w-lg">Absolutely. Our memberships are designed to grow with you. Upgrade or downgrade with just 30 days' notice — no penalties, no hassle.</p>
+          </div>
+        </div>
+
+        <div class="reveal faq-item border-b border-zinc-200 overflow-hidden" style="transition-delay:.1s">
+          <button class="faq-toggle w-full flex items-center justify-between py-5 text-left group">
+            <span class="text-lg font-medium text-black group-hover:text-zinc-600 transition-colors">Is there a minimum commitment?</span>
+            <span class="iconify faq-icon text-black flex-shrink-0 transition-transform duration-300" data-icon="mdi:chevron-down" data-width="24"></span>
+          </button>
+          <div class="faq-ans hidden pb-5">
+            <p class="text-sm text-zinc-500 leading-relaxed max-w-lg">Hot Desks are available on daily or monthly rolling plans. Dedicated Desks and Private Offices require a minimum 3-month commitment.</p>
+          </div>
+        </div>
+
+        <div class="reveal faq-item border-b border-zinc-200 overflow-hidden" style="transition-delay:.15s">
+          <button class="faq-toggle w-full flex items-center justify-between py-5 text-left group">
+            <span class="text-lg font-medium text-black group-hover:text-zinc-600 transition-colors">What amenities are included?</span>
+            <span class="iconify faq-icon text-black flex-shrink-0 transition-transform duration-300" data-icon="mdi:chevron-down" data-width="24"></span>
+          </button>
+          <div class="faq-ans hidden pb-5">
+            <p class="text-sm text-zinc-500 leading-relaxed max-w-lg">All plans include high-speed WiFi, coffee & tea, printing, access to communal areas, and community events.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
-  <div class="relative max-w-4xl mx-auto px-5 text-center">
+</section>
+
+<section id="book" class="py-20 md:py-32 relative bg-white">
+  <div class="relative max-w-5xl mx-auto px-5 text-center">
     <div class="reveal">
-      <span class="text-[10px] font-bold uppercase tracking-[.25em] text-brand-green mb-3 block">Get
-        Started</span>
-      <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 leading-[0.95]">
-        Seize The Moment –<br><span class="text-grad">Join Cowork Today!</span>
-      </h2>
-      <p class="text-sm md:text-base text-zinc-400 max-w-lg mx-auto mb-8">Your future workspace is waiting.
-        Book a spot in minutes and become part of a community that's redefining how professionals work.</p>
-      <div class="flex flex-wrap justify-center gap-3">
-        <a
-          href="#"
-          class="inline-flex items-center gap-2 text-sm font-bold px-8 py-4 rounded-full bg-brand-green text-black hover:brightness-110 transition-all duration-300 glow-green green-glow-hover"
-        >
-          Book a Spot
-          <span
-            class="iconify"
-            data-icon="mdi:arrow-right"
-            data-width="18"
-          ></span>
-        </a>
-        <a
-          href="#"
-          class="inline-flex items-center gap-2 text-sm font-semibold px-8 py-4 rounded-full border border-white/15 text-white hover:border-white/40 hover:bg-white/5 transition-all duration-300"
-        >
-          <span
-            class="iconify"
-            data-icon="mdi:phone-outline"
-            data-width="18"
-          ></span>
-          Contact Sales
-        </a>
+      <div class="flex flex-wrap justify-center items-center gap-3 mb-6">
+        <h2 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-black">Seize</h2>
+        <div class="w-[120px] h-[40px] md:w-[160px] md:h-[60px] rounded-full overflow-hidden inline-block align-middle">
+          <img src="https://picsum.photos/seed/pill-3/320/120.jpg" alt="" class="w-full h-full object-cover">
+        </div>
+        <h2 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-black">The Moment –</h2>
       </div>
-      <p class="text-xs text-zinc-600 mt-5">No credit card required · Free tour available · Cancel anytime</p>
+      <h2 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-black mb-8">Join Cowork Today!</h2>
+
+      <p class="text-sm md:text-base text-zinc-500 max-w-lg mx-auto mb-10">
+        Your future workspace is waiting. Book a spot in minutes and become part of a community that's redefining how professionals work.
+      </p>
+
+      <a href="#" class="inline-flex items-center justify-center gap-2 text-sm font-semibold px-10 py-4 rounded-full bg-black text-white hover:bg-zinc-800 transition-all duration-300 shadow-xl shadow-black/10">
+        Book a Tour
+      </a>
     </div>
   </div>
 </section>
 
-<!-- BLOG / INSIGHTS -->
-<section
-  id="blog"
-  class="py-14 md:py-20 border-t border-white/5"
->
+<section id="blog" class="py-16 md:py-24 bg-[#FAFAFA]">
   <div class="max-w-7xl mx-auto px-5">
-    <div class="reveal flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-10">
-      <div>
-        <span class="text-[10px] font-bold uppercase tracking-[.25em] text-brand-green mb-2 block">Insights</span>
-        <h2 class="text-3xl md:text-4xl font-bold tracking-tight">Insights & Resources</h2>
+    <div class="reveal text-center mb-16">
+      <span class="text-xs font-bold uppercase tracking-[.2em] text-zinc-400 mb-3 block">Our Blog</span>
+      <div class="flex flex-wrap justify-center items-center gap-3">
+        <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-black">Insights, Innovation, and</h2>
+        <div class="w-[100px] h-[36px] md:w-[130px] md:h-[46px] rounded-full overflow-hidden inline-block align-middle">
+           <img src="https://picsum.photos/seed/pill-4/260/92.jpg" alt="" class="w-full h-full object-cover">
+        </div>
       </div>
-      <a
-        href="#"
-        class="text-sm text-brand-green hover:underline flex items-center gap-1"
-      >View All Articles <span
-          class="iconify"
-          data-icon="mdi:arrow-right"
-          data-width="16"
-        ></span></a>
+      <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-black mt-2">Inspiration</h2>
     </div>
-    <div class="grid md:grid-cols-3 gap-4">
-      <!-- Article 1 -->
-      <article
-        class="reveal card-h group bg-brand-dark border border-white/5 rounded-xl overflow-hidden cursor-pointer">
-        <div class="img-hover overflow-hidden">
-          <img
-            src="https://picsum.photos/seed/blog-future-cowork/600/340.jpg"
-            alt="Future of coworking"
-            class="w-full aspect-video object-cover"
-          >
+
+    <div class="grid md:grid-cols-3 gap-8">
+      <article class="reveal group cursor-pointer">
+        <div class="rounded-3xl overflow-hidden mb-6 aspect-[4/3]">
+          <img src="https://picsum.photos/seed/blog-1/600/450.jpg" alt="Future of coworking" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
         </div>
-        <div class="p-5">
-          <div class="flex items-center gap-3 mb-3">
-            <span class="text-[10px] font-bold uppercase tracking-widest text-brand-green">Trends</span>
-            <span class="text-[10px] text-zinc-600">Dec 15, 2024</span>
-          </div>
-          <h3
-            class="text-base font-bold tracking-tight mb-2 group-hover:text-brand-green transition-colors duration-300 leading-snug"
-          >
-            Navigating the Future: Trends in Modern Coworking Spaces</h3>
-          <p class="text-xs text-zinc-500 leading-relaxed line-clamp-2">Explore how AI integration,
-            sustainability, and hybrid work models are reshaping the coworking landscape in 2025 and
-            beyond.</p>
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-zinc-400 block mb-3">Dec 15, 2024</span>
+          <h3 class="text-xl font-bold tracking-tight text-black mb-3 group-hover:text-zinc-600 transition-colors duration-300">
+            Navigating the Future: Trends in Modern Coworking Spaces
+          </h3>
+          <p class="text-sm text-zinc-500 leading-relaxed mb-4">Explore how AI integration, sustainability, and hybrid work models are reshaping the coworking landscape.</p>
+          <span class="text-sm font-semibold text-black flex items-center gap-1 group-hover:gap-2 transition-all">Read Article <span class="iconify" data-icon="mdi:arrow-right" data-width="16"></span></span>
         </div>
       </article>
-      <!-- Article 2 -->
-      <article
-        class="reveal card-h group bg-brand-dark border border-white/5 rounded-xl overflow-hidden cursor-pointer"
-        style="transition-delay:.1s"
-      >
-        <div class="img-hover overflow-hidden">
-          <img
-            src="https://picsum.photos/seed/blog-productivity-tips/600/340.jpg"
-            alt="Productivity tips"
-            class="w-full aspect-video object-cover"
-          >
+
+      <article class="reveal group cursor-pointer" style="transition-delay:.1s">
+        <div class="rounded-3xl overflow-hidden mb-6 aspect-[4/3]">
+          <img src="https://picsum.photos/seed/blog-2/600/450.jpg" alt="Productivity" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
         </div>
-        <div class="p-5">
-          <div class="flex items-center gap-3 mb-3">
-            <span class="text-[10px] font-bold uppercase tracking-widest text-orange-400">Productivity</span>
-            <span class="text-[10px] text-zinc-600">Dec 10, 2024</span>
-          </div>
-          <h3
-            class="text-base font-bold tracking-tight mb-2 group-hover:text-brand-green transition-colors duration-300 leading-snug"
-          >
-            10 Proven Strategies to Maximize Your Productivity in Shared Spaces</h3>
-          <p class="text-xs text-zinc-500 leading-relaxed line-clamp-2">From noise management to
-            time-blocking techniques, master the art of deep work in open-plan coworking environments.
-          </p>
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-zinc-400 block mb-3">Dec 10, 2024</span>
+          <h3 class="text-xl font-bold tracking-tight text-black mb-3 group-hover:text-zinc-600 transition-colors duration-300">
+            Maximizing Productivity & Focus in Shared Spaces
+          </h3>
+          <p class="text-sm text-zinc-500 leading-relaxed mb-4">From noise management to time-blocking techniques, master the art of deep work in open environments.</p>
+          <span class="text-sm font-semibold text-black flex items-center gap-1 group-hover:gap-2 transition-all">Read Article <span class="iconify" data-icon="mdi:arrow-right" data-width="16"></span></span>
         </div>
       </article>
-      <!-- Article 3 -->
-      <article
-        class="reveal card-h group bg-brand-dark border border-white/5 rounded-xl overflow-hidden cursor-pointer"
-        style="transition-delay:.2s"
-      >
-        <div class="img-hover overflow-hidden">
-          <img
-            src="https://picsum.photos/seed/blog-community-build/600/340.jpg"
-            alt="Building community"
-            class="w-full aspect-video object-cover"
-          >
+
+      <article class="reveal group cursor-pointer" style="transition-delay:.2s">
+        <div class="rounded-3xl overflow-hidden mb-6 aspect-[4/3]">
+          <img src="https://picsum.photos/seed/blog-3/600/450.jpg" alt="Community" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
         </div>
-        <div class="p-5">
-          <div class="flex items-center gap-3 mb-3">
-            <span class="text-[10px] font-bold uppercase tracking-widest text-sky-400">Community</span>
-            <span class="text-[10px] text-zinc-600">Dec 5, 2024</span>
-          </div>
-          <h3
-            class="text-base font-bold tracking-tight mb-2 group-hover:text-brand-green transition-colors duration-300 leading-snug"
-          >
-            Building Meaningful Professional Connections in Coworking Spaces</h3>
-          <p class="text-xs text-zinc-500 leading-relaxed line-clamp-2">How intentional community design
-            transforms strangers into collaborators, mentors, and long-term professional allies.</p>
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-zinc-400 block mb-3">Dec 5, 2024</span>
+          <h3 class="text-xl font-bold tracking-tight text-black mb-3 group-hover:text-zinc-600 transition-colors duration-300">
+            Building Meaningful Connections in Coworking
+          </h3>
+          <p class="text-sm text-zinc-500 leading-relaxed mb-4">How intentional community design transforms strangers into collaborators, mentors, and allies.</p>
+          <span class="text-sm font-semibold text-black flex items-center gap-1 group-hover:gap-2 transition-all">Read Article <span class="iconify" data-icon="mdi:arrow-right" data-width="16"></span></span>
         </div>
       </article>
+    </div>
+
+    <div class="mt-16 text-center">
+      <a href="#" class="inline-flex items-center justify-center px-8 py-3 rounded-full border border-zinc-200 text-sm font-semibold text-black hover:bg-zinc-50 transition-colors">
+        View All Posts
+      </a>
     </div>
   </div>
 </section>
 <app-footer></app-footer>
-
-  <script>
-        // Scroll Reveal
-        const revealElements = document.querySelectorAll('.reveal');
-        const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    revealObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-        revealElements.forEach(el => revealObserver.observe(el));
-
-        // Stat Counter
-        const statElements = document.querySelectorAll('.stat-num');
-        let statsCounted = false;
-        const statObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting && !statsCounted) {
-                    statsCounted = true;
-                    statElements.forEach(el => {
-                        const target = parseInt(el.dataset.target);
-                        const suffix = el.dataset.suffix || '';
-                        const duration = 2000;
-                        const step = target / (duration / 16);
-                        let current = 0;
-                        const timer = setInterval(() => {
-                            current += step;
-                            if (current >= target) {
-                                current = target;
-                                clearInterval(timer);
-                            }
-                            el.textContent = Math.floor(current) + suffix;
-                        }, 16);
-                    });
-                }
-            });
-        }, { threshold: 0.3 });
-        statElements.forEach(el => statObserver.observe(el));
-
-        // FAQ Accordion
-        document.querySelectorAll('.faq-toggle').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const item = btn.parentElement;
-                const answer = item.querySelector('.faq-ans');
-                const icon = btn.querySelector('.faq-icon');
-                const isOpen = answer.classList.contains('open');
-
-                // Close all
-                document.querySelectorAll('.faq-ans').forEach(a => a.classList.remove('open'));
-                document.querySelectorAll('.faq-icon').forEach(i => {
-                    i.setAttribute('data-icon', 'mdi:plus');
-                    i.style.transform = 'rotate(0deg)';
-                });
-
-                // Open clicked if it was closed
-                if (!isOpen) {
-                    answer.classList.add('open');
-                    icon.setAttribute('data-icon', 'mdi:minus');
-                    icon.style.transform = 'rotate(180deg)';
-                }
-            });
-        });
-
-        // Newsletter subscribe feedback
-        document.querySelector('footer button').addEventListener('click', function () {
-            const input = this.previousElementSibling;
-            if (input.value && input.value.includes('@')) {
-                const original = this.textContent;
-                this.textContent = 'Subscribed!';
-                this.classList.remove('bg-brand-green');
-                this.classList.add('bg-emerald-600');
-                input.value = '';
-                setTimeout(() => {
-                    this.textContent = original;
-                    this.classList.remove('bg-emerald-600');
-                    this.classList.add('bg-brand-green');
-                }, 2500);
-            } else {
-                input.style.borderColor = 'rgba(239,68,68,0.5)';
-                input.placeholder = 'Enter a valid email';
-                setTimeout(() => {
-                    input.style.borderColor = '';
-                    input.placeholder = 'your@email.com';
-                }, 2000);
-            }
-        });
-
-        // Nav background on scroll
-        const nav = document.querySelector('nav');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                nav.classList.add('border-white/10');
-                nav.classList.remove('border-white/5');
-                nav.style.backgroundColor = 'rgba(0,0,0,0.8)';
-            } else {
-                nav.classList.remove('border-white/10');
-                nav.classList.add('border-white/5');
-                nav.style.backgroundColor = 'rgba(0,0,0,0.6)';
-            }
-        });
-    </script>

@@ -1,110 +1,48 @@
-<!-- NAVIGATION -->
-<nav class="fixed top-0 left-0 right-0 z-50 bg-white  border-b border-white/5">
-    <div class="max-w-7xl mx-auto px-5 h-16 flex items-center justify-between">
-        <a
-            href="#"
-            class="flex items-center"
-        >
-            <img
-                src="images/Logo.svg"
-                alt="Cowork"
-                class="h-6 w-auto"
-            />
+<nav class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-zinc-100">
+    <div class="max-w-7xl mx-auto px-5 h-20 flex items-center justify-between">
+        <a href="#" class="flex items-center">
+            <span class="text-2xl font-bold tracking-tight text-black">Cowork</span>
         </a>
-        <div class="gap-12 flex flex-row">
-            <div class="hidden md:flex items-center gap-8">
-                <a
-                    href="#about"
-                    class="text-sm text-[#1D1E1C] hover:text-white transition-colors duration-300"
-                >About</a>
-                <a
-                    href="#pricing"
-                    class="text-sm text-[#1D1E1C] hover:text-white transition-colors duration-300"
-                >Pricing</a>
-                <a
-                    href="#spaces"
-                    class="text-sm text-[#1D1E1C] hover:text-white transition-colors duration-300"
-                >Spaces</a>
-                <a
-                    href="#blog"
-                    class="text-sm text-[#1D1E1C] hover:text-white transition-colors duration-300"
-                >Blog</a>
-                <a
-                    href="#events"
-                    class="text-sm text-[#1D1E1C] hover:text-white transition-colors duration-300"
-                >Events</a>
-            </div>
-            <div class="hidden md:flex items-center gap-6">
-                <a
-                    href="#"
-                    class="text-sm font-medium px-6 py-3 rounded-full border border-black text-[#1D1E1C] hover:border-white/40 transition-all duration-300"
-                >Log In</a>
-                <a
-                    href="#"
-                    class="text-sm font-medium px-6 py-3 rounded-full bg-black text-white hover:brightness-110 transition-all duration-300"
-                >Sign Up</a>
 
+        <div class="hidden md:flex items-center gap-10">
+            <div class="flex items-center gap-8">
+                <a href="#about" class="text-sm font-medium text-zinc-600 hover:text-black transition-colors">About</a>
+                <a href="#pricing" class="text-sm font-medium text-zinc-600 hover:text-black transition-colors">Pricing</a>
+                <a href="#blog" class="text-sm font-medium text-zinc-600 hover:text-black transition-colors">Blog</a>
+                <a href="#events" class="text-sm font-medium text-zinc-600 hover:text-black transition-colors">Events</a>
+            </div>
+
+            <div class="h-6 w-px bg-zinc-200 mx-2"></div> <div class="flex items-center gap-3">
+                <a href="#" class="text-sm font-bold px-7 py-3 rounded-full border border-zinc-200 text-black hover:bg-zinc-50 transition-all">
+                    Log In
+                </a>
+                <a href="#" class="text-sm font-bold px-7 py-3 rounded-full bg-black text-white hover:bg-zinc-800 transition-all">
+                    Sign Up
+                </a>
             </div>
         </div>
 
-        <button
-            id="menuBtn"
-            class="md:hidden text-black p-1"
-        >
-            <span
-                class="iconify"
-                data-icon="mdi:menu"
-                data-width="26"
-            ></span>
+        <button id="menuBtn" class="md:hidden text-black p-1">
+            <span class="iconify" data-icon="lucide:menu" data-width="24"></span>
         </button>
     </div>
 </nav>
 
-<!-- MOBILE MENU -->
-<div
-    id="mobileMenu"
-    class="mobile-menu fixed inset-0 z-[60] bg-white flex flex-col"
->
-    <div class="flex items-center justify-between px-5 h-16">
-        <span class="text-xl font-bold tracking-tight">Cowork</span>
-        <button
-            id="menuClose"
-            class="text-white p-1"
-        >
-            <span
-                class="iconify"
-                data-icon="mdi:close"
-                data-width="26"
-            ></span>
+<div id="mobileMenu" class="fixed inset-0 z-[60] bg-white translate-x-full transition-transform duration-300 md:hidden flex flex-col">
+    <div class="flex items-center justify-between px-5 h-20 border-b border-zinc-100">
+        <span class="text-xl font-bold">Cowork</span>
+        <button id="menuClose" class="text-black p-1">
+            <span class="iconify" data-icon="lucide:x" data-width="24"></span>
         </button>
     </div>
-    <div class="flex-1 flex flex-col justify-center px-8 gap-6">
-        <a
-            href="#about"
-            class="text-3xl font-semibold text-[#1D1E1C] hover:text-brand-green transition-colors menu-link"
-        >About</a>
-        <a
-            href="#pricing"
-            class="text-3xl font-semibold text-[#1D1E1C] hover:text-brand-green transition-colors menu-link"
-        >Pricing</a>
-        <a
-            href="#blog"
-            class="text-3xl font-semibold text-[#1D1E1C]  hover:text-brand-green transition-colors menu-link"
-        >Blog</a>
-        <a
-            href="#events"
-            class="text-3xl font-semibold text-[#1D1E1C] hover:text-brand-green transition-colors menu-link"
-        >Events</a>
+    <div class="flex-1 flex flex-col justify-center px-8 gap-8">
+        <a href="#about" class="text-4xl font-bold text-black hover:text-zinc-500 transition-colors">About</a>
+        <a href="#pricing" class="text-4xl font-bold text-black hover:text-zinc-500 transition-colors">Pricing</a>
+        <a href="#blog" class="text-4xl font-bold text-black hover:text-zinc-500 transition-colors">Blog</a>
+        <a href="#events" class="text-4xl font-bold text-black hover:text-zinc-500 transition-colors">Events</a>
     </div>
-    <div class="flex items-center gap-3 px-5 pb-8">
-         <a
-            href="#"
-            class="flex-1 text-center text-sm font-semibold py-3 rounded-full border border-black text-black"
-        >Log In</a>
-        <a
-            href="#"
-            class="flex-1 text-center text-sm font-semibold py-3 rounded-full bg-black text-white"
-        >Sign Up</a>
-
+    <div class="p-8 flex flex-col gap-4">
+        <a href="#" class="w-full text-center font-bold py-4 rounded-full border border-black text-black">Log In</a>
+        <a href="#" class="w-full text-center font-bold py-4 rounded-full bg-black text-white">Sign Up</a>
     </div>
 </div>
