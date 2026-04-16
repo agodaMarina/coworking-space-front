@@ -72,23 +72,6 @@ export class HomePageComponent implements OnInit, AfterViewInit {
     this.setupNewsletterSubscribe();
   }
 
-  // Gestion du Header au scroll (Remplace l'ancien addEventListener)
-  @HostListener('window:scroll', [])
-  onWindowScroll() {
-    const nav = document.querySelector('nav');
-    if (nav) {
-      if (window.scrollY > 50) {
-        nav.classList.add('border-white/10');
-        nav.classList.remove('border-white/5');
-        nav.style.backgroundColor = 'rgba(0,0,0,0.8)';
-      } else {
-        nav.classList.remove('border-white/10');
-        nav.classList.add('border-white/5');
-        nav.style.backgroundColor = 'rgba(0,0,0,0.6)';
-      }
-    }
-  }
-
   // Gestion de l'ouverture/fermeture des FAQ (Remplace l'ancien addEventListener)
   toggleFaq(index: number): void {
     this.faqs.forEach((faq, i) => {

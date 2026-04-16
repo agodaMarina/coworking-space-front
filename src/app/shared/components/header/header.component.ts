@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 
 @Component({
@@ -10,36 +10,20 @@ import { AuthService } from '../../../core/auth.service';
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
+  // Variable d'état pour le menu mobile
+  isMobileMenuOpen = false;
+
   constructor(private authService: AuthService, private router: Router) {}
 
-  ngOnInit() {
-    this.setupMobileMenu();
+  // Méthode pour ouvrir/fermer le menu
+  toggleMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
 
-  setupMobileMenu() {
-    setTimeout(() => {
-      const menuBtn = document.getElementById('menuBtn');
-      const menuClose = document.getElementById('menuClose');
-      const mobileMenu = document.getElementById('mobileMenu');
-      const menuLinks = document.querySelectorAll('.menu-link');
-
-      if (menuBtn && menuClose && mobileMenu) {
-        menuBtn.addEventListener('click', () => {
-          mobileMenu.classList.add('open');
-        });
-
-        menuClose.addEventListener('click', () => {
-          mobileMenu.classList.remove('open');
-        });
-
-        menuLinks.forEach(link => {
-          link.addEventListener('click', () => {
-            mobileMenu.classList.remove('open');
-          });
-        });
-      }
-    }, 100);
+  // Méthode pour fermer le menu quand on clique sur un lien
+  closeMenu() {
+    this.isMobileMenuOpen = false;
   }
 
   logout(): void {
@@ -47,4 +31,3 @@ export class HeaderComponent implements OnInit {
     this.router.navigate(['/home']);
   }
 }
-
