@@ -1,0 +1,91 @@
+<div class="min-h-full bg-white">
+
+  <div class="px-8 pt-10 pb-8 border-b border-zinc-100">
+    <p class="text-xs font-medium text-zinc-400 mb-1">Admin</p>
+    <div class="flex items-end justify-between gap-4">
+      <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Spaces</h1>
+      <div class="flex items-center gap-2 mb-0.5">
+        <div class="relative">
+          <span class="iconify absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" data-icon="lucide:search" data-width="13"></span>
+          <input type="text" placeholder="Search…" [value]="search()" (input)="search.set($any($event.target).value)"
+            class="pl-8 pr-3 py-2 text-sm bg-white border border-zinc-200 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition-colors w-44">
+        </div>
+        <select [value]="filterType()" (change)="filterType.set($any($event.target).value || null)"
+          class="text-sm bg-white border border-zinc-200 rounded-lg px-3 py-2 text-zinc-600 focus:outline-none focus:border-zinc-400 transition-colors">
+          @for (opt of typeOptions; track opt.label) {
+            <option [value]="opt.value ?? ''">{{ opt.label }}</option>
+          }
+        </select>
+        <button class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition-colors">
+          <span class="iconify" data-icon="lucide:plus" data-width="13"></span>
+          Add space
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="px-8 py-8">
+
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-4 mb-8">
+      <div class="bg-[#AEE9F4] rounded-xl px-6 py-5">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Total spaces</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().total }}</p>
+      </div>
+      <div class="bg-[#CEF09D] rounded-xl px-6 py-5">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Available</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().available }}</p>
+      </div>
+      <div class="bg-[#FBCBE3] rounded-xl px-6 py-5">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Unavailable</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().unavailable }}</p>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="border border-zinc-100 rounded-xl overflow-hidden">
+      <div class="grid grid-cols-[1fr_130px_80px_90px_70px_90px] px-5 py-2.5 bg-zinc-50 border-b border-zinc-100">
+        <p class="text-[11px] font-medium text-zinc-400">Name</p>
+        <p class="text-[11px] font-medium text-zinc-400">Type</p>
+        <p class="text-[11px] font-medium text-zinc-400">Capacity</p>
+        <p class="text-[11px] font-medium text-zinc-400">Price / day</p>
+        <p class="text-[11px] font-medium text-zinc-400">Status</p>
+        <p class="text-[11px] font-medium text-zinc-400 text-right">Actions</p>
+      </div>
+
+      @if (filtered().length === 0) {
+        <div class="py-16 text-center">
+          <p class="text-sm text-zinc-400">No spaces match your search.</p>
+        </div>
+      }
+
+      @for (s of filtered(); track s.id; let last = $last) {
+        <div class="grid grid-cols-[1fr_130px_80px_90px_70px_90px] px-5 py-3.5 items-center hover:bg-zinc-50/50 transition-colors"
+          [class.border-b]="!last" [class.border-zinc-100]="!last">
+          <div class="min-w-0 pr-4">
+            <p class="text-sm font-medium text-zinc-900 truncate">{{ s.name }}</p>
+            <p class="text-xs text-zinc-400 truncate">{{ s.address }}</p>
+          </div>
+          <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit" [ngClass]="typeBadge(s.type)">
+            {{ s.typeDisplay }}
+          </span>
+          <p class="text-sm text-zinc-500">{{ s.capacity }} pax</p>
+          <p class="text-sm font-medium text-zinc-900">${{ s.pricePerDay }}</p>
+          <div class="flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" [ngClass]="s.available ? 'bg-emerald-400' : 'bg-zinc-300'"></span>
+            <span class="text-sm text-zinc-500">{{ s.available ? 'Open' : 'Closed' }}</span>
+          </div>
+          <div class="flex items-center justify-end gap-3">
+            <button class="text-xs text-zinc-400 hover:text-zinc-900 transition-colors font-medium">Edit</button>
+            <button (click)="toggleAvailability(s.id)"
+              class="text-xs font-medium transition-colors"
+              [ngClass]="s.available ? 'text-zinc-400 hover:text-red-500' : 'text-zinc-400 hover:text-emerald-600'">
+              {{ s.available ? 'Close' : 'Open' }}
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+  </div>
+</div>

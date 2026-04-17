@@ -1,0 +1,62 @@
+<div class="min-h-full bg-white">
+
+  <div class="px-8 pt-10 pb-0 border-b border-zinc-100">
+    <p class="text-xs font-medium text-zinc-400 mb-1">Admin</p>
+    <div class="flex items-end justify-between gap-4 mb-6">
+      <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Reservations</h1>
+      <div class="flex items-center gap-3 mb-0.5 text-sm text-zinc-400">
+        <span class="bg-[#CEF09D] text-zinc-800 px-2 py-0.5 rounded text-[11px] font-medium">{{ stats().confirmed }} confirmed</span>
+        <span class="bg-[#FDD5AB] text-zinc-800 px-2 py-0.5 rounded text-[11px] font-medium">{{ stats().pending }} pending</span>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex gap-0">
+      @for (f of filters; track f.key) {
+        <button
+          (click)="activeFilter.set(f.key)"
+          class="relative px-4 py-2.5 text-sm font-medium transition-colors border-b-2"
+          [ngClass]="activeFilter() === f.key
+            ? 'text-zinc-900 border-zinc-900'
+            : 'text-zinc-400 border-transparent hover:text-zinc-600'">
+          {{ f.label }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="px-8 py-6">
+
+    @if (filtered().length === 0) {
+      <div class="border border-zinc-100 rounded-xl py-20 text-center">
+        <p class="text-sm text-zinc-400">No reservations in this category.</p>
+      </div>
+    } @else {
+      <div class="border border-zinc-100 rounded-xl overflow-hidden">
+        <div class="grid grid-cols-[1fr_150px_130px_80px_90px_70px] px-5 py-2.5 bg-zinc-50 border-b border-zinc-100">
+          <p class="text-[11px] font-medium text-zinc-400">User</p>
+          <p class="text-[11px] font-medium text-zinc-400">Space</p>
+          <p class="text-[11px] font-medium text-zinc-400">Dates</p>
+          <p class="text-[11px] font-medium text-zinc-400">Billing</p>
+          <p class="text-[11px] font-medium text-zinc-400">Status</p>
+          <p class="text-[11px] font-medium text-zinc-400 text-right">Amount</p>
+        </div>
+
+        @for (r of filtered(); track r.id; let last = $last) {
+          <div class="grid grid-cols-[1fr_150px_130px_80px_90px_70px] px-5 py-3.5 items-center hover:bg-zinc-50/50 transition-colors"
+            [class.border-b]="!last" [class.border-zinc-100]="!last">
+            <p class="text-sm font-medium text-zinc-900 truncate pr-4">{{ r.user }}</p>
+            <p class="text-sm text-zinc-400 truncate">{{ r.space }}</p>
+            <p class="text-sm text-zinc-400">{{ r.start | date:'MMM d' }} – {{ r.end | date:'MMM d' }}</p>
+            <p class="text-sm text-zinc-400">{{ r.billing }}</p>
+            <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit" [ngClass]="statusBadge(r.status)">
+              {{ r.status }}
+            </span>
+            <p class="text-sm font-semibold text-zinc-900 text-right">{{ r.amount | currency:'USD':'symbol':'1.0-0' }}</p>
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</div>

@@ -1,0 +1,73 @@
+<div class="min-h-full bg-white">
+
+  <div class="px-8 pt-10 pb-8 border-b border-zinc-100">
+    <p class="text-xs font-medium text-zinc-400 mb-1">Admin</p>
+    <div class="flex items-end justify-between gap-4">
+      <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Equipment</h1>
+      <button class="mb-0.5 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition-colors">
+        <span class="iconify" data-icon="lucide:plus" data-width="14"></span>
+        Add equipment
+      </button>
+    </div>
+  </div>
+
+  <div class="px-8 py-8">
+
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-4 mb-8">
+      <div class="bg-[#AEE9F4] rounded-xl px-6 py-5">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Total items</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().total }}</p>
+      </div>
+      <div class="bg-[#CEF09D] rounded-xl px-6 py-5">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Good condition</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().good }}</p>
+      </div>
+      <div class="bg-[#FBCBE3] rounded-xl px-6 py-5">
+        <p class="text-xs text-zinc-600 font-medium mb-3">In maintenance</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().maintenance }}</p>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="relative mb-4 w-64">
+      <span class="iconify absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" data-icon="lucide:search" data-width="13"></span>
+      <input type="text" placeholder="Search equipment…" [value]="search()" (input)="search.set($any($event.target).value)"
+        class="w-full pl-8 pr-3 py-2 text-sm bg-white border border-zinc-200 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition-colors">
+    </div>
+
+    <!-- Table -->
+    <div class="border border-zinc-100 rounded-xl overflow-hidden">
+      <div class="grid grid-cols-[1fr_180px_80px_110px_70px] px-5 py-2.5 bg-zinc-50 border-b border-zinc-100">
+        <p class="text-[11px] font-medium text-zinc-400">Equipment</p>
+        <p class="text-[11px] font-medium text-zinc-400">Space</p>
+        <p class="text-[11px] font-medium text-zinc-400">Qty</p>
+        <p class="text-[11px] font-medium text-zinc-400">Condition</p>
+        <p class="text-[11px] font-medium text-zinc-400 text-right">Actions</p>
+      </div>
+
+      @if (filtered().length === 0) {
+        <div class="py-16 text-center">
+          <p class="text-sm text-zinc-400">No equipment found.</p>
+        </div>
+      }
+
+      @for (e of filtered(); track e.id; let last = $last) {
+        <div class="grid grid-cols-[1fr_180px_80px_110px_70px] px-5 py-3.5 items-center hover:bg-zinc-50/50 transition-colors"
+          [class.border-b]="!last" [class.border-zinc-100]="!last">
+          <p class="text-sm font-medium text-zinc-900 truncate pr-4">{{ e.name }}</p>
+          <p class="text-sm text-zinc-400 truncate">{{ e.space }}</p>
+          <p class="text-sm text-zinc-500">{{ e.quantity }}</p>
+          <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit" [ngClass]="conditionBadge(e.condition)">
+            {{ e.condition }}
+          </span>
+          <div class="flex items-center justify-end gap-3">
+            <button class="text-xs text-zinc-400 hover:text-zinc-900 transition-colors font-medium">Edit</button>
+            <button (click)="deleteEquipment(e.id)" class="text-xs text-zinc-400 hover:text-red-500 transition-colors font-medium">Delete</button>
+          </div>
+        </div>
+      }
+    </div>
+
+  </div>
+</div>

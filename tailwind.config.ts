@@ -10,6 +10,11 @@ export default {
         'brand-gray': '#111111',
         'brand-green': '#4ADE80',
         'brand-silver': '#A1A1AA',
+        'pastel-green': '#CEF09D',
+        'pastel-blue': '#AEE9F4',
+        'pastel-pink': '#FBCBE3',
+        'pastel-orange': '#FDD5AB',
+        'pastel-yellow': '#E2F89C',
       },
       fontFamily: {
         sans: ['Space Grotesk', 'system-ui', 'sans-serif'],

@@ -1,8 +1,9 @@
 <!-- Desktop -->
 <aside class="hidden md:flex w-52 flex-shrink-0 bg-white border-r border-zinc-100 flex-col h-full">
 
-  <div class="px-5 h-14 flex items-center border-b border-zinc-100 flex-shrink-0">
+  <div class="px-5 h-14 flex items-center justify-between border-b border-zinc-100 flex-shrink-0">
     <a routerLink="/home" class="text-sm font-bold text-zinc-900 tracking-tight">Cowork</a>
+    <span class="text-[10px] font-semibold bg-[#AEE9F4] text-zinc-700 px-2 py-0.5 rounded-full">Admin</span>
   </div>
 
   <nav class="flex-1 px-3 py-4 flex flex-col gap-0.5 overflow-y-auto">
@@ -14,21 +15,11 @@
         {{ item.label }}
       </a>
     }
-
-    <div class="my-3 border-t border-zinc-100"></div>
-
-    @for (item of bottomItems; track item.path) {
-      <a [routerLink]="item.path"
-        class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-50 transition-all text-sm">
-        <span class="iconify flex-shrink-0" [attr.data-icon]="item.icon" data-width="14"></span>
-        {{ item.label }}
-      </a>
-    }
   </nav>
 
   <div class="px-3 py-3 border-t border-zinc-100 flex-shrink-0">
     <div class="flex items-center gap-2.5 px-3 py-2 mb-0.5">
-      <div class="w-6 h-6 rounded-md bg-[#CEF09D] flex items-center justify-center text-zinc-900 text-[9px] font-bold flex-shrink-0">
+      <div class="w-6 h-6 rounded-md bg-[#FBCBE3] flex items-center justify-center text-zinc-900 text-[9px] font-bold flex-shrink-0">
         {{ userInitials() }}
       </div>
       <div class="min-w-0 flex-1">
@@ -46,7 +37,10 @@
 
 <!-- Mobile top bar -->
 <div class="md:hidden fixed top-0 inset-x-0 z-50 h-12 bg-white border-b border-zinc-100 flex items-center justify-between px-5">
-  <span class="text-sm font-bold text-zinc-900">Cowork</span>
+  <div class="flex items-center gap-2">
+    <span class="text-sm font-bold text-zinc-900">Cowork</span>
+    <span class="text-[10px] font-semibold bg-[#AEE9F4] text-zinc-700 px-2 py-0.5 rounded-full">Admin</span>
+  </div>
   <button (click)="mobileOpen.set(!mobileOpen())" class="text-zinc-500 hover:text-zinc-900 transition-colors">
     <span class="iconify" [attr.data-icon]="mobileOpen() ? 'lucide:x' : 'lucide:menu'" data-width="18"></span>
   </button>
@@ -57,10 +51,11 @@
   <div class="md:hidden fixed inset-0 z-40 flex">
     <div class="absolute inset-0 bg-black/20 backdrop-blur-sm" (click)="mobileOpen.set(false)"></div>
     <aside class="relative w-52 bg-white flex flex-col h-full border-r border-zinc-100">
-      <div class="px-5 h-12 flex items-center border-b border-zinc-100">
+      <div class="px-5 h-12 flex items-center justify-between border-b border-zinc-100">
         <span class="text-sm font-bold text-zinc-900">Cowork</span>
+        <span class="text-[10px] font-semibold bg-[#AEE9F4] text-zinc-700 px-2 py-0.5 rounded-full">Admin</span>
       </div>
-      <nav class="flex-1 px-3 py-4 flex flex-col gap-0.5">
+      <nav class="flex-1 px-3 py-4 flex flex-col gap-0.5 overflow-y-auto">
         @for (item of navItems; track item.path) {
           <a [routerLink]="item.path" (click)="mobileOpen.set(false)"
             [routerLinkActive]="item.activeClass"

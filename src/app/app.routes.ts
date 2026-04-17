@@ -22,6 +22,10 @@ export const routes: Routes = [
         path: 'spaces',
         loadComponent: () => import('./features/dashboard/spaces/spaces.component').then(m => m.DashboardSpacesComponent),
       },
+      {
+        path: 'payments',
+        loadComponent: () => import('./features/dashboard/payments/payments.component').then(m => m.DashboardPaymentsComponent),
+      },
     ],
   },
   { path: '', pathMatch: 'full', redirectTo: 'home' },
@@ -59,5 +63,19 @@ export const routes: Routes = [
   path:'booking',
   loadComponent: () => import('./features/web-site/booking/booking.component').then((m) => m.BookingPageComponent),
 },
+  {
+    path: 'admin',
+    loadComponent: () => import('./features/admin/admin.component').then(m => m.AdminComponent),
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'overview' },
+      { path: 'overview',      loadComponent: () => import('./features/admin/overview/overview.component').then(m => m.AdminOverviewComponent) },
+      { path: 'users',         loadComponent: () => import('./features/admin/users/users.component').then(m => m.AdminUsersComponent) },
+      { path: 'reservations',  loadComponent: () => import('./features/admin/reservations/reservations.component').then(m => m.AdminReservationsComponent) },
+      { path: 'spaces',        loadComponent: () => import('./features/admin/spaces/spaces.component').then(m => m.AdminSpacesComponent) },
+      { path: 'payments',      loadComponent: () => import('./features/admin/payments/payments.component').then(m => m.AdminPaymentsComponent) },
+      { path: 'equipment',     loadComponent: () => import('./features/admin/equipment/equipment.component').then(m => m.AdminEquipmentComponent) },
+      { path: 'notifications', loadComponent: () => import('./features/admin/notifications/notifications.component').then(m => m.AdminNotificationsComponent) },
+    ],
+  },
   { path: '**', redirectTo: 'home' },
 ];

@@ -1,16 +1,13 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgClass } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Button } from 'primeng/button';
-import { Checkbox } from 'primeng/checkbox';
-import { DatePicker } from 'primeng/datepicker';
-import { RadioButton } from 'primeng/radiobutton';
-import { Select } from 'primeng/select';
-import { Textarea } from 'primeng/textarea';
 import { ReservationsService } from '../../../core/services/reservations.service';
-import { Space, SpacesService } from '../../../core/services/spaces.service';
+import { SpacesService } from '../../../core/services/spaces.service';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
+import { DatePickerComponent } from '../../../shared/components/date-picker/date-picker.component';
+
+type BookingStep = 'details' | 'payment' | 'success';
 
 interface BookingSpace {
   id: number;
@@ -25,35 +22,27 @@ interface BookingSpace {
 @Component({
   standalone: true,
   selector: 'app-booking-page',
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HeaderComponent,
-    FooterComponent,
-    Button,
-    DatePicker,
-    RadioButton,
-    Checkbox,
-    Textarea,
-    Select,
-  ],
+  imports: [CommonModule, NgClass, FormsModule, ReactiveFormsModule, HeaderComponent, FooterComponent, DatePickerComponent],
   templateUrl: './booking.component.html',
   styleUrls: ['./booking.component.css'],
 })
 export class BookingPageComponent implements OnInit {
   bookingForm!: FormGroup;
-  bookingSuccess = false;
-  minDate = this.getTodayString();
-  minDateObj = new Date();
+  paymentForm!: FormGroup;
+
+  currentStep = signal<BookingStep>('details');
+  isProcessingPayment = signal(false);
+
+  spaceDropdownOpen = signal(false);
+  recurrenceDropdownOpen = signal(false);
 
   availableSpaces = signal<BookingSpace[]>([]);
 
   recurrenceOptions = [
-    { label: 'Daily', value: 'daily' },
-    { label: 'Weekly', value: 'weekly' },
+    { label: 'Daily',         value: 'daily'    },
+    { label: 'Weekly',        value: 'weekly'   },
     { label: 'Every 2 Weeks', value: 'biweekly' },
-    { label: 'Monthly', value: 'monthly' },
+    { label: 'Monthly',       value: 'monthly'  },
   ];
 
   constructor(
@@ -64,6 +53,7 @@ export class BookingPageComponent implements OnInit {
 
   ngOnInit() {
     this.initializeForm();
+    this.initializePaymentForm();
     this.loadSpaces();
   }
 
@@ -72,10 +62,14 @@ export class BookingPageComponent implements OnInit {
     return !!(field && field.invalid && field.touched);
   }
 
+  isPaymentFieldInvalid(fieldName: string): boolean {
+    const field = this.paymentForm.get(fieldName);
+    return !!(field && field.invalid && field.touched);
+  }
+
   onRecurringChange() {
     const isRecurring = this.bookingForm.get('isRecurring')?.value;
     const recurrenceEnd = this.bookingForm.get('recurrenceEnd');
-
     if (isRecurring) {
       recurrenceEnd?.setValidators([Validators.required]);
     } else {
@@ -84,137 +78,134 @@ export class BookingPageComponent implements OnInit {
     recurrenceEnd?.updateValueAndValidity();
   }
 
-  getStartDateObj(): Date {
-    const start = this.bookingForm.get('startDate')?.value;
-    return start ? new Date(start) : new Date();
-  }
-
-  getEndDateObj(): Date {
-    const end = this.bookingForm.get('endDate')?.value;
-    return end ? new Date(end) : new Date();
-  }
-
   getDurationDays(): number {
     const start = this.bookingForm.get('startDate')?.value;
-    const end = this.bookingForm.get('endDate')?.value;
-
+    const end   = this.bookingForm.get('endDate')?.value;
     if (!start || !end) return 0;
-
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-
-    return diffDays;
+    const diff = Math.abs(new Date(end).getTime() - new Date(start).getTime());
+    return Math.ceil(diff / (1000 * 60 * 60 * 24)) + 1;
   }
 
   getSelectedSpace(): BookingSpace | null {
-    const spaceId = this.bookingForm.get('spaceId')?.value;
-    if (!spaceId) return null;
-    return this.availableSpaces().find(s => s.id === Number(spaceId)) || null;
+    const id = this.bookingForm.get('spaceId')?.value;
+    return id ? (this.availableSpaces().find(s => s.id === Number(id)) ?? null) : null;
   }
 
   calculateTotal(): number {
     const space = this.getSelectedSpace();
-    if (!space) return 0;
-
-    const days = this.getDurationDays();
-    return space.price_per_day * days;
+    return space ? space.price_per_day * this.getDurationDays() : 0;
   }
 
-  submitBooking() {
-    if (this.bookingForm.invalid) {
-      console.log('Form is invalid', this.bookingForm.errors);
-      return;
-    }
+  selectSpace(space: BookingSpace): void {
+    this.bookingForm.get('spaceId')?.setValue(space.id);
+    this.spaceDropdownOpen.set(false);
+  }
 
-    const formData = this.bookingForm.value;
-    const startDateTime = new Date(formData.startDate);
-    const endDateTime = new Date(formData.endDate);
+  selectRecurrence(value: string): void {
+    this.bookingForm.get('recurrencePattern')?.setValue(value);
+    this.recurrenceDropdownOpen.set(false);
+  }
 
-    if (formData.startTime) {
-      const [hours, minutes] = formData.startTime.split(':');
-      startDateTime.setHours(parseInt(hours, 10), parseInt(minutes, 10));
-    }
-    if (formData.endTime) {
-      const [hours, minutes] = formData.endTime.split(':');
-      endDateTime.setHours(parseInt(hours, 10), parseInt(minutes, 10));
-    }
+  getRecurrenceLabel(): string {
+    const val = this.bookingForm.get('recurrencePattern')?.value;
+    return this.recurrenceOptions.find(o => o.value === val)?.label ?? 'Select pattern…';
+  }
 
-    const reservationData = {
-      space_id: Number(formData.spaceId),
-      start_datetime: startDateTime.toISOString(),
-      end_datetime: endDateTime.toISOString(),
-      billing_type: formData.billingType,
-      is_recurring: formData.isRecurring,
-      recurrence_rule: formData.isRecurring ? formData.recurrencePattern : 'none',
-      notes: formData.specialRequests
-    };
+  proceedToPayment() {
+    if (this.bookingForm.invalid) { this.bookingForm.markAllAsTouched(); return; }
+    this.currentStep.set('payment');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
-    this.reservationsService.createReservation(reservationData).subscribe({
-      next: (reservation) => {
-        console.log('Booking created:', reservation);
-        this.bookingSuccess = true;
-        setTimeout(() => {
-          this.resetForm();
-        }, 3000);
+  backToDetails() { this.currentStep.set('details'); }
+
+  formatCardNumber(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digits = input.value.replace(/\D/g, '').slice(0, 16);
+    input.value = digits.replace(/(.{4})/g, '$1 ').trim();
+    this.paymentForm.get('cardNumber')?.setValue(input.value, { emitEvent: false });
+  }
+
+  formatExpiry(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digits = input.value.replace(/\D/g, '').slice(0, 4);
+    input.value = digits.length > 2 ? digits.slice(0, 2) + '/' + digits.slice(2) : digits;
+    this.paymentForm.get('expiry')?.setValue(input.value, { emitEvent: false });
+  }
+
+  submitPayment() {
+    if (this.paymentForm.invalid) { this.paymentForm.markAllAsTouched(); return; }
+    this.isProcessingPayment.set(true);
+
+    const fv = this.bookingForm.value;
+    const start = new Date(fv.startDate);
+    const end   = new Date(fv.endDate);
+    if (fv.startTime) { const [h,m] = fv.startTime.split(':'); start.setHours(+h,+m); }
+    if (fv.endTime)   { const [h,m] = fv.endTime.split(':');   end.setHours(+h,+m);   }
+
+    this.reservationsService.createReservation({
+      space_id:        Number(fv.spaceId),
+      start_datetime:  start.toISOString(),
+      end_datetime:    end.toISOString(),
+      billing_type:    fv.billingType,
+      is_recurring:    fv.isRecurring,
+      recurrence_rule: fv.isRecurring ? fv.recurrencePattern : 'none',
+      notes:           fv.specialRequests,
+    }).subscribe({
+      next: () => {
+        this.isProcessingPayment.set(false);
+        this.currentStep.set('success');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       },
-      error: (error) => {
-        console.error('Error creating booking:', error);
-      }
+      error: () => this.isProcessingPayment.set(false),
     });
   }
 
-  resetForm() {
-    this.bookingForm.reset({
-      billingType: 'daily',
-      startTime: '09:00',
-      endTime: '17:00',
-      isRecurring: false,
-      recurrencePattern: 'weekly'
-    });
-    this.bookingSuccess = false;
+  resetFlow() {
+    this.bookingForm.reset({ billingType: 'daily', startTime: '09:00', endTime: '17:00', isRecurring: false, recurrencePattern: 'weekly' });
+    this.paymentForm.reset();
+    this.currentStep.set('details');
   }
 
   initializeForm() {
     this.bookingForm = this.fb.group({
-      spaceId: ['', Validators.required],
-      startDate: [new Date(), Validators.required],
-      endDate: [new Date(), Validators.required],
-      billingType: ['daily', Validators.required],
-      startTime: ['09:00'],
-      endTime: ['17:00'],
-      isRecurring: [false],
+      spaceId:           ['', Validators.required],
+      startDate:         ['', Validators.required],
+      endDate:           ['', Validators.required],
+      billingType:       ['daily', Validators.required],
+      startTime:         ['09:00'],
+      endTime:           ['17:00'],
+      isRecurring:       [false],
       recurrencePattern: ['weekly'],
-      recurrenceEnd: [''],
-      specialRequests: [''],
+      recurrenceEnd:     [''],
+      specialRequests:   [''],
+    });
+  }
+
+  initializePaymentForm() {
+    this.paymentForm = this.fb.group({
+      cardName:   ['', Validators.required],
+      cardNumber: ['', [Validators.required, Validators.minLength(19)]],
+      expiry:     ['', [Validators.required, Validators.pattern(/^\d{2}\/\d{2}$/)]],
+      cvv:        ['', [Validators.required, Validators.pattern(/^\d{3,4}$/)]],
     });
   }
 
   loadSpaces() {
     this.spacesService.getAvailableSpaces().subscribe({
-      next: (spaces) => {
-        const bookingSpaces: BookingSpace[] = spaces.map(space => ({
-          id: space.id,
-          name: space.name,
-          space_type: space.space_type,
-          price_per_day: space.price_per_day,
-          capacity: space.capacity
-            ,
-            photo: (space.photos && space.photos.length) ? space.photos[0] : undefined,
-            address: space.address
-          }));
-        this.availableSpaces.set(bookingSpaces);
-      },
-      error: (error) => console.error('Error loading spaces:', error)
+      next: spaces => this.availableSpaces.set(spaces.map(s => ({
+        id:            s.id,
+        name:          s.name,
+        space_type:    s.space_type,
+        price_per_day: s.price_per_day,
+        capacity:      s.capacity,
+        photo:         s.photos?.length ? s.photos[0] : undefined,
+        address:       s.address,
+      }))),
     });
   }
 
-  private getTodayString(): string {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+  today(): string {
+    return new Date().toISOString().split('T')[0];
   }
 }

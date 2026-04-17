@@ -10,7 +10,7 @@
 
     <!-- Avatar + name -->
     <div class="flex items-center gap-4 mb-8">
-      <div class="w-12 h-12 rounded-xl bg-zinc-900 flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
+      <div class="w-12 h-12 rounded-xl bg-[#AEE9F4] flex items-center justify-center text-zinc-900 text-sm font-bold flex-shrink-0">
         {{ userInitials() }}
       </div>
       <div>
@@ -21,15 +21,15 @@
 
     <!-- Fields -->
     <div class="border border-zinc-100 rounded-xl overflow-hidden mb-6">
-      <div class="grid grid-cols-[140px_1fr] items-center px-5 py-3.5 border-b border-zinc-100">
+      <div class="grid grid-cols-[140px_1fr] items-center px-5 py-3.5 border-b border-zinc-100 hover:bg-zinc-50/50 transition-colors">
         <p class="text-sm text-zinc-400">Full name</p>
         <p class="text-sm font-medium text-zinc-900">{{ user()?.name ?? '—' }}</p>
       </div>
-      <div class="grid grid-cols-[140px_1fr] items-center px-5 py-3.5 border-b border-zinc-100">
+      <div class="grid grid-cols-[140px_1fr] items-center px-5 py-3.5 border-b border-zinc-100 hover:bg-zinc-50/50 transition-colors">
         <p class="text-sm text-zinc-400">Email</p>
         <p class="text-sm font-medium text-zinc-900">{{ user()?.email ?? '—' }}</p>
       </div>
-      <div class="grid grid-cols-[140px_1fr] items-center px-5 py-3.5">
+      <div class="grid grid-cols-[140px_1fr] items-center px-5 py-3.5 hover:bg-zinc-50/50 transition-colors">
         <p class="text-sm text-zinc-400">Member ID</p>
         <p class="text-sm font-mono text-zinc-400">#{{ user()?.id ?? '—' }}</p>
       </div>

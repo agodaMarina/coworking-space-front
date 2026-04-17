@@ -18,29 +18,29 @@
   <div class="px-8 py-8">
 
     <!-- Stats -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-100 rounded-xl overflow-hidden border border-zinc-100 mb-8">
-      <div class="bg-white px-6 py-5">
-        <p class="text-xs text-zinc-400 mb-3">Total bookings</p>
-        <p class="text-3xl font-semibold text-zinc-900 tracking-tight">{{ stats().total }}</p>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="bg-[#AEE9F4] rounded-xl px-6 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Total bookings</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().total }}</p>
       </div>
-      <div class="bg-white px-6 py-5">
-        <p class="text-xs text-zinc-400 mb-3">Active</p>
-        <p class="text-3xl font-semibold text-zinc-900 tracking-tight">{{ stats().active }}</p>
+      <div class="bg-[#CEF09D] rounded-xl px-6 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Active</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().active }}</p>
       </div>
-      <div class="bg-white px-6 py-5">
-        <p class="text-xs text-zinc-400 mb-3">Upcoming</p>
-        <p class="text-3xl font-semibold text-zinc-900 tracking-tight">{{ stats().upcoming }}</p>
+      <div class="bg-[#FDD5AB] rounded-xl px-6 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Upcoming</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().upcoming }}</p>
       </div>
-      <div class="bg-white px-6 py-5">
-        <p class="text-xs text-zinc-400 mb-3">Total spent</p>
-        <p class="text-3xl font-semibold text-zinc-900 tracking-tight">{{ stats().spent | currency:'USD':'symbol':'1.0-0' }}</p>
+      <div class="bg-[#FBCBE3] rounded-xl px-6 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Total spent</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().spent | currency:'USD':'symbol':'1.0-0' }}</p>
       </div>
     </div>
 
     <!-- Recent bookings -->
     <div class="mb-2 flex items-center justify-between">
-      <p class="text-sm font-medium text-zinc-900">Recent bookings</p>
-      <a routerLink="../bookings" class="text-xs text-zinc-400 hover:text-zinc-900 transition-colors">View all</a>
+      <p class="text-sm font-semibold text-zinc-900">Recent bookings</p>
+      <a routerLink="../bookings" class="text-xs text-zinc-400 hover:text-zinc-900 font-medium transition-colors">View all →</a>
     </div>
 
     @if (isLoading()) {
@@ -71,16 +71,17 @@
             [class.border-b]="!last" [class.border-zinc-100]="!last">
             <p class="text-sm text-zinc-900 font-medium truncate pr-4">{{ r.space_detail?.name }}</p>
             <p class="text-sm text-zinc-400">{{ r.start_datetime | date:'MMM d, y' }}</p>
-            <div class="flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full flex-shrink-0"
+            <div class="flex items-center">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium"
                 [ngClass]="{
-                  'bg-emerald-400': r.status === 'confirmed',
-                  'bg-amber-400':   r.status === 'pending',
-                  'bg-zinc-300':    r.status === 'cancelled'
-                }"></span>
-              <span class="text-sm text-zinc-500">{{ r.status_display }}</span>
+                  'bg-[#CEF09D] text-zinc-800': r.status === 'confirmed',
+                  'bg-[#FDD5AB] text-zinc-800': r.status === 'pending',
+                  'bg-zinc-100 text-zinc-500':  r.status === 'cancelled'
+                }">
+                {{ r.status_display }}
+              </span>
             </div>
-            <p class="text-sm font-medium text-zinc-900 text-right">{{ r.total_price | currency:'USD':'symbol':'1.0-0' }}</p>
+            <p class="text-sm font-semibold text-zinc-900 text-right">{{ r.total_price | currency:'USD':'symbol':'1.0-0' }}</p>
           </div>
         }
       </div>

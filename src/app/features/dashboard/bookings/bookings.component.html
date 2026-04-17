@@ -71,50 +71,44 @@
 
             <p class="text-sm text-zinc-400">{{ r.billing_type_display }}</p>
 
-            <div class="flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full flex-shrink-0"
+            <div class="flex items-center">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium"
                 [ngClass]="{
-                  'bg-emerald-400': r.status === 'confirmed',
-                  'bg-amber-400':   r.status === 'pending',
-                  'bg-zinc-300':    r.status === 'cancelled'
-                }"></span>
-              <span class="text-sm text-zinc-500">{{ r.status_display }}</span>
+                  'bg-[#CEF09D] text-zinc-800': r.status === 'confirmed',
+                  'bg-[#FDD5AB] text-zinc-800': r.status === 'pending',
+                  'bg-zinc-100 text-zinc-500':  r.status === 'cancelled'
+                }">
+                {{ r.status_display }}
+              </span>
             </div>
 
-            <div class="flex items-center justify-end gap-3">
-              <p class="text-sm font-medium text-zinc-900">{{ r.total_price | currency:'USD':'symbol':'1.0-0' }}</p>
+            <div class="flex items-center justify-end">
+              <p class="text-sm font-semibold text-zinc-900">{{ r.total_price | currency:'USD':'symbol':'1.0-0' }}</p>
             </div>
 
           </div>
         }
       </div>
 
-      <!-- Cancel actions below table -->
-      @for (r of filtered(); track r.id) {
-        @if (canCancel(r)) {
-          <p class="hidden"><!-- cancel handled inline --></p>
-        }
+      <!-- Inline cancel -->
+      @if (!isLoading() && filtered().length > 0) {
+        <div class="mt-3 space-y-0">
+          @for (r of filtered(); track r.id) {
+            @if (canCancel(r)) {
+              <div class="flex items-center justify-between py-2 border-b border-zinc-50 last:border-0">
+                <p class="text-xs text-zinc-400">{{ r.space_detail?.name }}</p>
+                <button
+                  (click)="cancel(r.id)"
+                  [disabled]="cancellingId() === r.id"
+                  class="text-xs text-zinc-400 hover:text-red-500 transition-colors disabled:opacity-40 font-medium">
+                  {{ cancellingId() === r.id ? 'Cancelling…' : 'Cancel booking' }}
+                </button>
+              </div>
+            }
+          }
+        </div>
       }
 
-    }
-
-    <!-- Inline cancel — shown as a subtle action row per booking -->
-    @if (!isLoading() && filtered().length > 0) {
-      <div class="mt-3 space-y-0">
-        @for (r of filtered(); track r.id) {
-          @if (canCancel(r)) {
-            <div class="flex items-center justify-between py-2 border-b border-zinc-50 last:border-0">
-              <p class="text-xs text-zinc-400">{{ r.space_detail?.name }}</p>
-              <button
-                (click)="cancel(r.id)"
-                [disabled]="cancellingId() === r.id"
-                class="text-xs text-zinc-400 hover:text-red-500 transition-colors disabled:opacity-40 font-medium">
-                {{ cancellingId() === r.id ? 'Cancelling…' : 'Cancel booking' }}
-              </button>
-            </div>
-          }
-        }
-      </div>
     }
 
   </div>

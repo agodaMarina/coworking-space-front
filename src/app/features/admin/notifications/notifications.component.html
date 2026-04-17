@@ -1,0 +1,75 @@
+<div class="min-h-full bg-white">
+
+  <div class="px-8 pt-10 pb-8 border-b border-zinc-100">
+    <p class="text-xs font-medium text-zinc-400 mb-1">Admin</p>
+    <div class="flex items-end justify-between gap-4">
+      <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Notifications</h1>
+      <button class="mb-0.5 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition-colors">
+        <span class="iconify" data-icon="lucide:send" data-width="14"></span>
+        Send notification
+      </button>
+    </div>
+  </div>
+
+  <div class="px-8 py-8">
+
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-4 mb-8">
+      <div class="bg-[#CEF09D] rounded-xl px-6 py-5">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Sent</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().sent }}</p>
+      </div>
+      <div class="bg-[#FDD5AB] rounded-xl px-6 py-5">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Scheduled</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().scheduled }}</p>
+      </div>
+      <div class="bg-[#FBCBE3] rounded-xl px-6 py-5">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Failed</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().failed }}</p>
+      </div>
+    </div>
+
+    <!-- List -->
+    <div class="border border-zinc-100 rounded-xl overflow-hidden">
+      <div class="grid grid-cols-[90px_1fr_120px_80px_90px_60px] px-5 py-2.5 bg-zinc-50 border-b border-zinc-100">
+        <p class="text-[11px] font-medium text-zinc-400">Type</p>
+        <p class="text-[11px] font-medium text-zinc-400">Message</p>
+        <p class="text-[11px] font-medium text-zinc-400">Target</p>
+        <p class="text-[11px] font-medium text-zinc-400">Date</p>
+        <p class="text-[11px] font-medium text-zinc-400">Status</p>
+        <p class="text-[11px] font-medium text-zinc-400 text-right">Action</p>
+      </div>
+
+      @for (n of notifications(); track n.id; let last = $last) {
+        <div class="grid grid-cols-[90px_1fr_120px_80px_90px_60px] px-5 py-4 items-start hover:bg-zinc-50/50 transition-colors"
+          [class.border-b]="!last" [class.border-zinc-100]="!last">
+
+          <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit mt-0.5" [ngClass]="typeBadge(n.type)">
+            {{ n.type }}
+          </span>
+
+          <div class="min-w-0 pr-4">
+            <p class="text-sm font-medium text-zinc-900 truncate">{{ n.title }}</p>
+            <p class="text-xs text-zinc-400 truncate mt-0.5">{{ n.message }}</p>
+          </div>
+
+          <p class="text-sm text-zinc-400 truncate">{{ n.target }}</p>
+
+          <p class="text-sm text-zinc-400">{{ n.date | date:'MMM d' }}</p>
+
+          <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit" [ngClass]="statusBadge(n.status)">
+            {{ n.status }}
+          </span>
+
+          <div class="flex justify-end">
+            <button (click)="deleteNotification(n.id)" class="text-xs text-zinc-400 hover:text-red-500 transition-colors font-medium">
+              Delete
+            </button>
+          </div>
+
+        </div>
+      }
+    </div>
+
+  </div>
+</div>
