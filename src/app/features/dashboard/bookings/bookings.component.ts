@@ -1,6 +1,7 @@
 import { CurrencyPipe, DatePipe, NgClass } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { Reservation, ReservationsService } from '../../../core/services/reservations.service';
+import { Reservation } from '../../../core/dtos/reservation';
+import { ReservationsService } from '../../../core/services/reservations.service';
 
 type Filter = 'all' | 'upcoming' | 'past' | 'cancelled';
 
@@ -20,9 +21,9 @@ export class BookingsComponent implements OnInit {
   readonly cancellingId = signal<number | null>(null);
 
   readonly filters: { key: Filter; label: string }[] = [
-    { key: 'all',       label: 'All' },
-    { key: 'upcoming',  label: 'Upcoming' },
-    { key: 'past',      label: 'Past' },
+    { key: 'all', label: 'All' },
+    { key: 'upcoming', label: 'Upcoming' },
+    { key: 'past', label: 'Past' },
     { key: 'cancelled', label: 'Cancelled' },
   ];
 
@@ -30,10 +31,10 @@ export class BookingsComponent implements OnInit {
     const now = new Date();
     const all = this.reservations();
     switch (this.activeFilter()) {
-      case 'upcoming':  return all.filter(r => r.status !== 'cancelled' && new Date(r.start_datetime) > now);
-      case 'past':      return all.filter(r => r.status !== 'cancelled' && new Date(r.end_datetime) <= now);
+      case 'upcoming': return all.filter(r => r.status !== 'cancelled' && new Date(r.start_datetime) > now);
+      case 'past': return all.filter(r => r.status !== 'cancelled' && new Date(r.end_datetime) <= now);
       case 'cancelled': return all.filter(r => r.status === 'cancelled');
-      default:          return all;
+      default: return all;
     }
   });
 
@@ -63,7 +64,7 @@ export class BookingsComponent implements OnInit {
   statusClass(status: string): string {
     return {
       confirmed: 'bg-[#CEF09D] text-black',
-      pending:   'bg-[#FDD5AB] text-black',
+      pending: 'bg-[#FDD5AB] text-black',
       cancelled: 'bg-zinc-100 text-zinc-400',
     }[status] ?? 'bg-zinc-100 text-zinc-500';
   }

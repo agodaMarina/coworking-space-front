@@ -3,10 +3,10 @@
 <section class="pt-24 pb-12 md:pt-32 md:pb-20 flex items-center relative overflow-hidden bg-white">
   <div class="relative z-10 max-w-7xl mx-auto px-5 w-full">
     <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-      
+
       <div class="w-full max-w-[640px]">
         <h1 class="anim d2 text-5xl sm:text-6xl md:text-7xl lg:text-[96px] font-bold leading-[0.95] tracking-tight mb-6 text-black">
-          Elevate Your<br>Workspace<br> with 
+          Elevate Your<br>Workspace<br> with
           <span class="relative inline-block">
             Cowork
             <svg class="absolute -bottom-2 left-0 w-full text-brand-green" viewBox="0 0 200 20" fill="none" stroke="currentColor" stroke-width="4">
@@ -16,12 +16,12 @@
         </h1>
         <p class="anim d3 text-xs md:text-sm text-[#1D1E1C] leading-[180%] w-full max-w-[500px] mb-8 font-general">
           Welcome to Cowork – where innovation meets collaboration in the heart  of productivity!
-          Unleash 🚀 your potential in our thoughtfully designed coworking spaces, 
+          Unleash 🚀 your potential in our thoughtfully designed coworking spaces,
           tailored to inspire creativity and foster connections.
         </p>
-        
+
         <div class="anim d4 flex flex-wrap gap-4">
-          <a href="#book" class="inline-flex items-center justify-center gap-2 text-sm font-semibold px-8 py-3.5 rounded-full bg-black text-white hover:bg-zinc-800 transition-all duration-300 shadow-lg shadow-black/10">
+          <a routerLink="/booking" class="inline-flex items-center justify-center gap-2 text-sm font-semibold px-8 py-3.5 rounded-full bg-black text-white hover:bg-zinc-800 transition-all duration-300 shadow-lg shadow-black/10">
             Claim your Spot
           </a>
         </div>
@@ -50,7 +50,7 @@
 
   <div class="max-w-[1312px] mx-auto px-5 grid sm:grid-cols-2 lg:grid-cols-3 gap-12">
     <div *ngFor="let feature of features" class="reveal w-full flex flex-col items-center text-center group gap-6">
-      <div class="w-14 h-14 rounded-2xl bg-[#E8F5E9] flex items-center justify-center group-hover:scale-110 transition-transform duration-300"> 
+      <div class="w-14 h-14 rounded-2xl bg-[#E8F5E9] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
         <span class="iconify text-2xl text-green-700" data-icon="mdi:home-city-outline"></span>
       </div>
       <div class="w-full flex flex-col items-center text-center group gap-6">
@@ -79,7 +79,7 @@
       <p class="text-gray-700 text-xs md:text-sm max-w-3xl mx-auto mb-6 leading-relaxed font-general">
         Experience the essence of Cowork before setting foot in our dynamic spaces. Our immersive video tour gives you a sneak peek into the vibrant atmosphere, cutting-edge facilities, and collaborative energy that define the Cowork experience.
       </p>
-      <a href="#spaces" class="inline-flex items-center justify-center px-6 py-3 mt-10 rounded-full border border-black text-sm font-semibold text-black hover:bg-black hover:text-white transition-colors duration-300">
+      <a routerLink="/space" class="inline-flex items-center justify-center px-6 py-3 mt-10 rounded-full border border-black text-sm font-semibold text-black hover:bg-black hover:text-white transition-colors duration-300">
         Explore Spaces
       </a>
     </div>
@@ -97,7 +97,7 @@
 
 <section class="py-24 md:py-28 relative bg-white">
   <div class="max-w-[1312px] mx-auto px-5 flex flex-col md:flex-row items-center justify-between gap-[80px]">
-    
+
     <div class="w-full md:w-[616px] flex-shrink-0">
       <span class="reveal text-xs font-bold font-space uppercase text-bold mb-4 block">Cowork in Numbers</span>
       <h2 class="reveal text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-black mb-12 leading-tight">
@@ -132,7 +132,7 @@
 
       <div class="w-full md:w-auto flex flex-col items-center md:flex-row gap-6 md:gap-0 md:justify-center md:items-start">
         <ng-container *ngFor="let t of testimonialsTop">
-          
+
           <div *ngIf="!t.isOffset" class="reveal w-full sm:w-[calc(50%-12px)] lg:w-[350px] rounded-3xl p-8 flex flex-col items-center text-center gap-6" [ngClass]="t.bg">
             <div class="flex justify-center mb-6">
               <img [src]="'https://picsum.photos/seed/' + t.img + '/64/64.jpg'" class="w-14 h-14 rounded-full object-cover shadow-sm" [alt]="t.name">

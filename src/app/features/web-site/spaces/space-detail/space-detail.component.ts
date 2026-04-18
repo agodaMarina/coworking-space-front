@@ -2,9 +2,10 @@ import { NgClass } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { Space } from '../../../../core/dtos/space';
+import { SpacesService } from '../../../../core/services/spaces.service';
 import { FooterComponent } from '../../../../shared/components/footer/footer.component';
 import { HeaderComponent } from '../../../../shared/components/header/header.component';
-import { Space, SpacesService } from '../../../../core/services/spaces.service';
 
 @Component({
   standalone: true,

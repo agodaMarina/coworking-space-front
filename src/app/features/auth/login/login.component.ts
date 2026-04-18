@@ -1,7 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../../core/auth.service';
+import { AuthService } from '../../../core/services/auth/auth.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   standalone: true,
@@ -14,6 +15,7 @@ export class LoginPageComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
+  private readonly toastService = inject(ToastService);
 
   readonly submitting = signal(false);
   readonly error = signal<string | null>(null);
@@ -34,9 +36,12 @@ export class LoginPageComponent {
     this.error.set(null);
 
     this.authService.login(this.loginForm.value as { email: string; password: string }).subscribe({
-      next: () => this.router.navigate(['/booking']),
+      next: () => {
+        this.toastService.showSuccess('Connexion reussie.');
+        this.router.navigate(['/dashboard']);
+      },
       error: () => {
-        this.error.set('Invalid credentials. Please check your email and password.');
+        this.error.set('Identifiants invalide. Veuillez vérifier votre email et mot de passe.');
         this.submitting.set(false);
       },
     });

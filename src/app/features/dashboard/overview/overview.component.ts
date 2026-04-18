@@ -1,8 +1,9 @@
 import { CurrencyPipe, DatePipe, NgClass } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AuthService } from '../../../core/auth.service';
-import { Reservation, ReservationsService } from '../../../core/services/reservations.service';
+import { Reservation } from '../../../core/dtos/reservation';
+import { AuthService } from '../../../core/services/auth/auth.service';
+import { ReservationsService } from '../../../core/services/reservations.service';
 
 @Component({
   standalone: true,

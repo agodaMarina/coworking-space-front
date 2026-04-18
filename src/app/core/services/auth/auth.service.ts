@@ -1,34 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { Observable, of, tap, throwError } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { AuthResponse, LoginPayload, RegisterPayload, User } from '../../dtos/auth';
+import { ApiService } from '../../http/api.service';
 
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-}
-
-export interface AuthTokens {
-  access: string;
-  refresh: string;
-}
-
-export interface LoginPayload {
-  email: string;
-  password: string;
-}
-
-export interface RegisterPayload {
-  name: string;
-  email: string;
-  password: string;
-}
-
-export interface AuthResponse {
-  message: string;
-  user: User;
-  tokens: AuthTokens;
-}
 
 function readStorageUser(): User | null {
   const raw = localStorage.getItem('coworking_user');
@@ -45,6 +21,7 @@ function readStorageUser(): User | null {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private readonly baseUrl = environment.apiUrl;
   private readonly http = inject(HttpClient);
   private readonly useMocks = signal(false); // Variable pour switcher entre mocks et API
 
@@ -108,7 +85,7 @@ export class AuthService {
         return throwError(() => new Error('Invalid credentials'));
       }
     }
-    return this.http.post<AuthResponse>('/api/auth/login/', payload).pipe(
+    return this.http.post<AuthResponse>(this.baseUrl+'/auth/login/', payload).pipe(
       tap((response) => this.setAuthPayload(response))
     );
   }
@@ -124,7 +101,7 @@ export class AuthService {
       this.setAuthPayload(mockResponse);
       return of(mockResponse);
     }
-    return this.http.post<AuthResponse>('/api/auth/register/', payload).pipe(
+    return this.http.post<AuthResponse>(this.baseUrl+'/auth/register/', payload).pipe(
       tap((response) => this.setAuthPayload(response))
     );
   }
@@ -132,7 +109,7 @@ export class AuthService {
   logout(): void {
     const refreshToken = this.refreshTokenSignal();
     if (refreshToken) {
-      this.http.post('/api/auth/logout/', { refresh: refreshToken }).subscribe({
+      this.http.post(this.baseUrl+'/auth/logout/', { refresh: refreshToken }).subscribe({
         next: () => {},
         error: () => {},
       });
@@ -145,7 +122,7 @@ export class AuthService {
 
   refreshAccessToken(): Observable<{ access: string }> {
     const refreshToken = this.refreshTokenSignal();
-    return this.http.post<{ access: string }>('/api/auth/token/refresh/', { refresh: refreshToken }).pipe(
+    return this.http.post<{ access: string }>(this.baseUrl+'/auth/token/refresh/', { refresh: refreshToken }).pipe(
       tap((data) => {
         this.accessTokenSignal.set(data.access);
       })
@@ -153,7 +130,7 @@ export class AuthService {
   }
 
   loadProfile(): Observable<User> {
-    return this.http.get<User>('/api/auth/profile/').pipe(
+    return this.http.get<User>(this.baseUrl+'/auth/profile/').pipe(
       tap((user) => this.userSignal.set(user))
     );
   }

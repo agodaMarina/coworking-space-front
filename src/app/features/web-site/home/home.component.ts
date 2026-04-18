@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, HostListener, OnInit } from '@angular/core';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
+import { RouterLink } from "@angular/router";
 
 @Component({
   standalone: true,
@@ -10,12 +11,13 @@ import { HeaderComponent } from '../../../shared/components/header/header.compon
     CommonModule,
     HeaderComponent,
     FooterComponent,
-  ],
+    RouterLink
+],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
 export class HomePageComponent implements OnInit, AfterViewInit {
-  
+
   // =========================================
   // DONNÉES DE LA PAGE (Principe DRY)
   // =========================================
@@ -71,23 +73,6 @@ export class HomePageComponent implements OnInit, AfterViewInit {
     this.setupStatCounter();
     this.setupNewsletterSubscribe();
   }
-
-//   // Gestion du Header au scroll (Remplace l'ancien addEventListener)
-//   @HostListener('window:scroll', [])
-//   onWindowScroll() {
-//     const nav = document.querySelector('nav');
-//     if (nav) {
-//       if (window.scrollY > 50) {
-//         nav.classList.add('border-white/10');
-//         nav.classList.remove('border-white/5');
-//         nav.style.backgroundColor = 'rgba(0,0,0,0.8)';
-//       } else {
-//         nav.classList.remove('border-white/10');
-//         nav.classList.add('border-white/5');
-//         nav.style.backgroundColor = 'rgba(0,0,0,0.6)';
-//       }
-//     }
-//   }
 
   // Gestion de l'ouverture/fermeture des FAQ (Remplace l'ancien addEventListener)
   toggleFaq(index: number): void {

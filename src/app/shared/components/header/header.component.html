@@ -6,13 +6,13 @@
 
         <div class="hidden md:flex items-center gap-10">
             <div class="flex items-center gap-8">
-                <a href="#about" class="text-sm font-medium text-zinc-600 hover:text-black transition-colors">About</a>
-                <a href="#pricing" class="text-sm font-medium text-zinc-600 hover:text-black transition-colors">Pricing</a>
-                <a href="#blog" class="text-sm font-medium text-zinc-600 hover:text-black transition-colors">Blog</a>
-                <a href="#events" class="text-sm font-medium text-zinc-600 hover:text-black transition-colors">Events</a>
+                <a routerLink="/home" class="text-sm font-medium text-zinc-600 hover:text-black transition-colors">About</a>
+                <a routerLink="/spaces" class="text-sm font-medium text-zinc-600 hover:text-black transition-colors">spaces</a>
+                <a routerLink="/blog" class="text-sm font-medium text-zinc-600 hover:text-black transition-colors">Blog</a>
+                <a routerLink="/events" class="text-sm font-medium text-zinc-600 hover:text-black transition-colors">Events</a>
             </div>
 
-            <div class="h-6 w-px bg-zinc-200 mx-2"></div> 
+            <div class="h-6 w-px bg-zinc-200 mx-2"></div>
             <div class="flex items-center gap-3">
                 @if (isAuthenticated()) {
                     <a routerLink="/dashboard" class="text-sm font-bold px-7 py-3 rounded-full border border-black text-black hover:bg-zinc-50 transition-all">
@@ -41,23 +41,23 @@
 <div class="fixed inset-0 z-[60] bg-white transition-transform duration-300 md:hidden flex flex-col"
      [class.translate-x-full]="!isMobileMenuOpen"
      [class.translate-x-0]="isMobileMenuOpen">
-    
+
     <div class="flex items-center justify-between px-5 h-20 border-b border-zinc-100">
         <span class="text-xl font-bold">Cowork</span>
         <button (click)="closeMenu()" class="text-black p-1">
             <span class="iconify" data-icon="lucide:x" data-width="24"></span>
         </button>
     </div>
-    
+
     <div class="flex-1 flex flex-col justify-center px-8 gap-8">
-        <a href="#about" (click)="closeMenu()" class="text-4xl font-bold text-black hover:text-zinc-500 transition-colors">About</a>
-        <a href="#pricing" (click)="closeMenu()" class="text-4xl font-bold text-black hover:text-zinc-500 transition-colors">Pricing</a>
-        <a href="#blog" (click)="closeMenu()" class="text-4xl font-bold text-black hover:text-zinc-500 transition-colors">Blog</a>
-        <a href="#events" (click)="closeMenu()" class="text-4xl font-bold text-black hover:text-zinc-500 transition-colors">Events</a>
+        <a routerLink="/home" (click)="closeMenu()" class="text-4xl font-bold text-black hover:text-zinc-500 transition-colors">About</a>
+        <a routerLink="/pricing" (click)="closeMenu()" class="text-4xl font-bold text-black hover:text-zinc-500 transition-colors">Pricing</a>
+        <a routerLink="/blog" (click)="closeMenu()" class="text-4xl font-bold text-black hover:text-zinc-500 transition-colors">Blog</a>
+        <a routerLink="/events" (click)="closeMenu()" class="text-4xl font-bold text-black hover:text-zinc-500 transition-colors">Events</a>
     </div>
-    
+
     <div class="p-8 flex flex-col gap-4">
-        <a href="#" class="w-full text-center font-bold py-4 rounded-full border border-black text-black">Log In</a>
-        <a href="#" class="w-full text-center font-bold py-4 rounded-full bg-black text-white">Sign Up</a>
+        <a routerLink="/login" class="w-full text-center font-bold py-4 rounded-full border border-black text-black">Log In</a>
+        <a routerLink="/register" class="w-full text-center font-bold py-4 rounded-full bg-black text-white">Sign Up</a>
     </div>
 </div>

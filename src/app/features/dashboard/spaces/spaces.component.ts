@@ -1,7 +1,8 @@
 import { NgClass } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Space, SpacesService } from '../../../core/services/spaces.service';
+import { Space } from '../../../core/dtos/space';
+import { SpacesService } from '../../../core/services/spaces.service';
 
 @Component({
   standalone: true,
@@ -19,11 +20,11 @@ export class DashboardSpacesComponent implements OnInit {
 
   readonly typeOptions = [
     { label: 'All types', value: null },
-    { label: 'Hot Desk',       value: 'desk' },
-    { label: 'Open Space',     value: 'open_space' },
-    { label: 'Meeting Room',   value: 'meeting_room' },
+    { label: 'Hot Desk', value: 'desk' },
+    { label: 'Open Space', value: 'open_space' },
+    { label: 'Meeting Room', value: 'meeting_room' },
     { label: 'Private Office', value: 'private' },
-    { label: 'Conference',     value: 'conference' },
+    { label: 'Conference', value: 'conference' },
   ];
 
   readonly filtered = computed(() => {
@@ -45,11 +46,11 @@ export class DashboardSpacesComponent implements OnInit {
   });
 
   private readonly typeBadgeColors: Record<string, string> = {
-    desk:         'bg-[#CEF09D] text-black',
-    open_space:   'bg-[#AEE9F4] text-black',
+    desk: 'bg-[#CEF09D] text-black',
+    open_space: 'bg-[#AEE9F4] text-black',
     meeting_room: 'bg-[#FBCBE3] text-black',
-    private:      'bg-[#FDD5AB] text-black',
-    conference:   'bg-[#E2F89C] text-black',
+    private: 'bg-[#FDD5AB] text-black',
+    conference: 'bg-[#E2F89C] text-black',
   };
 
   typeBadge(type: string): string {

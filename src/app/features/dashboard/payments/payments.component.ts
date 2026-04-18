@@ -1,7 +1,8 @@
+import { CurrencyPipe, DatePipe, NgClass } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { NgClass, CurrencyPipe, DatePipe } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Reservation, ReservationsService } from '../../../core/services/reservations.service';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Reservation } from '../../../core/dtos/reservation';
+import { ReservationsService } from '../../../core/services/reservations.service';
 
 @Component({
   standalone: true,
