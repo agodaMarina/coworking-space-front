@@ -1,0 +1,65 @@
+<div class="relative">
+
+  <!-- Trigger -->
+  <button
+    type="button"
+    (click)="toggle()"
+    [disabled]="disabled"
+    class="w-full flex items-center gap-2 px-3.5 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-left focus:outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+    [ngClass]="selectedOption() ? 'text-zinc-900' : 'text-zinc-400'"
+  >
+    @if (icon) {
+      <span class="iconify text-zinc-400 shrink-0" [attr.data-icon]="icon" data-width="15"></span>
+    }
+
+    @if (selectedOption()?.badge) {
+      <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium" [ngClass]="selectedOption()!.badge!">
+        {{ selectedOption()!.label }}
+      </span>
+    } @else {
+      <span class="flex-1 truncate">{{ selectedOption()?.label ?? placeholder }}</span>
+    }
+
+    <svg
+      class="w-4 h-4 text-zinc-400 shrink-0 transition-transform duration-200 ml-auto"
+      [class.rotate-180]="isOpen()"
+      fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+    >
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
+  </button>
+
+  <!-- Backdrop -->
+  @if (isOpen()) {
+    <div class="fixed inset-0 z-20" (click)="close()"></div>
+
+    <!-- Dropdown panel -->
+    <div class="absolute z-30 mt-1.5 w-full bg-white border border-zinc-200 rounded-xl shadow-lg py-1 overflow-hidden">
+      @for (opt of options; track opt.label) {
+        <button
+          type="button"
+          (click)="select(opt)"
+          class="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-left transition-colors"
+          [ngClass]="isSelected(opt)
+            ? 'bg-zinc-50 text-zinc-900 font-medium'
+            : 'text-zinc-700 hover:bg-zinc-50'"
+        >
+          @if (opt.badge) {
+            <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium" [ngClass]="opt.badge">
+              {{ opt.label }}
+            </span>
+          } @else {
+            <span class="flex-1 truncate">{{ opt.label }}</span>
+          }
+
+          @if (isSelected(opt)) {
+            <svg class="w-3.5 h-3.5 text-zinc-900 shrink-0 ml-auto" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          }
+        </button>
+      }
+    </div>
+  }
+
+</div>

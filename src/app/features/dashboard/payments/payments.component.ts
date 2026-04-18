@@ -2,11 +2,13 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { NgClass, CurrencyPipe, DatePipe } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Reservation, ReservationsService } from '../../../core/services/reservations.service';
+import { TableComponent } from '../../../shared/components/table/table.component';
+import { ColumnComponent } from '../../../shared/components/table/column.component';
 
 @Component({
   standalone: true,
   selector: 'app-dashboard-payments',
-  imports: [NgClass, CurrencyPipe, DatePipe, ReactiveFormsModule],
+  imports: [NgClass, CurrencyPipe, DatePipe, ReactiveFormsModule, TableComponent, ColumnComponent],
   templateUrl: './payments.component.html',
 })
 export class DashboardPaymentsComponent implements OnInit {

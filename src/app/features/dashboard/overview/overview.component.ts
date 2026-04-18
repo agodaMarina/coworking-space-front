@@ -3,11 +3,13 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 import { Reservation, ReservationsService } from '../../../core/services/reservations.service';
+import { TableComponent } from '../../../shared/components/table/table.component';
+import { ColumnComponent } from '../../../shared/components/table/column.component';
 
 @Component({
   standalone: true,
   selector: 'app-overview',
-  imports: [NgClass, DatePipe, CurrencyPipe, RouterLink],
+  imports: [NgClass, DatePipe, CurrencyPipe, RouterLink, TableComponent, ColumnComponent],
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.css',
 })

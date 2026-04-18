@@ -1,22 +1,20 @@
 <div class="min-h-full bg-white">
 
-  <!-- Header -->
-  <div class="px-8 pt-10 pb-0 border-b border-zinc-100">
+  <div class="px-4 md:px-8 pt-6 md:pt-10 pb-0 border-b border-zinc-100">
     <p class="text-xs font-medium text-zinc-400 mb-1">Dashboard</p>
-    <div class="flex items-end justify-between gap-4 mb-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
       <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">My Bookings</h1>
       <a routerLink="/spaces"
-        class="mb-0.5 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition-colors">
+        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition-colors">
         <span class="iconify" data-icon="lucide:plus" data-width="14"></span>
         New booking
       </a>
     </div>
 
-    <!-- Tab filters -->
     <div class="flex gap-0">
       @for (f of filters; track f.key) {
         <button
-          (click)="activeFilter.set(f.key)"
+          (click)="setFilter(f.key)"
           class="relative px-4 py-2.5 text-sm font-medium transition-colors border-b-2"
           [ngClass]="activeFilter() === f.key
             ? 'text-zinc-900 border-zinc-900'
@@ -30,7 +28,7 @@
     </div>
   </div>
 
-  <div class="px-8 py-6">
+  <div class="px-4 md:px-8 py-4 md:py-6">
 
     @if (isLoading()) {
       <div class="border border-zinc-100 rounded-xl overflow-hidden divide-y divide-zinc-100">
@@ -41,75 +39,161 @@
           </div>
         }
       </div>
-    } @else if (filtered().length === 0) {
+    } @else if (allFiltered().length === 0) {
       <div class="border border-zinc-100 rounded-xl py-20 text-center">
         <p class="text-sm text-zinc-400">No bookings in this category.</p>
       </div>
     } @else {
-      <div class="border border-zinc-100 rounded-xl overflow-hidden">
+      <app-table [rows]="paginated()" emptyMessage="No bookings in this category.">
 
-        <!-- Table head -->
-        <div class="grid grid-cols-[1fr_160px_100px_90px_60px] px-5 py-2.5 bg-zinc-50 border-b border-zinc-100">
-          <p class="text-[11px] font-medium text-zinc-400">Space</p>
-          <p class="text-[11px] font-medium text-zinc-400">Dates</p>
-          <p class="text-[11px] font-medium text-zinc-400">Billing</p>
-          <p class="text-[11px] font-medium text-zinc-400">Status</p>
-          <p class="text-[11px] font-medium text-zinc-400 text-right">Amount</p>
-        </div>
-
-        @for (r of filtered(); track r.id; let last = $last) {
-          <div class="grid grid-cols-[1fr_160px_100px_90px_60px] px-5 py-3.5 items-center hover:bg-zinc-50/50 transition-colors"
-            [class.border-b]="!last" [class.border-zinc-100]="!last">
-
-            <div class="min-w-0 pr-4">
-              <p class="text-sm font-medium text-zinc-900 truncate">{{ r.space_detail?.name }}</p>
-            </div>
-
-            <p class="text-sm text-zinc-400 truncate">
-              {{ r.start_datetime | date:'MMM d' }} – {{ r.end_datetime | date:'MMM d' }}
+        <app-column label="Space" flex="1">
+          <ng-template let-r>
+            <p class="text-sm font-medium text-zinc-900 truncate cursor-pointer pr-4" (click)="openDetail(r.id)">
+              {{ r.space_detail?.name }}
             </p>
+          </ng-template>
+        </app-column>
 
+        <app-column label="Dates" width="160px">
+          <ng-template let-r>
+            <p class="text-sm text-zinc-400">{{ r.start_datetime | date:'MMM d' }} – {{ r.end_datetime | date:'MMM d' }}</p>
+          </ng-template>
+        </app-column>
+
+        <app-column label="Billing" width="100px">
+          <ng-template let-r>
             <p class="text-sm text-zinc-400">{{ r.billing_type_display }}</p>
+          </ng-template>
+        </app-column>
 
-            <div class="flex items-center">
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium"
-                [ngClass]="{
-                  'bg-[#CEF09D] text-zinc-800': r.status === 'confirmed',
-                  'bg-[#FDD5AB] text-zinc-800': r.status === 'pending',
-                  'bg-zinc-100 text-zinc-500':  r.status === 'cancelled'
-                }">
-                {{ r.status_display }}
-              </span>
-            </div>
+        <app-column label="Status" width="90px">
+          <ng-template let-r>
+            <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit" [ngClass]="statusClass(r.status)">
+              {{ r.status_display }}
+            </span>
+          </ng-template>
+        </app-column>
 
-            <div class="flex items-center justify-end">
-              <p class="text-sm font-semibold text-zinc-900">{{ r.total_price | currency:'USD':'symbol':'1.0-0' }}</p>
-            </div>
+        <app-column label="Amount" width="60px" align="right">
+          <ng-template let-r>
+            <p class="text-sm font-semibold text-zinc-900">{{ r.total_price | currency:'USD':'symbol':'1.0-0' }}</p>
+          </ng-template>
+        </app-column>
 
-          </div>
-        }
-      </div>
+        <app-column label="" width="40px" align="right">
+          <ng-template let-r>
+            <span class="iconify text-zinc-300 cursor-pointer" data-icon="lucide:chevron-right" data-width="14" (click)="openDetail(r.id)"></span>
+          </ng-template>
+        </app-column>
 
-      <!-- Inline cancel -->
-      @if (!isLoading() && filtered().length > 0) {
-        <div class="mt-3 space-y-0">
-          @for (r of filtered(); track r.id) {
-            @if (canCancel(r)) {
-              <div class="flex items-center justify-between py-2 border-b border-zinc-50 last:border-0">
-                <p class="text-xs text-zinc-400">{{ r.space_detail?.name }}</p>
-                <button
-                  (click)="cancel(r.id)"
-                  [disabled]="cancellingId() === r.id"
-                  class="text-xs text-zinc-400 hover:text-red-500 transition-colors disabled:opacity-40 font-medium">
-                  {{ cancellingId() === r.id ? 'Cancelling…' : 'Cancel booking' }}
-                </button>
-              </div>
-            }
-          }
-        </div>
-      }
+      </app-table>
 
+      <app-pagination
+        [total]="allFiltered().length"
+        [pageSize]="pageSize"
+        [current]="page()"
+        (pageChange)="page.set($event)">
+      </app-pagination>
     }
 
   </div>
 </div>
+
+<!-- Confirm cancel -->
+@if (pendingCancel() !== null) {
+  <app-confirm-dialog
+    title="Cancel booking?"
+    message="This reservation will be cancelled. This action cannot be undone."
+    confirmLabel="Cancel booking"
+    (confirmed)="confirmCancel()"
+    (cancelled)="cancelCancel()">
+  </app-confirm-dialog>
+}
+
+<!-- Detail drawer -->
+@if (selected()) {
+  <div class="fixed inset-0 z-40 flex flex-col justify-end md:flex-row md:justify-end">
+    <div class="absolute inset-0 bg-black/20 backdrop-blur-[1px]" (click)="closeDetail()"></div>
+
+    <div class="relative z-50 w-full max-h-[90vh] rounded-t-2xl md:rounded-none md:max-h-full md:max-w-md md:h-full bg-white shadow-2xl flex flex-col overflow-hidden">
+
+      <div class="px-8 pt-8 pb-6 border-b border-zinc-100 flex items-center justify-between flex-shrink-0">
+        <div>
+          <p class="text-xs font-medium text-zinc-400 mb-0.5">Dashboard · Bookings</p>
+          <h2 class="text-xl font-semibold text-zinc-900 tracking-tight">Booking detail</h2>
+        </div>
+        <button (click)="closeDetail()" class="text-zinc-400 hover:text-zinc-700 transition-colors">
+          <span class="iconify" data-icon="lucide:x" data-width="18"></span>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto px-8 py-6 space-y-6">
+
+        <!-- Space -->
+        <div class="bg-zinc-50 rounded-xl px-5 py-4">
+          <p class="text-xs font-medium text-zinc-400 mb-1">Space</p>
+          <p class="text-base font-semibold text-zinc-900">{{ selected()!.space_detail?.name }}</p>
+          <p class="text-sm text-zinc-400 mt-0.5">{{ selected()!.space_detail?.space_type_display }}</p>
+        </div>
+
+        <!-- Status badge -->
+        <div class="flex items-center gap-2">
+          <span class="inline-flex px-3 py-1 rounded-lg text-sm font-medium"
+            [ngClass]="statusClass(selected()!.status)">
+            {{ selected()!.status_display }}
+          </span>
+        </div>
+
+        <!-- Details grid -->
+        <div class="space-y-0 border border-zinc-100 rounded-xl overflow-hidden">
+          <div class="grid grid-cols-[140px_1fr] px-5 py-3.5 border-b border-zinc-100">
+            <p class="text-sm text-zinc-400">Start date</p>
+            <p class="text-sm font-medium text-zinc-900">{{ selected()!.start_datetime | date:'EEE, MMM d, y' }}</p>
+          </div>
+          <div class="grid grid-cols-[140px_1fr] px-5 py-3.5 border-b border-zinc-100">
+            <p class="text-sm text-zinc-400">End date</p>
+            <p class="text-sm font-medium text-zinc-900">{{ selected()!.end_datetime | date:'EEE, MMM d, y' }}</p>
+          </div>
+          <div class="grid grid-cols-[140px_1fr] px-5 py-3.5 border-b border-zinc-100">
+            <p class="text-sm text-zinc-400">Billing</p>
+            <p class="text-sm font-medium text-zinc-900">{{ selected()!.billing_type_display }}</p>
+          </div>
+          <div class="grid grid-cols-[140px_1fr] px-5 py-3.5 border-b border-zinc-100">
+            <p class="text-sm text-zinc-400">Duration</p>
+            <p class="text-sm font-medium text-zinc-900">{{ selected()!.duration_hours }}h</p>
+          </div>
+          @if (selected()!.is_recurring) {
+            <div class="grid grid-cols-[140px_1fr] px-5 py-3.5 border-b border-zinc-100">
+              <p class="text-sm text-zinc-400">Recurring</p>
+              <p class="text-sm font-medium text-zinc-900">{{ selected()!.recurrence_rule }}</p>
+            </div>
+          }
+          <div class="grid grid-cols-[140px_1fr] px-5 py-3.5">
+            <p class="text-sm text-zinc-400">Total</p>
+            <p class="text-sm font-bold text-zinc-900">{{ selected()!.total_price | currency:'USD':'symbol':'1.0-0' }}</p>
+          </div>
+        </div>
+
+        @if (selected()!.notes) {
+          <div>
+            <p class="text-xs font-medium text-zinc-400 mb-2">Notes</p>
+            <p class="text-sm text-zinc-600 bg-zinc-50 rounded-xl px-4 py-3">{{ selected()!.notes }}</p>
+          </div>
+        }
+
+      </div>
+
+      @if (canCancel(selected()!)) {
+        <div class="px-8 py-5 border-t border-zinc-100 flex-shrink-0 bg-white">
+          <button
+            (click)="askCancel(selected()!.id)"
+            [disabled]="cancellingId() === selected()!.id"
+            class="w-full px-4 py-2.5 rounded-lg border border-red-200 text-red-600 text-sm font-medium hover:bg-red-50 transition-colors disabled:opacity-40">
+            {{ cancellingId() === selected()!.id ? 'Cancelling…' : 'Cancel this booking' }}
+          </button>
+        </div>
+      }
+
+    </div>
+  </div>
+}

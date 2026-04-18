@@ -2,37 +2,43 @@
   <app-header></app-header>
 
   <main class="pt-20">
-    <div class="max-w-6xl mx-auto px-6 py-10">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
 
       <!-- Step indicator -->
-      <div class="flex items-center justify-center mb-10">
+      <div class="flex items-center justify-center mb-8 sm:mb-10">
+
         <div class="flex flex-col items-center gap-1.5">
-          <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all"
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all"
             [ngClass]="currentStep() === 'details' ? 'bg-zinc-900 text-white' : 'bg-[#CEF09D] text-zinc-800'">
             @if (currentStep() !== 'details') {
-              <span class="iconify" data-icon="lucide:check" data-width="14"></span>
+              <span class="iconify" data-icon="lucide:check" data-width="12"></span>
             } @else { 1 }
           </div>
-          <span class="text-xs font-medium" [ngClass]="currentStep() === 'details' ? 'text-zinc-900' : 'text-zinc-400'">Details</span>
+          <span class="text-[10px] sm:text-xs font-medium" [ngClass]="currentStep() === 'details' ? 'text-zinc-900' : 'text-zinc-400'">Details</span>
         </div>
-        <div class="w-20 h-0.5 mb-4 mx-1 transition-all"
+
+        <div class="w-10 sm:w-20 h-0.5 mb-4 mx-1 transition-all"
           [ngClass]="currentStep() !== 'details' ? 'bg-[#CEF09D]' : 'bg-zinc-200'"></div>
+
         <div class="flex flex-col items-center gap-1.5">
-          <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all"
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all"
             [ngClass]="{'bg-zinc-900 text-white': currentStep() === 'payment', 'bg-[#CEF09D] text-zinc-800': currentStep() === 'success', 'bg-zinc-200 text-zinc-400': currentStep() === 'details'}">
             @if (currentStep() === 'success') {
-              <span class="iconify" data-icon="lucide:check" data-width="14"></span>
+              <span class="iconify" data-icon="lucide:check" data-width="12"></span>
             } @else { 2 }
           </div>
-          <span class="text-xs font-medium" [ngClass]="currentStep() === 'payment' ? 'text-zinc-900' : 'text-zinc-400'">Payment</span>
+          <span class="text-[10px] sm:text-xs font-medium" [ngClass]="currentStep() === 'payment' ? 'text-zinc-900' : 'text-zinc-400'">Payment</span>
         </div>
-        <div class="w-20 h-0.5 mb-4 mx-1 transition-all"
+
+        <div class="w-10 sm:w-20 h-0.5 mb-4 mx-1 transition-all"
           [ngClass]="currentStep() === 'success' ? 'bg-[#CEF09D]' : 'bg-zinc-200'"></div>
+
         <div class="flex flex-col items-center gap-1.5">
-          <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all"
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all"
             [ngClass]="currentStep() === 'success' ? 'bg-zinc-900 text-white' : 'bg-zinc-200 text-zinc-400'">3</div>
-          <span class="text-xs font-medium" [ngClass]="currentStep() === 'success' ? 'text-zinc-900' : 'text-zinc-400'">Confirmation</span>
+          <span class="text-[10px] sm:text-xs font-medium" [ngClass]="currentStep() === 'success' ? 'text-zinc-900' : 'text-zinc-400'">Confirm</span>
         </div>
+
       </div>
 
       <!-- ── STEP 1: DETAILS ── -->

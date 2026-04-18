@@ -1,6 +1,8 @@
 import { Component, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe, NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { TableComponent } from '../../../shared/components/table/table.component';
+import { ColumnComponent } from '../../../shared/components/table/column.component';
 
 interface RecentReservation {
   id: number;
@@ -14,7 +16,7 @@ interface RecentReservation {
 @Component({
   standalone: true,
   selector: 'app-admin-overview',
-  imports: [CurrencyPipe, DatePipe, NgClass, RouterLink],
+  imports: [CurrencyPipe, DatePipe, NgClass, RouterLink, TableComponent, ColumnComponent],
   templateUrl: './overview.component.html',
 })
 export class AdminOverviewComponent {

@@ -7,6 +7,7 @@ import { FooterComponent } from '../../../shared/components/footer/footer.compon
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { DatePickerComponent } from '../../../shared/components/date-picker/date-picker.component';
 
+
 type BookingStep = 'details' | 'payment' | 'success';
 
 interface BookingSpace {
