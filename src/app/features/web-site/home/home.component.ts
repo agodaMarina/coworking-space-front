@@ -57,9 +57,9 @@ export class HomePageComponent implements OnInit, AfterViewInit {
   ];
 
   blogs = [
-    { badge: 'Trending', badgeColor: 'bg-[#AEE9F4]', time: '7 min read', title: 'Navigating the Future: Trends in Modern Coworking Spaces', img: 'blog-new-1', delay: '0s' },
-    { badge: 'Productivity', badgeColor: 'bg-[#F8C8E1]', time: '5 min read', title: "Mastering Productivity: Tips from Cowork's High Achievers", img: 'blog-new-2', delay: '.1s' },
-    { badge: 'Talk', badgeColor: 'bg-[#CEF09D]', time: '10 min read', title: "Tech Talk: The Backbone of Cowork's Seamless Experience", img: 'blog-new-3', delay: '.2s' }
+    { badge: 'Trending', badgeColor: 'bg-[#AEE9F4]', time: '7 min read', title: 'Navigating the Future: Trends in Modern Coworking Spaces', img: '/images/desktop.png', delay: '0s', link:'' },
+    { badge: 'Productivity', badgeColor: 'bg-[#F8C8E1]', time: '5 min read', title: "Mastering Productivity: Tips from Cowork's High Achievers", img: '/images/image-desktop.png', delay: '.1s',link:'' },
+    { badge: 'Talk', badgeColor: 'bg-[#CEF09D]', time: '10 min read', title: "Tech Talk: The Backbone of Cowork's Seamless Experience", img: '/images/view-modern-office.jpg', delay: '.2s',link:'' }
   ];
 
   // =========================================

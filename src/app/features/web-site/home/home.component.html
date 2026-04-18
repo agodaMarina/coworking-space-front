@@ -29,7 +29,7 @@
 
       <div class="anim d5 relative img-hover flex w-full justify-center md:justify-end">
         <div class="rounded-3xl overflow-hidden w-full max-w-[320px] sm:max-w-[420px] md:max-w-[640px] aspect-square">
-          <img src="https://picsum.photos/seed/cowork-hero-main/800/800.jpg" alt="Modern coworking space" class="w-full h-full object-cover" loading="eager">
+          <img src="/images/hero-section.png" alt="Modern coworking space" class="w-full h-full object-cover" loading="eager">
         </div>
       </div>
 
@@ -42,7 +42,7 @@
     <div class="reveal flex flex-wrap justify-center items-center gap-3 md:gap-4">
       <h2 class="text-[32px] md:text-[48px] font-bold tracking-tight text-black">Why Choose</h2>
       <div class="w-[120px] h-[40px] md:w-[160px] md:h-[50px] rounded-full bg-zinc-100 overflow-hidden inline-block align-middle">
-        <img src="https://picsum.photos/seed/pill-1/320/100.jpg" alt="" class="w-full h-full object-cover">
+        <img src="/icons/why-choose-cowork.svg" alt="" class="w-full h-full object-cover">
       </div>
       <h2 class="text-[32px] md:text-[48px] font-bold tracking-tight text-black">Cowork?</h2>
     </div>
@@ -71,7 +71,7 @@
         <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-black">Explore Cowork Through Our</h2>
         <div class="flex flex-row justify-center items-center gap-3">
           <div class="w-[90px] h-[36px] md:w-[130px] md:h-[46px] rounded-full overflow-hidden inline-block align-middle">
-            <img src="https://picsum.photos/seed/pill-2/260/92.jpg" alt="" class="w-full h-full object-cover">
+            <img src="/icons/cowork.svg" alt="" class="w-full h-full object-cover">
           </div>
           <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-black">Lens</h2>
         </div>
@@ -85,7 +85,7 @@
     </div>
 
     <div class="reveal relative rounded-[48px] overflow-hidden img-hover group cursor-pointer shadow-2xl shadow-black/5 w-full aspect-[1312/700]">
-      <img src="https://picsum.photos/seed/cowork-video-cover/1312/700.jpg" alt="Coworking space virtual tour" class="w-full h-full object-cover">
+      <img src="/images/space.png" alt="Coworking space virtual tour" class="w-full h-full object-cover">
       <div class="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-500 flex items-center justify-center">
         <div class="relative w-16 h-16 md:w-24 md:h-24 rounded-2xl bg-black/80 backdrop-blur-sm flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
           <span class="iconify text-white" data-icon="mdi:play" data-width="40"></span>
@@ -116,7 +116,7 @@
     </div>
 
     <div class="reveal w-full md:w-[616px] h-[400px] md:h-[640px] rounded-[32px] overflow-hidden flex-shrink-0">
-       <img src="https://picsum.photos/seed/cowork-stats-img/616/640.jpg" alt="Meeting room" class="w-full h-full object-cover">
+       <img src="/images/office.png" alt="Meeting room" class="w-full h-full object-cover">
     </div>
   </div>
 </section>
@@ -218,7 +218,7 @@
       <div class="flex flex-wrap justify-center items-center gap-3 md:gap-4 mb-4">
         <h2 class="text-4xl sm:text-5xl md:text-6xl lg:text-[96px] font-bold tracking-tight text-black leading-none">Seize</h2>
         <div class="w-[120px] h-[40px] md:w-[160px] md:h-[60px] lg:w-[220px] lg:h-[80px] rounded-full overflow-hidden inline-block align-middle">
-          <img src="https://picsum.photos/seed/pill-3/320/120.jpg" alt="" class="w-full h-full object-cover">
+          <img src="/icons/seize.svg" alt="" class="w-full h-full object-cover">
         </div>
         <h2 class="text-4xl sm:text-5xl md:text-6xl lg:text-[96px] font-bold tracking-tight text-black leading-none">The Moment –</h2>
       </div>
@@ -241,7 +241,7 @@
         <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-bold tracking-tight text-black leading-tight">Insights, Innovation, and</h2>
         <div class="flex justify-center items-center gap-3 md:gap-4 mt-2">
           <div class="w-[90px] h-[36px] md:w-[140px] md:h-[48px] rounded-full overflow-hidden inline-block align-middle">
-            <img src="https://picsum.photos/seed/pill-brain/280/96.jpg" alt="" class="w-full h-full object-cover">
+            <img src="/icons/inspiration.svg" alt="" class="w-full h-full object-cover">
           </div>
           <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-bold tracking-tight text-black leading-tight">Inspiration</h2>
         </div>
@@ -254,7 +254,7 @@
     <div class="grid md:grid-cols-3 gap-8">
       <article *ngFor="let blog of blogs" class="reveal group cursor-pointer flex flex-col" [style.transition-delay]="blog.delay">
         <div class="rounded-[24px] overflow-hidden mb-6 aspect-[4/3] shadow-sm">
-          <img [src]="'https://picsum.photos/seed/' + blog.img + '/600/450.jpg'" alt="Blog Image" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
+          <img [src]="blog.img" alt="Blog Image" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
         </div>
         <div class="flex items-center gap-3 mb-4">
           <span class="px-3 py-1 rounded-md text-black text-xs font-bold" [ngClass]="blog.badgeColor">{{ blog.badge }}</span>
@@ -264,9 +264,9 @@
           {{ blog.title }}
         </h3>
         <div class="mt-auto">
-          <span class="text-sm font-general text-black flex items-center gap-1 group-hover:gap-2 transition-all">
+          <a [href]="blog.link" class="text-sm font-general text-black flex items-center gap-1 group-hover:gap-2 transition-all">
             Read more <span class="iconify" data-icon="mdi:chevron-right" data-width="20"></span>
-          </span>
+          </a>
         </div>
       </article>
     </div>
