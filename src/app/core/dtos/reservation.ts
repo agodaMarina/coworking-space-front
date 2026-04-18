@@ -26,3 +26,22 @@ export interface CreateReservation {
     recurrence_rule?: string;
     notes?: string;
 }
+
+export interface ReservationListParams {
+    billing_type?: 'hourly' | 'daily';
+    is_recurring?: boolean;
+    ordering?: string;
+    page?: number;
+    status?: 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'rejected';
+}
+
+export interface ReservationUpdatePayload {
+    status?: 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'rejected';
+    notes?: string;
+}
+
+export interface ReservationAvailabilityPayload {
+    start_datetime?: string;
+    end_datetime?: string;
+    billing_type?: 'hourly' | 'daily';
+}

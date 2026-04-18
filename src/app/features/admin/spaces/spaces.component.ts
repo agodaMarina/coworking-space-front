@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputComponent } from '../../../shared/components/input/input.component';
@@ -10,19 +10,8 @@ import { ToastService } from '../../../core/services/toast.service';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { TableComponent } from '../../../shared/components/table/table.component';
 import { ColumnComponent } from '../../../shared/components/table/column.component';
-
-export interface AdminSpace {
-  id: number;
-  name: string;
-  type: string;
-  typeDisplay: string;
-  capacity: number;
-  pricePerHour: number;
-  pricePerDay: number;
-  available: boolean;
-  address: string;
-  description: string;
-}
+import { Amenity, Space, SpacePhoto, SpaceWritePayload } from '../../../core/dtos/space';
+import { SpacesService } from '../../../core/services/spaces.service';
 
 @Component({
   standalone: true,
@@ -30,7 +19,7 @@ export interface AdminSpace {
   imports: [NgClass, ReactiveFormsModule, InputComponent, TextareaComponent, SelectComponent, ToggleComponent, ConfirmDialogComponent, PaginationComponent, TableComponent, ColumnComponent],
   templateUrl: './spaces.component.html',
 })
-export class AdminSpacesComponent {
+export class AdminSpacesComponent implements OnInit {
   readonly search = signal('');
   readonly filterType = signal<string | null>(null);
   readonly filterControl = new FormControl<string | null>(null);
@@ -39,6 +28,16 @@ export class AdminSpacesComponent {
   readonly showModal = signal(false);
   readonly editingId = signal<number | null>(null);
   readonly pendingDeleteId = signal<number | null>(null);
+  readonly spaces = signal<Space[]>([]);
+  readonly amenities = signal<Amenity[]>([]);
+  readonly currentSpace = signal<Space | null>(null);
+  readonly isSaving = signal(false);
+  readonly isLoadingDetails = signal(false);
+  readonly isUploadingPhoto = signal(false);
+  readonly selectedPhotoFile = signal<File | null>(null);
+  readonly selectedPhotoPreview = signal<string | null>(null);
+  readonly selectedPhotoName = signal('');
+  readonly selectedPhotoIsPrimary = signal(false);
 
   readonly form: FormGroup;
 
@@ -59,28 +58,19 @@ export class AdminSpacesComponent {
     { label: 'Conference',     value: 'conference',   badge: 'bg-[#E2F89C] text-black' },
   ];
 
-  readonly spaces = signal<AdminSpace[]>([
-    { id: 1, name: 'Open Space A',     type: 'open_space',   typeDisplay: 'Open Space',     capacity: 20, pricePerHour: 8,  pricePerDay: 50,  available: true,  address: '12 Rue du Cowork',    description: 'Espace de travail partagé lumineux.' },
-    { id: 2, name: 'Meeting Room 1',   type: 'meeting_room', typeDisplay: 'Meeting Room',   capacity: 8,  pricePerHour: 20, pricePerDay: 120, available: true,  address: '12 Rue du Cowork',    description: 'Salle de réunion avec vidéoprojecteur.' },
-    { id: 3, name: 'Private Office 3', type: 'private',      typeDisplay: 'Private Office', capacity: 4,  pricePerHour: 30, pricePerDay: 200, available: false, address: '8 Avenue Centrale',   description: 'Bureau privatif climatisé.' },
-    { id: 4, name: 'Hot Desk B',       type: 'desk',         typeDisplay: 'Hot Desk',       capacity: 1,  pricePerHour: 5,  pricePerDay: 25,  available: true,  address: '12 Rue du Cowork',    description: 'Poste de travail flexible.' },
-    { id: 5, name: 'Conference Hall',  type: 'conference',   typeDisplay: 'Conference',     capacity: 50, pricePerHour: 60, pricePerDay: 400, available: true,  address: '3 Place des Affaires', description: 'Grande salle de conférence.' },
-    { id: 6, name: 'Open Space B',     type: 'open_space',   typeDisplay: 'Open Space',     capacity: 15, pricePerHour: 7,  pricePerDay: 40,  available: false, address: '8 Avenue Centrale',   description: 'Espace ouvert en rez-de-chaussée.' },
-  ]);
-
   readonly filtered = computed(() => {
     const q = this.search().toLowerCase();
     const t = this.filterType();
     return this.spaces().filter(s =>
       (!q || s.name.toLowerCase().includes(q) || s.address.toLowerCase().includes(q)) &&
-      (!t || s.type === t)
+      (!t || s.space_type === t)
     );
   });
 
   readonly stats = computed(() => ({
     total:       this.spaces().length,
-    available:   this.spaces().filter(s => s.available).length,
-    unavailable: this.spaces().filter(s => !s.available).length,
+    available:   this.spaces().filter(s => s.is_available).length,
+    unavailable: this.spaces().filter(s => !s.is_available).length,
   }));
 
   readonly modalTitle = computed(() => this.editingId() !== null ? 'Edit space' : 'New space');
@@ -91,19 +81,30 @@ export class AdminSpacesComponent {
     return this.filtered().slice(start, start + this.pageSize);
   });
 
-  constructor(private fb: FormBuilder, private toast: ToastService) {
+  constructor(
+    private fb: FormBuilder,
+    private toast: ToastService,
+    private spacesService: SpacesService
+  ) {
     this.filterControl.valueChanges.subscribe(v => { this.filterType.set(v); this.page.set(1); });
 
     this.form = this.fb.group({
       name:         ['', Validators.required],
-      type:         ['desk', Validators.required],
+      space_type:   ['desk', Validators.required],
       address:      ['', Validators.required],
       description:  [''],
-      capacity:     [null],
-      pricePerHour: [null],
-      pricePerDay:  [null],
-      available:    [true],
+      capacity:     [1, [Validators.required, Validators.min(0)]],
+      price_per_hour: [0, [Validators.required, Validators.min(0)]],
+      price_per_day:  [0, [Validators.required, Validators.min(0)]],
+      is_available:   [true],
+      amenities:      [[]],
     });
+  }
+
+  ngOnInit(): void {
+    this.spacesService.disableMocks();
+    this.loadSpaces();
+    this.loadAmenities();
   }
 
   typeBadge(type: string): string {
@@ -114,46 +115,72 @@ export class AdminSpacesComponent {
     return this.typeOptions.find(o => o.value === type)?.label ?? type;
   }
 
-  toggleAvailability(id: number): void {
-    this.spaces.update(list =>
-      list.map(s => s.id === id ? { ...s, available: !s.available } : s)
-    );
-    this.toast.showSuccess('Space availability updated.');
+  loadSpaces(): void {
+    this.spacesService.getSpaces().subscribe({
+      next: spaces => this.spaces.set(spaces),
+      error: () => this.toast.showError('Unable to load spaces.'),
+    });
+  }
+
+  loadAmenities(): void {
+    this.spacesService.getAmenities().subscribe({
+      next: amenities => this.amenities.set(amenities),
+      error: () => this.toast.showError('Unable to load amenities.'),
+    });
+  }
+
+  toggleAvailability(space: Space): void {
+    this.spacesService.patchSpace(space.id, { is_available: !space.is_available }).subscribe({
+      next: updated => {
+        this.mergeSpace(updated);
+        this.toast.showSuccess('Space availability updated.');
+      },
+      error: () => this.toast.showError('Unable to update availability.'),
+    });
   }
 
   openCreate(): void {
     this.editingId.set(null);
-    this.form.reset({ type: 'desk', available: true });
+    this.currentSpace.set(null);
+    this.resetForm();
+    this.clearSelectedPhoto();
     this.showModal.set(true);
   }
 
-  openEdit(s: AdminSpace): void {
+  openEdit(s: Space): void {
     this.editingId.set(s.id);
-    this.form.patchValue(s);
+    this.currentSpace.set(s);
+    this.patchForm(s);
+    this.clearSelectedPhoto();
     this.showModal.set(true);
+    this.loadSpaceDetail(s.id);
   }
 
   closeModal(): void {
     this.showModal.set(false);
+    this.editingId.set(null);
+    this.currentSpace.set(null);
+    this.isLoadingDetails.set(false);
+    this.clearSelectedPhoto();
   }
 
   saveForm(): void {
-    if (this.form.invalid) return;
-    const v = this.form.value;
-    const typeDisp = this.typeDisplay(v.type);
-    const id = this.editingId();
+    if (this.form.invalid || this.isSaving()) return;
 
-    if (id !== null) {
-      this.spaces.update(list =>
-        list.map(s => s.id === id ? { ...s, ...v, typeDisplay: typeDisp } : s)
-      );
-      this.toast.showSuccess('Space updated.');
-    } else {
-      const newId = Math.max(0, ...this.spaces().map(s => s.id)) + 1;
-      this.spaces.update(list => [...list, { id: newId, typeDisplay: typeDisp, ...v }]);
-      this.toast.showSuccess('Space created.');
-    }
-    this.closeModal();
+    const id = this.editingId();
+    const payload = this.buildPayload();
+    const request = id !== null
+      ? this.spacesService.updateSpace(id, payload)
+      : this.spacesService.createSpace(payload);
+
+    this.isSaving.set(true);
+    request.subscribe({
+      next: space => this.persistPendingPhoto(space, id !== null ? 'Space updated.' : 'Space created.'),
+      error: () => {
+        this.isSaving.set(false);
+        this.toast.showError(id !== null ? 'Unable to update the space.' : 'Unable to create the space.');
+      }
+    });
   }
 
   askDelete(id: number): void {
@@ -163,12 +190,199 @@ export class AdminSpacesComponent {
   confirmDelete(): void {
     const id = this.pendingDeleteId();
     if (id === null) return;
-    this.spaces.update(list => list.filter(s => s.id !== id));
-    this.pendingDeleteId.set(null);
-    this.toast.showSuccess('Space deleted.');
+
+    this.spacesService.deleteSpace(id).subscribe({
+      next: () => {
+        this.spaces.update(list => list.filter(space => space.id !== id));
+        this.pendingDeleteId.set(null);
+        if (this.currentSpace()?.id === id) {
+          this.closeModal();
+        }
+        this.toast.showSuccess('Space deleted.');
+      },
+      error: () => this.toast.showError('Unable to delete the space.'),
+    });
   }
 
   cancelDelete(): void {
     this.pendingDeleteId.set(null);
+  }
+
+  loadSpaceDetail(id: number): void {
+    this.isLoadingDetails.set(true);
+    this.spacesService.getSpace(id).subscribe({
+      next: space => {
+        this.currentSpace.set(space);
+        this.patchForm(space);
+        this.isLoadingDetails.set(false);
+      },
+      error: () => {
+        this.isLoadingDetails.set(false);
+        this.toast.showError('Unable to load space details.');
+      },
+    });
+  }
+
+  onAmenityToggle(amenityId: number, checked: boolean): void {
+    const current = [...((this.form.get('amenities')?.value as number[] | null) ?? [])];
+    const next = checked
+      ? Array.from(new Set([...current, amenityId]))
+      : current.filter(id => id !== amenityId);
+
+    this.form.patchValue({ amenities: next });
+  }
+
+  isAmenitySelected(amenityId: number): boolean {
+    const selected = (this.form.get('amenities')?.value as number[] | null) ?? [];
+    return selected.includes(amenityId);
+  }
+
+  onPhotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    this.clearSelectedPhoto();
+    this.selectedPhotoFile.set(file);
+    this.selectedPhotoName.set(file.name);
+    this.selectedPhotoPreview.set(URL.createObjectURL(file));
+  }
+
+  removeSelectedPhoto(): void {
+    this.clearSelectedPhoto();
+  }
+
+  deletePhoto(photo: SpacePhoto): void {
+    const spaceId = this.currentSpace()?.id;
+    if (!spaceId || this.isUploadingPhoto()) return;
+
+    this.isUploadingPhoto.set(true);
+    this.spacesService.deleteSpacePhoto(spaceId, photo.id).subscribe({
+      next: () => {
+        this.loadSpaces();
+        this.loadSpaceDetail(spaceId);
+        this.isUploadingPhoto.set(false);
+        this.toast.showSuccess('Photo deleted.');
+      },
+      error: () => {
+        this.isUploadingPhoto.set(false);
+        this.toast.showError('Unable to delete the photo.');
+      },
+    });
+  }
+
+  primaryPhoto(space: Space | null): string | undefined {
+    if (!space) {
+      return undefined;
+    }
+
+    const primary = space.photos.find(photo => photo.is_primary);
+    return primary?.url ?? space.photo;
+  }
+
+  private buildPayload(): SpaceWritePayload {
+    const raw = this.form.getRawValue();
+
+    return {
+      name: String(raw.name ?? ''),
+      space_type: raw.space_type,
+      address: String(raw.address ?? ''),
+      description: String(raw.description ?? ''),
+      capacity: Number(raw.capacity ?? 0),
+      price_per_hour: Number(raw.price_per_hour ?? 0),
+      price_per_day: Number(raw.price_per_day ?? 0),
+      is_available: !!raw.is_available,
+      amenities: Array.isArray(raw.amenities) ? raw.amenities.map((value: number | string) => Number(value)) : [],
+    };
+  }
+
+  private patchForm(space: Space): void {
+    this.form.patchValue({
+      name: space.name,
+      space_type: space.space_type,
+      address: space.address,
+      description: space.description,
+      capacity: space.capacity,
+      price_per_hour: space.price_per_hour,
+      price_per_day: space.price_per_day,
+      is_available: space.is_available,
+      amenities: space.amenities.map(amenity => amenity.id),
+    });
+  }
+
+  private resetForm(): void {
+    this.form.reset({
+      name: '',
+      space_type: 'desk',
+      address: '',
+      description: '',
+      capacity: 1,
+      price_per_hour: 0,
+      price_per_day: 0,
+      is_available: true,
+      amenities: [],
+    });
+  }
+
+  private persistPendingPhoto(space: Space, successMessage: string): void {
+    this.mergeSpace(space);
+    const file = this.selectedPhotoFile();
+
+    if (!file) {
+      this.isSaving.set(false);
+      this.closeModal();
+      this.toast.showSuccess(successMessage);
+      return;
+    }
+
+    this.isUploadingPhoto.set(true);
+    this.spacesService.uploadSpacePhoto(space.id, file, this.selectedPhotoIsPrimary()).subscribe({
+      next: () => {
+        this.isUploadingPhoto.set(false);
+        this.isSaving.set(false);
+        this.loadSpaces();
+        this.closeModal();
+        this.toast.showSuccess(successMessage);
+      },
+      error: () => {
+        this.isUploadingPhoto.set(false);
+        this.isSaving.set(false);
+        this.loadSpaces();
+        this.loadSpaceDetail(space.id);
+        this.editingId.set(space.id);
+        this.currentSpace.set(space);
+        this.toast.showError('Space saved, but the photo upload failed.');
+      },
+    });
+  }
+
+  private mergeSpace(updated: Space): void {
+    this.spaces.update(list => {
+      const exists = list.some(space => space.id === updated.id);
+      if (!exists) {
+        return [updated, ...list];
+      }
+
+      return list.map(space => space.id === updated.id ? updated : space);
+    });
+
+    if (this.currentSpace()?.id === updated.id) {
+      this.currentSpace.set(updated);
+    }
+  }
+
+  private clearSelectedPhoto(): void {
+    const preview = this.selectedPhotoPreview();
+    if (preview) {
+      URL.revokeObjectURL(preview);
+    }
+
+    this.selectedPhotoFile.set(null);
+    this.selectedPhotoPreview.set(null);
+    this.selectedPhotoName.set('');
+    this.selectedPhotoIsPrimary.set(false);
   }
 }

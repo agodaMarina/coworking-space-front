@@ -1,6 +1,14 @@
+import { HttpParams } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
-import { finalize, Observable, of, tap } from 'rxjs';
-import { CreateReservation, Reservation } from '../dtos/reservation';
+import { finalize, map, Observable, of, tap } from 'rxjs';
+import { PaginatedResponse } from '../dtos/pagination';
+import {
+  CreateReservation,
+  Reservation,
+  ReservationAvailabilityPayload,
+  ReservationListParams,
+  ReservationUpdatePayload
+} from '../dtos/reservation';
 import { ApiService } from '../http/api.service';
 
 
@@ -113,10 +121,26 @@ export class ReservationsService extends ApiService {
     this.useMocks.set(!this.useMocks());
   }
 
-  getReservations(): Observable<Reservation[]> {
+  getReservations(params?: ReservationListParams): Observable<Reservation[]> {
     return (this.useMocks()
-      ? of(this.mockReservations)
-      : this.get<Reservation[]>('/reservations/')).pipe(
+      ? of(this.filterMockReservations(params))
+      : this.get<PaginatedResponse<Reservation>>('/reservations/', this.buildParams(params)).pipe(
+          map(response => response.results.map(reservation => this.normalizeReservation(reservation)))
+        )).pipe(
+      tap(() => this.isLoading.set(true)),
+      finalize(() => this.isLoading.set(false))
+    );
+  }
+
+  getReservationsPage(params?: ReservationListParams): Observable<PaginatedResponse<Reservation>> {
+    return (this.useMocks()
+      ? of(this.paginateMockReservations(this.filterMockReservations(params)))
+      : this.get<PaginatedResponse<Reservation>>('/reservations/', this.buildParams(params)).pipe(
+          map(response => ({
+            ...response,
+            results: response.results.map(reservation => this.normalizeReservation(reservation))
+          }))
+        )).pipe(
       tap(() => this.isLoading.set(true)),
       finalize(() => this.isLoading.set(false))
     );
@@ -125,7 +149,9 @@ export class ReservationsService extends ApiService {
   createReservation(data: CreateReservation): Observable<Reservation> {
     const source = this.useMocks()
       ? of(this.createMockReservation(data))
-      : this.post<Reservation>('/reservations/create/', data);
+      : this.post<Reservation>('/reservations/create/', data).pipe(
+          map(reservation => this.normalizeReservation(reservation))
+        );
 
     return source.pipe(
       tap(() => this.isLoading.set(true)),
@@ -135,8 +161,10 @@ export class ReservationsService extends ApiService {
 
   getReservation(id: number): Observable<Reservation> {
     const source = this.useMocks()
-      ? of(this.mockReservations.find(r => r.id === id) || ({} as Reservation))
-      : this.get<Reservation>(`/reservations/${id}/`);
+      ? of(this.normalizeReservation(this.mockReservations.find(r => r.id === id) || ({} as Reservation)))
+      : this.get<Reservation>(`/reservations/${id}/`).pipe(
+          map(reservation => this.normalizeReservation(reservation))
+        );
 
     return source.pipe(
       tap(() => this.isLoading.set(true)),
@@ -153,6 +181,89 @@ export class ReservationsService extends ApiService {
       tap(() => this.isLoading.set(true)),
       finalize(() => this.isLoading.set(false))
     );
+  }
+
+  updateReservation(id: number, payload: ReservationUpdatePayload): Observable<ReservationUpdatePayload> {
+    const source = this.useMocks()
+      ? of(this.updateMockReservation(id, payload))
+      : this.put<ReservationUpdatePayload>(`/reservations/${id}/update/`, payload);
+
+    return source.pipe(
+      tap(() => this.isLoading.set(true)),
+      finalize(() => this.isLoading.set(false))
+    );
+  }
+
+  patchReservation(id: number, payload: ReservationUpdatePayload): Observable<ReservationUpdatePayload> {
+    const source = this.useMocks()
+      ? of(this.updateMockReservation(id, payload))
+      : this.patch<ReservationUpdatePayload>(`/reservations/${id}/update/`, payload);
+
+    return source.pipe(
+      tap(() => this.isLoading.set(true)),
+      finalize(() => this.isLoading.set(false))
+    );
+  }
+
+  checkAvailability(spaceId: number, payload: ReservationAvailabilityPayload = {}): Observable<Record<string, unknown>> {
+    const source = this.useMocks()
+      ? of(this.checkMockAvailability(spaceId, payload))
+      : this.post<Record<string, unknown>>(`/reservations/availability/${spaceId}/`, payload);
+
+    return source.pipe(
+      tap(() => this.isLoading.set(true)),
+      finalize(() => this.isLoading.set(false))
+    );
+  }
+
+  private buildParams(params?: object): HttpParams | undefined {
+    if (!params) {
+      return undefined;
+    }
+
+    let httpParams = new HttpParams();
+
+    for (const [key, value] of Object.entries(params as Record<string, unknown>)) {
+      if (value !== undefined && value !== null && value !== '') {
+        httpParams = httpParams.set(key, String(value));
+      }
+    }
+
+    return httpParams.keys().length ? httpParams : undefined;
+  }
+
+  private normalizeReservation(reservation: Reservation): Reservation {
+    return {
+      ...reservation,
+      total_price: Number(reservation.total_price)
+    };
+  }
+
+  private filterMockReservations(params?: ReservationListParams): Reservation[] {
+    return this.mockReservations.filter(reservation => {
+      if (params?.billing_type && reservation.billing_type !== params.billing_type) {
+        return false;
+      }
+
+      if (params?.is_recurring !== undefined && reservation.is_recurring !== params.is_recurring) {
+        return false;
+      }
+
+      if (params?.status && reservation.status !== params.status) {
+        return false;
+      }
+
+      return true;
+    });
+  }
+
+  private paginateMockReservations(reservations: Reservation[]): PaginatedResponse<Reservation> {
+    return {
+      count: reservations.length,
+      next: null,
+      previous: null,
+      results: reservations
+    };
   }
 
   private createMockReservation(data: CreateReservation): Reservation {
@@ -185,5 +296,30 @@ export class ReservationsService extends ApiService {
       this.mockReservations[index].status_display = 'Annulée';
     }
     return of({ success: true });
+  }
+
+  private updateMockReservation(id: number, payload: ReservationUpdatePayload): ReservationUpdatePayload {
+    const reservation = this.mockReservations.find(item => item.id === id);
+
+    if (!reservation) {
+      return payload;
+    }
+
+    Object.assign(reservation, payload, { updated_at: new Date().toISOString() });
+    return payload;
+  }
+
+  private checkMockAvailability(spaceId: number, payload: ReservationAvailabilityPayload): Record<string, unknown> {
+    return {
+      available: !this.mockReservations.some(reservation =>
+        reservation.space_detail?.id === spaceId &&
+        reservation.status !== 'cancelled' &&
+        payload.start_datetime &&
+        payload.end_datetime &&
+        payload.start_datetime < reservation.end_datetime &&
+        payload.end_datetime > reservation.start_datetime
+      ),
+      space_id: spaceId
+    };
   }
 }
