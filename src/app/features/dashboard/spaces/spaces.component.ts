@@ -1,13 +1,15 @@
 import { NgClass } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { TableComponent } from '../../../shared/components/table/table.component';
+import { ColumnComponent } from '../../../shared/components/table/column.component';
 import { Space } from '../../../core/dtos/space';
 import { SpacesService } from '../../../core/services/spaces.service';
 
 @Component({
   standalone: true,
   selector: 'app-dashboard-spaces',
-  imports: [NgClass, RouterLink],
+  imports: [NgClass, RouterLink, TableComponent, ColumnComponent],
   templateUrl: './spaces.component.html',
 })
 export class DashboardSpacesComponent implements OnInit {

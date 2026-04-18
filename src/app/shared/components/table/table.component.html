@@ -1,0 +1,70 @@
+<!-- ── Mobile: cartes ── -->
+<div class="md:hidden space-y-2">
+
+  @if (rows.length === 0) {
+    <div class="border border-zinc-100 rounded-xl py-12 text-center">
+      <p class="text-sm text-zinc-400">{{ emptyMessage }}</p>
+    </div>
+  }
+
+  @for (row of rows; track $index) {
+    <div class="border border-zinc-100 rounded-xl px-4 py-3.5 space-y-2.5 bg-white">
+      @for (col of cols(); track col.label) {
+        @if (col.label && !col.hideOnMobile) {
+          <div class="flex items-start justify-between gap-4 min-w-0">
+            <p class="text-xs font-medium text-zinc-400 flex-shrink-0 pt-0.5 w-24">{{ col.label }}</p>
+            <div class="flex-1 min-w-0 flex justify-end">
+              <ng-container *ngTemplateOutlet="col.cell; context: { $implicit: row }"></ng-container>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
+
+</div>
+
+<!-- ── Desktop: tableau ── -->
+<div class="hidden md:block border border-zinc-100 rounded-xl overflow-hidden">
+
+  <!-- Header -->
+  @if (cols().length > 0) {
+    <div class="grid px-5 py-2.5 bg-zinc-50 border-b border-zinc-100"
+      [style.grid-template-columns]="gridTemplate">
+      @for (col of cols(); track col.label) {
+        <p class="text-[11px] font-medium text-zinc-400"
+          [ngClass]="{
+            'text-right':  col.align === 'right',
+            'text-center': col.align === 'center'
+          }">
+          {{ col.label }}
+        </p>
+      }
+    </div>
+  }
+
+  <!-- Empty state -->
+  @if (rows.length === 0) {
+    <div class="py-16 text-center">
+      <p class="text-sm text-zinc-400">{{ emptyMessage }}</p>
+    </div>
+  }
+
+  <!-- Rows -->
+  @for (row of rows; track $index; let last = $last) {
+    <div class="grid px-5 py-3.5 items-center hover:bg-zinc-50/50 transition-colors"
+      [style.grid-template-columns]="gridTemplate"
+      [class.border-b]="!last"
+      [class.border-zinc-100]="!last">
+      @for (col of cols(); track col.label) {
+        <div [ngClass]="{
+          'flex justify-end':    col.align === 'right',
+          'flex justify-center': col.align === 'center'
+        }">
+          <ng-container *ngTemplateOutlet="col.cell; context: { $implicit: row }"></ng-container>
+        </div>
+      }
+    </div>
+  }
+
+</div>

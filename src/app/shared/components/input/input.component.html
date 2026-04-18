@@ -1,0 +1,21 @@
+<div class="relative">
+  @if (icon) {
+    <span class="iconify absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none"
+      [attr.data-icon]="icon" data-width="15"></span>
+  }
+  <input
+    [type]="type"
+    [placeholder]="placeholder"
+    [maxLength]="maxlength ?? 524288"
+    [disabled]="disabled"
+    [value]="value"
+    (input)="onInput($event)"
+    (blur)="onBlur()"
+    class="w-full py-2.5 text-sm border border-zinc-200 rounded-xl text-zinc-900 placeholder-zinc-300 bg-white focus:outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+    [ngClass]="{
+      'pl-9 pr-3.5': icon,
+      'px-3.5':      !icon,
+      'font-mono':   mono
+    }"
+  >
+</div>

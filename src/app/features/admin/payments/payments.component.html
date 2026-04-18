@@ -1,16 +1,15 @@
 <div class="min-h-full bg-white">
 
-  <div class="px-8 pt-10 pb-0 border-b border-zinc-100">
+  <div class="px-4 md:px-8 pt-6 md:pt-10 pb-0 border-b border-zinc-100">
     <p class="text-xs font-medium text-zinc-400 mb-1">Admin</p>
     <div class="flex items-end justify-between gap-4 mb-6">
       <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Payments</h1>
     </div>
 
-    <!-- Tabs -->
     <div class="flex gap-0">
       @for (f of filters; track f.key) {
         <button
-          (click)="activeFilter.set(f.key)"
+          (click)="setFilter(f.key)"
           class="relative px-4 py-2.5 text-sm font-medium transition-colors border-b-2"
           [ngClass]="activeFilter() === f.key
             ? 'text-zinc-900 border-zinc-900'
@@ -21,10 +20,10 @@
     </div>
   </div>
 
-  <div class="px-8 py-6">
+  <div class="px-4 md:px-8 py-4 md:py-6">
 
     <!-- Stats -->
-    <div class="grid grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
       <div class="bg-[#CEF09D] rounded-xl px-6 py-5">
         <p class="text-xs text-zinc-600 font-medium mb-3">Total revenue</p>
         <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().total | currency:'USD':'symbol':'1.0-0' }}</p>
@@ -39,37 +38,84 @@
       </div>
     </div>
 
-    <!-- Table -->
-    @if (filtered().length === 0) {
+    @if (allFiltered().length === 0) {
       <div class="border border-zinc-100 rounded-xl py-20 text-center">
         <p class="text-sm text-zinc-400">No payments in this category.</p>
       </div>
     } @else {
-      <div class="border border-zinc-100 rounded-xl overflow-hidden">
-        <div class="grid grid-cols-[100px_1fr_150px_120px_90px_70px] px-5 py-2.5 bg-zinc-50 border-b border-zinc-100">
-          <p class="text-[11px] font-medium text-zinc-400">Invoice</p>
-          <p class="text-[11px] font-medium text-zinc-400">User</p>
-          <p class="text-[11px] font-medium text-zinc-400">Space</p>
-          <p class="text-[11px] font-medium text-zinc-400">Date</p>
-          <p class="text-[11px] font-medium text-zinc-400">Status</p>
-          <p class="text-[11px] font-medium text-zinc-400 text-right">Amount</p>
-        </div>
+      <app-table [rows]="paginated()" emptyMessage="No payments in this category.">
 
-        @for (p of filtered(); track p.id; let last = $last) {
-          <div class="grid grid-cols-[100px_1fr_150px_120px_90px_70px] px-5 py-3.5 items-center hover:bg-zinc-50/50 transition-colors"
-            [class.border-b]="!last" [class.border-zinc-100]="!last">
+        <app-column label="Invoice" width="100px">
+          <ng-template let-p>
             <p class="text-sm font-mono text-zinc-400">{{ p.invoice }}</p>
+          </ng-template>
+        </app-column>
+
+        <app-column label="User" flex="1">
+          <ng-template let-p>
             <p class="text-sm font-medium text-zinc-900 truncate pr-4">{{ p.user }}</p>
+          </ng-template>
+        </app-column>
+
+        <app-column label="Space" width="150px">
+          <ng-template let-p>
             <p class="text-sm text-zinc-400 truncate">{{ p.space }}</p>
+          </ng-template>
+        </app-column>
+
+        <app-column label="Date" width="110px">
+          <ng-template let-p>
             <p class="text-sm text-zinc-400">{{ p.date | date:'MMM d, y' }}</p>
+          </ng-template>
+        </app-column>
+
+        <app-column label="Status" width="90px">
+          <ng-template let-p>
             <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit" [ngClass]="statusBadge(p.status)">
               {{ p.status }}
             </span>
-            <p class="text-sm font-semibold text-zinc-900 text-right">{{ p.amount | currency:'USD':'symbol':'1.0-0' }}</p>
-          </div>
-        }
-      </div>
+          </ng-template>
+        </app-column>
+
+        <app-column label="Amount" width="70px" align="right">
+          <ng-template let-p>
+            <p class="text-sm font-semibold text-zinc-900">{{ p.amount | currency:'USD':'symbol':'1.0-0' }}</p>
+          </ng-template>
+        </app-column>
+
+        <app-column label="Actions" width="100px" align="right">
+          <ng-template let-p>
+            @if (p.status === 'pending') {
+              <div class="flex gap-2">
+                <button (click)="askAction(p.id, 'paid')" class="text-xs font-medium text-zinc-400 hover:text-emerald-600 transition-colors">Paid</button>
+                <button (click)="askAction(p.id, 'refunded')" class="text-xs font-medium text-zinc-400 hover:text-red-500 transition-colors">Refund</button>
+              </div>
+            } @else {
+              <span class="text-xs text-zinc-200">—</span>
+            }
+          </ng-template>
+        </app-column>
+
+      </app-table>
+
+      <app-pagination
+        [total]="allFiltered().length"
+        [pageSize]="pageSize"
+        [current]="page()"
+        (pageChange)="page.set($event)">
+      </app-pagination>
     }
 
   </div>
 </div>
+
+<!-- Confirm action -->
+@if (pendingAction() !== null) {
+  <app-confirm-dialog
+    [title]="confirmTitle"
+    [message]="confirmMessage"
+    [confirmLabel]="confirmLabel"
+    (confirmed)="confirmAction()"
+    (cancelled)="cancelAction()">
+  </app-confirm-dialog>
+}

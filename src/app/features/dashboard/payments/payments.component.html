@@ -1,30 +1,28 @@
 <div class="min-h-full bg-white">
 
-  <!-- Header -->
-  <div class="px-8 pt-10 pb-8 border-b border-zinc-100">
+  <div class="px-4 md:px-8 pt-6 md:pt-10 pb-6 md:pb-8 border-b border-zinc-100">
     <p class="text-xs font-medium text-zinc-400 mb-1">Dashboard</p>
     <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Payments</h1>
   </div>
 
-  <div class="px-8 py-8">
+  <div class="px-4 md:px-8 py-6 md:py-8">
 
     <!-- Stats -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-      <div class="bg-[#CEF09D] rounded-xl px-6 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+    <div class="grid grid-cols-2 gap-3 mb-8">
+      <div class="bg-[#CEF09D] rounded-xl px-4 md:px-6 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
         <p class="text-xs text-zinc-600 font-medium mb-3">Total paid</p>
         <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().paid }}</p>
       </div>
-      <div class="bg-[#FDD5AB] rounded-xl px-6 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+      <div class="bg-[#FDD5AB] rounded-xl px-4 md:px-6 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
         <p class="text-xs text-zinc-600 font-medium mb-3">Pending</p>
         <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().pending }}</p>
       </div>
-      <div class="bg-[#AEE9F4] rounded-xl px-6 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 col-span-2">
+      <div class="bg-[#AEE9F4] rounded-xl px-4 md:px-6 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 col-span-2">
         <p class="text-xs text-zinc-600 font-medium mb-3">Total spent</p>
         <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().totalSpent | currency:'USD':'symbol':'1.0-0' }}</p>
       </div>
     </div>
 
-    <!-- Table -->
     @if (isLoading()) {
       <div class="border border-zinc-100 rounded-xl overflow-hidden divide-y divide-zinc-100">
         @for (_ of [1,2,3,4]; track $index) {
@@ -35,48 +33,56 @@
         }
       </div>
     } @else {
-      <div class="border border-zinc-100 rounded-xl overflow-hidden">
-        <div class="grid grid-cols-[110px_1fr_130px_80px_80px_70px] px-5 py-2.5 bg-zinc-50 border-b border-zinc-100">
-          <p class="text-[11px] font-medium text-zinc-400">Invoice</p>
-          <p class="text-[11px] font-medium text-zinc-400">Space</p>
-          <p class="text-[11px] font-medium text-zinc-400">Date</p>
-          <p class="text-[11px] font-medium text-zinc-400">Status</p>
-          <p class="text-[11px] font-medium text-zinc-400 text-right">Amount</p>
-          <p class="text-[11px] font-medium text-zinc-400 text-right">Action</p>
-        </div>
+      <app-table [rows]="reservations()" emptyMessage="No payments yet.">
 
-        @for (r of reservations(); track r.id; let last = $last) {
-          <div class="grid grid-cols-[110px_1fr_130px_80px_80px_70px] px-5 py-3.5 items-center hover:bg-zinc-50/50 transition-colors"
-            [class.border-b]="!last" [class.border-zinc-100]="!last">
-
+        <app-column label="Invoice" width="110px">
+          <ng-template let-r>
             <p class="text-sm font-mono text-zinc-400">{{ invoiceNumber(r.id) }}</p>
+          </ng-template>
+        </app-column>
 
+        <app-column label="Space" flex="1">
+          <ng-template let-r>
             <p class="text-sm font-medium text-zinc-900 truncate pr-4">{{ r.space_detail?.name }}</p>
+          </ng-template>
+        </app-column>
 
+        <app-column label="Date" width="120px">
+          <ng-template let-r>
             <p class="text-sm text-zinc-400">{{ r.start_datetime | date:'MMM d, y' }}</p>
+          </ng-template>
+        </app-column>
 
+        <app-column label="Status" width="80px">
+          <ng-template let-r>
             <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit" [ngClass]="statusBadge(r.status)">
               {{ paymentStatusFromReservation(r.status) }}
             </span>
+          </ng-template>
+        </app-column>
 
-            <p class="text-sm font-semibold text-zinc-900 text-right">{{ r.total_price | currency:'USD':'symbol':'1.0-0' }}</p>
+        <app-column label="Amount" width="80px" align="right">
+          <ng-template let-r>
+            <p class="text-sm font-semibold text-zinc-900">{{ r.total_price | currency:'USD':'symbol':'1.0-0' }}</p>
+          </ng-template>
+        </app-column>
 
-            <div class="flex justify-end">
-              @if (r.status === 'pending') {
-                <button (click)="openPayment(r)"
-                  class="text-xs font-medium text-zinc-900 bg-[#FDD5AB] px-2.5 py-1 rounded-lg hover:bg-[#f5c490] transition-colors">
-                  Pay
-                </button>
-              } @else if (r.status === 'confirmed') {
-                <button class="text-xs font-medium text-zinc-400 hover:text-zinc-700 transition-colors">
-                  Receipt
-                </button>
-              }
-            </div>
+        <app-column label="Action" width="70px" align="right">
+          <ng-template let-r>
+            @if (r.status === 'pending') {
+              <button (click)="openPayment(r)"
+                class="text-xs font-medium text-zinc-900 bg-[#FDD5AB] px-2.5 py-1 rounded-lg hover:bg-[#f5c490] transition-colors">
+                Pay
+              </button>
+            } @else if (r.status === 'confirmed') {
+              <button class="text-xs font-medium text-zinc-400 hover:text-zinc-700 transition-colors">
+                Receipt
+              </button>
+            }
+          </ng-template>
+        </app-column>
 
-          </div>
-        }
-      </div>
+      </app-table>
     }
 
   </div>
@@ -84,13 +90,12 @@
 
 <!-- Payment modal -->
 @if (selectedReservation()) {
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="absolute inset-0 bg-black/20" (click)="closePayment()"></div>
 
-    <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
+    <div class="relative bg-white w-full sm:rounded-2xl sm:max-w-md shadow-xl rounded-t-2xl p-6 sm:p-8 max-h-[92vh] overflow-y-auto">
 
       @if (paymentSuccess()) {
-        <!-- Success state -->
         <div class="text-center py-4">
           <div class="w-14 h-14 bg-[#CEF09D] rounded-full flex items-center justify-center mx-auto mb-4">
             <span class="iconify text-zinc-800" data-icon="lucide:check" data-width="24"></span>
@@ -105,9 +110,7 @@
             Done
           </button>
         </div>
-
       } @else {
-        <!-- Payment form -->
         <div class="flex items-start justify-between mb-6">
           <div>
             <h3 class="text-lg font-semibold text-zinc-900">Complete payment</h3>
@@ -119,7 +122,6 @@
           </div>
         </div>
 
-        <!-- Card visual -->
         <div class="bg-zinc-900 rounded-xl p-5 mb-6 text-white">
           <div class="flex items-center justify-between mb-6">
             <span class="iconify text-zinc-400" data-icon="lucide:credit-card" data-width="20"></span>
@@ -141,20 +143,17 @@
         </div>
 
         <form [formGroup]="paymentForm" (ngSubmit)="submitPayment()" class="space-y-4">
-
           <div>
             <label class="block text-xs font-medium text-zinc-500 mb-1.5">Name on card</label>
             <input formControlName="cardName" type="text" placeholder="Alice Martin"
               class="w-full px-3.5 py-2.5 text-sm border border-zinc-200 rounded-xl text-zinc-900 placeholder-zinc-300 focus:outline-none focus:border-zinc-400 transition-colors">
           </div>
-
           <div>
             <label class="block text-xs font-medium text-zinc-500 mb-1.5">Card number</label>
             <input formControlName="cardNumber" type="text" placeholder="1234 5678 9012 3456"
               (input)="formatCardNumber($event)" maxlength="19"
               class="w-full px-3.5 py-2.5 text-sm font-mono border border-zinc-200 rounded-xl text-zinc-900 placeholder-zinc-300 focus:outline-none focus:border-zinc-400 transition-colors">
           </div>
-
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-medium text-zinc-500 mb-1.5">Expiry date</label>
@@ -164,12 +163,10 @@
             </div>
             <div>
               <label class="block text-xs font-medium text-zinc-500 mb-1.5">CVV</label>
-              <input formControlName="cvv" type="password" placeholder="•••"
-                maxlength="4"
+              <input formControlName="cvv" type="password" placeholder="•••" maxlength="4"
                 class="w-full px-3.5 py-2.5 text-sm font-mono border border-zinc-200 rounded-xl text-zinc-900 placeholder-zinc-300 focus:outline-none focus:border-zinc-400 transition-colors">
             </div>
           </div>
-
           <button type="submit"
             [disabled]="paymentForm.invalid || isPaying()"
             class="w-full py-3 rounded-xl bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2">
@@ -182,7 +179,6 @@
               Pay {{ selectedReservation()?.total_price | currency:'USD':'symbol':'1.0-0' }}
             }
           </button>
-
         </form>
 
         <button (click)="closePayment()" class="absolute top-5 right-5 text-zinc-400 hover:text-zinc-700 transition-colors">

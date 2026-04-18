@@ -1,6 +1,9 @@
 import { CurrencyPipe, DatePipe, NgClass } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+
+import { TableComponent } from '../../../shared/components/table/table.component';
+import { ColumnComponent } from '../../../shared/components/table/column.component';
 import { Reservation } from '../../../core/dtos/reservation';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { ReservationsService } from '../../../core/services/reservations.service';
@@ -8,7 +11,7 @@ import { ReservationsService } from '../../../core/services/reservations.service
 @Component({
   standalone: true,
   selector: 'app-overview',
-  imports: [NgClass, DatePipe, CurrencyPipe, RouterLink],
+  imports: [NgClass, DatePipe, CurrencyPipe, RouterLink, TableComponent, ColumnComponent],
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.css',
 })

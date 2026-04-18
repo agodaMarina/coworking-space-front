@@ -1,0 +1,41 @@
+@if (totalPages > 1) {
+  <div class="flex items-center justify-between pt-4">
+    <p class="text-xs text-zinc-400">
+      Page {{ current }} of {{ totalPages }}
+    </p>
+
+    <div class="flex items-center gap-1">
+      <!-- Prev -->
+      <button
+        (click)="prev()"
+        [disabled]="current === 1"
+        class="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+        <span class="iconify" data-icon="lucide:chevron-left" data-width="14"></span>
+      </button>
+
+      <!-- Pages -->
+      @for (p of pages; track $index) {
+        @if (p === '…') {
+          <span class="w-8 h-8 flex items-center justify-center text-xs text-zinc-400">…</span>
+        } @else {
+          <button
+            (click)="go(p)"
+            class="w-8 h-8 flex items-center justify-center rounded-lg text-sm transition-colors"
+            [ngClass]="p === current
+              ? 'bg-zinc-900 text-white font-medium'
+              : 'text-zinc-600 hover:bg-zinc-100'">
+            {{ p }}
+          </button>
+        }
+      }
+
+      <!-- Next -->
+      <button
+        (click)="next()"
+        [disabled]="current === totalPages"
+        class="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+        <span class="iconify" data-icon="lucide:chevron-right" data-width="14"></span>
+      </button>
+    </div>
+  </div>
+}
