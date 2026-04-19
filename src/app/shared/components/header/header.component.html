@@ -6,10 +6,10 @@
 
         <div class="hidden md:flex items-center gap-10">
             <div class="flex items-center gap-8">
-                <a routerLink="/home" class="text-sm font-medium text-zinc-600 hover:text-black transition-colors">About</a>
-                <a routerLink="/spaces" class="text-sm font-medium text-zinc-600 hover:text-black transition-colors">spaces</a>
+                <a routerLink="/home" class="text-sm font-medium text-zinc-600 hover:text-black transition-colors">Accueil</a>
+                <a routerLink="/spaces" class="text-sm font-medium text-zinc-600 hover:text-black transition-colors">Espaces</a>
                 <a routerLink="/blog" class="text-sm font-medium text-zinc-600 hover:text-black transition-colors">Blog</a>
-                <a routerLink="/events" class="text-sm font-medium text-zinc-600 hover:text-black transition-colors">Events</a>
+                <a routerLink="/events" class="text-sm font-medium text-zinc-600 hover:text-black transition-colors">Contact</a>
             </div>
 
             <div class="h-6 w-px bg-zinc-200 mx-2"></div>
@@ -19,14 +19,14 @@
                         Dashboard
                     </a>
                     <button (click)="logout()" class="text-sm font-bold px-7 py-3 rounded-full bg-black text-white hover:bg-zinc-800 transition-all">
-                        Sign out
+                        Déconnexion
                     </button>
                 } @else {
                     <a routerLink="/login" class="text-sm font-bold px-7 py-3 rounded-full border border-black text-black hover:bg-zinc-50 transition-all">
-                        Log In
+                        Se connecter
                     </a>
                     <a routerLink="/register" class="text-sm font-bold px-7 py-3 rounded-full bg-black text-white hover:bg-zinc-800 transition-all">
-                        Sign Up
+                        S'inscrire
                     </a>
                 }
             </div>
@@ -50,14 +50,14 @@
     </div>
 
     <div class="flex-1 flex flex-col justify-center px-8 gap-8">
-        <a routerLink="/home" (click)="closeMenu()" class="text-4xl font-bold text-black hover:text-zinc-500 transition-colors">About</a>
-        <a routerLink="/pricing" (click)="closeMenu()" class="text-4xl font-bold text-black hover:text-zinc-500 transition-colors">Pricing</a>
+        <a routerLink="/home" (click)="closeMenu()" class="text-4xl font-bold text-black hover:text-zinc-500 transition-colors">Accueil</a>
+        <a routerLink="/pricing" (click)="closeMenu()" class="text-4xl font-bold text-black hover:text-zinc-500 transition-colors">Espaces</a>
         <a routerLink="/blog" (click)="closeMenu()" class="text-4xl font-bold text-black hover:text-zinc-500 transition-colors">Blog</a>
-        <a routerLink="/events" (click)="closeMenu()" class="text-4xl font-bold text-black hover:text-zinc-500 transition-colors">Events</a>
+        <a routerLink="/events" (click)="closeMenu()" class="text-4xl font-bold text-black hover:text-zinc-500 transition-colors">Contact</a>
     </div>
 
     <div class="p-8 flex flex-col gap-4">
-        <a routerLink="/login" class="w-full text-center font-bold py-4 rounded-full border border-black text-black">Log In</a>
-        <a routerLink="/register" class="w-full text-center font-bold py-4 rounded-full bg-black text-white">Sign Up</a>
+        <a routerLink="/login" class="w-full text-center font-bold py-4 rounded-full border border-black text-black">Se connecter</a>
+        <a routerLink="/register" class="w-full text-center font-bold py-4 rounded-full bg-black text-white">S'inscrire</a>
     </div>
 </div>
