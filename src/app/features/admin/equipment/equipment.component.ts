@@ -9,6 +9,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
 import { TableComponent } from '../../../shared/components/table/table.component';
 import { ColumnComponent } from '../../../shared/components/table/column.component';
 import { MessageService } from 'primeng/api';
+import { SpacesService } from '../../../core/services/spaces.service';
 
 export interface Equipment {
   id: number;
@@ -84,7 +85,7 @@ export class AdminEquipmentComponent {
   readonly modalTitle = computed(() => this.editingId() !== null ? 'Edit equipment' : 'New equipment');
   readonly submitLabel = computed(() => this.editingId() !== null ? 'Save changes' : 'Create equipment');
 
-  constructor(private fb: FormBuilder, private toast: ToastService) {
+  constructor(private fb: FormBuilder, private toast: ToastService,private spaceService:SpacesService) {
     this.form = this.fb.group({
       name:      ['', Validators.required],
       space:     ['Open Space A', Validators.required],
