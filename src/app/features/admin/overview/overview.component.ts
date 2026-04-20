@@ -3,6 +3,7 @@ import { CurrencyPipe, DatePipe, NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TableComponent } from '../../../shared/components/table/table.component';
 import { ColumnComponent } from '../../../shared/components/table/column.component';
+import { MessageService } from 'primeng/api';
 
 interface RecentReservation {
   id: number;
@@ -18,6 +19,7 @@ interface RecentReservation {
   selector: 'app-admin-overview',
   imports: [CurrencyPipe, DatePipe, NgClass, RouterLink, TableComponent, ColumnComponent],
   templateUrl: './overview.component.html',
+  providers:[MessageService]
 })
 export class AdminOverviewComponent {
   readonly stats = signal({

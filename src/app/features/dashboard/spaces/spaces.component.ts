@@ -5,12 +5,14 @@ import { TableComponent } from '../../../shared/components/table/table.component
 import { ColumnComponent } from '../../../shared/components/table/column.component';
 import { Space } from '../../../core/dtos/space';
 import { SpacesService } from '../../../core/services/spaces.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   standalone: true,
   selector: 'app-dashboard-spaces',
   imports: [NgClass, RouterLink, TableComponent, ColumnComponent],
   templateUrl: './spaces.component.html',
+  providers:[MessageService]
 })
 export class DashboardSpacesComponent implements OnInit {
   private readonly spacesService = inject(SpacesService);

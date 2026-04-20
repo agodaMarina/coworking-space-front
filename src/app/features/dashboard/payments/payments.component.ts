@@ -7,12 +7,14 @@ import { TableComponent } from '../../../shared/components/table/table.component
 import { ColumnComponent } from '../../../shared/components/table/column.component';
 import { Reservation } from '../../../core/dtos/reservation';
 import { ReservationsService } from '../../../core/services/reservations.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   standalone: true,
   selector: 'app-dashboard-payments',
   imports: [NgClass, CurrencyPipe, DatePipe, ReactiveFormsModule, TableComponent, ColumnComponent],
   templateUrl: './payments.component.html',
+  providers:[MessageService]
 })
 export class DashboardPaymentsComponent implements OnInit {
   private readonly reservationsService = inject(ReservationsService);

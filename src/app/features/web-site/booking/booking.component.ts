@@ -6,6 +6,7 @@ import { SpacesService } from '../../../core/services/spaces.service';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { DatePickerComponent } from '../../../shared/components/date-picker/date-picker.component';
+import { MessageService } from 'primeng/api';
 
 
 type BookingStep = 'details' | 'payment' | 'success';
@@ -26,6 +27,7 @@ interface BookingSpace {
   imports: [CommonModule, NgClass, FormsModule, ReactiveFormsModule, HeaderComponent, FooterComponent, DatePickerComponent],
   templateUrl: './booking.component.html',
   styleUrls: ['./booking.component.css'],
+  providers:[MessageService]
 })
 export class BookingPageComponent implements OnInit {
   bookingForm!: FormGroup;

@@ -8,6 +8,7 @@ import { ToastService } from '../../../core/services/toast.service';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { TableComponent } from '../../../shared/components/table/table.component';
 import { ColumnComponent } from '../../../shared/components/table/column.component';
+import { MessageService } from 'primeng/api';
 
 export interface Equipment {
   id: number;
@@ -22,6 +23,7 @@ export interface Equipment {
   selector: 'app-admin-equipment',
   imports: [NgClass, ReactiveFormsModule, InputComponent, SelectComponent, ConfirmDialogComponent, PaginationComponent, TableComponent, ColumnComponent],
   templateUrl: './equipment.component.html',
+  providers:[MessageService]
 })
 export class AdminEquipmentComponent {
   readonly search = signal('');

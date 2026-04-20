@@ -10,6 +10,7 @@ import { ToastService } from '../../../core/services/toast.service';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { TableComponent } from '../../../shared/components/table/table.component';
 import { ColumnComponent } from '../../../shared/components/table/column.component';
+import { MessageService } from 'primeng/api';
 
 export interface AdminReservation {
   id: number;
@@ -28,6 +29,7 @@ export interface AdminReservation {
   selector: 'app-admin-reservations',
   imports: [NgClass, CurrencyPipe, DatePipe, ReactiveFormsModule, InputComponent, TextareaComponent, SelectComponent, DatePickerComponent, ConfirmDialogComponent, PaginationComponent, TableComponent, ColumnComponent],
   templateUrl: './reservations.component.html',
+  providers:[MessageService]
 })
 export class AdminReservationsComponent {
   readonly activeFilter = signal<'all' | 'confirmed' | 'pending' | 'cancelled'>('all');

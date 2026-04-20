@@ -3,6 +3,7 @@ import { AfterViewInit, Component, HostListener, OnInit } from '@angular/core';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { RouterLink } from "@angular/router";
+import { MessageService } from 'primeng/api';
 
 @Component({
   standalone: true,
@@ -15,6 +16,7 @@ import { RouterLink } from "@angular/router";
 ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
+  providers:[MessageService]
 })
 export class HomePageComponent implements OnInit, AfterViewInit {
 

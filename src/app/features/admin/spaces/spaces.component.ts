@@ -12,12 +12,14 @@ import { TableComponent } from '../../../shared/components/table/table.component
 import { ColumnComponent } from '../../../shared/components/table/column.component';
 import { Amenity, Space, SpacePhoto, SpaceWritePayload } from '../../../core/dtos/space';
 import { SpacesService } from '../../../core/services/spaces.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   standalone: true,
   selector: 'app-admin-spaces',
   imports: [NgClass, ReactiveFormsModule, InputComponent, TextareaComponent, SelectComponent, ToggleComponent, ConfirmDialogComponent, PaginationComponent, TableComponent, ColumnComponent],
   templateUrl: './spaces.component.html',
+  providers:[MessageService]
 })
 export class AdminSpacesComponent implements OnInit {
   readonly search = signal('');

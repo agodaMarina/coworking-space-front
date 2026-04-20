@@ -11,6 +11,7 @@ import { ToastService } from '../../../core/services/toast.service';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { TableComponent } from '../../../shared/components/table/table.component';
 import { ColumnComponent } from '../../../shared/components/table/column.component';
+import { MessageService } from 'primeng/api';
 
 export interface AdminNotification {
   id: number;
@@ -27,6 +28,7 @@ export interface AdminNotification {
   selector: 'app-admin-notifications',
   imports: [NgClass, DatePipe, ReactiveFormsModule, InputComponent, TextareaComponent, SelectComponent, ToggleComponent, DatePickerComponent, ConfirmDialogComponent, PaginationComponent, TableComponent, ColumnComponent],
   templateUrl: './notifications.component.html',
+  providers:[MessageService]
 })
 export class AdminNotificationsComponent {
   readonly showModal = signal(false);

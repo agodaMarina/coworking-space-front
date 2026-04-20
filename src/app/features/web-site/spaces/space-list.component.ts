@@ -6,6 +6,7 @@ import { Space } from '../../../core/dtos/space';
 import { SpacesService } from '../../../core/services/spaces.service';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
+import { MessageService } from 'primeng/api';
 
 @Component({
     standalone: true,
@@ -18,6 +19,7 @@ import { HeaderComponent } from '../../../shared/components/header/header.compon
     ],
     templateUrl: './space-list.component.html',
     styleUrl: './space-list.component.css',
+    providers:[MessageService]
 })
 export class SpaceListPageComponent implements OnInit {
     spaces = signal<Space[]>([]);

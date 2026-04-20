@@ -5,6 +5,7 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
 import { TableComponent } from '../../../shared/components/table/table.component';
 import { ColumnComponent } from '../../../shared/components/table/column.component';
 import { ToastService } from '../../../core/services/toast.service';
+import { MessageService } from 'primeng/api';
 
 export interface Payment {
   id: number;
@@ -25,6 +26,7 @@ const PAGE_SIZE = 8;
   selector: 'app-admin-payments',
   imports: [NgClass, CurrencyPipe, DatePipe, PaginationComponent, ConfirmDialogComponent, TableComponent, ColumnComponent],
   templateUrl: './payments.component.html',
+  providers:[MessageService]
 })
 export class AdminPaymentsComponent {
   readonly activeFilter = signal<'all' | 'paid' | 'pending' | 'refunded'>('all');

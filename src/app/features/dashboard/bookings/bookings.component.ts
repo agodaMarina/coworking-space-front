@@ -8,6 +8,7 @@ import { ColumnComponent } from '../../../shared/components/table/column.compone
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ToastService } from '../../../core/services/toast.service';
 import { Reservation } from '../../../core/dtos/reservation';
+import { MessageService } from 'primeng/api';
 
 type Filter = 'all' | 'upcoming' | 'past' | 'cancelled';
 
@@ -18,6 +19,7 @@ const PAGE_SIZE = 6;
   selector: 'app-bookings',
   imports: [NgClass, DatePipe, CurrencyPipe, RouterLink, PaginationComponent, ConfirmDialogComponent, TableComponent, ColumnComponent],
   templateUrl: './bookings.component.html',
+  providers:[MessageService]
 })
 export class BookingsComponent implements OnInit {
   private readonly reservationsService = inject(ReservationsService);

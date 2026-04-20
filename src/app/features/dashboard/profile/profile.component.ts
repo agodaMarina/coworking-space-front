@@ -6,6 +6,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { InputComponent } from '../../../shared/components/input/input.component';
+import { MessageService } from 'primeng/api';
 
 const PASTEL_COLORS = ['bg-[#AEE9F4]', 'bg-[#CEF09D]', 'bg-[#FBCBE3]', 'bg-[#FDD5AB]', 'bg-[#E2F89C]'];
 
@@ -14,6 +15,7 @@ const PASTEL_COLORS = ['bg-[#AEE9F4]', 'bg-[#CEF09D]', 'bg-[#FBCBE3]', 'bg-[#FDD
   selector: 'app-profile',
   imports: [ReactiveFormsModule, InputComponent],
   templateUrl: './profile.component.html',
+  providers:[MessageService]
 })
 
 export class ProfileComponent {
@@ -23,7 +25,7 @@ export class ProfileComponent {
 
 
   ngOnInit(): void {
-    
+
   }
 
   readonly user = this.auth.user;

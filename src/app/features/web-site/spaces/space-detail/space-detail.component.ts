@@ -6,13 +6,15 @@ import { Space } from '../../../../core/dtos/space';
 import { SpacesService } from '../../../../core/services/spaces.service';
 import { FooterComponent } from '../../../../shared/components/footer/footer.component';
 import { HeaderComponent } from '../../../../shared/components/header/header.component';
+import { MessageService } from 'primeng/api';
 
 @Component({
   standalone: true,
   selector: 'app-space-detail-page',
   imports: [NgClass, HeaderComponent, FooterComponent, ProgressSpinnerModule],
   templateUrl: './space-detail.component.html',
-  styleUrls: ['./space-detail.component.css']
+  styleUrls: ['./space-detail.component.css'],
+  providers:[MessageService]
 })
 export class SpaceDetailPageComponent implements OnInit {
   space = signal<Space | null>(null);

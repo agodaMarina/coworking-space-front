@@ -4,11 +4,13 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth/auth.service';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
 import { HeaderComponent } from '../../shared/components/header/header.component';
+import { MessageService } from 'primeng/api';
 
 @Component({
   standalone: true,
   selector: 'app-profile-page',
   imports: [CommonModule, HeaderComponent, FooterComponent, RouterLink],
+  providers:[MessageService],
   template: `
     <div class="page-shell">
       <app-header></app-header>

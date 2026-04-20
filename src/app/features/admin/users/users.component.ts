@@ -9,6 +9,7 @@ import { ToastService } from '../../../core/services/toast.service';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { TableComponent } from '../../../shared/components/table/table.component';
 import { ColumnComponent } from '../../../shared/components/table/column.component';
+import { MessageService } from 'primeng/api';
 
 export interface AdminUser {
   id: number;
@@ -24,6 +25,7 @@ export interface AdminUser {
   selector: 'app-admin-users',
   imports: [NgClass, DatePipe, ReactiveFormsModule, InputComponent, SelectComponent, ToggleComponent, ConfirmDialogComponent, PaginationComponent, TableComponent, ColumnComponent],
   templateUrl: './users.component.html',
+  providers:[MessageService]
 })
 export class AdminUsersComponent {
   readonly search   = signal('');

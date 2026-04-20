@@ -7,6 +7,7 @@ import { ColumnComponent } from '../../../shared/components/table/column.compone
 import { Reservation } from '../../../core/dtos/reservation';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { ReservationsService } from '../../../core/services/reservations.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   standalone: true,
@@ -14,6 +15,7 @@ import { ReservationsService } from '../../../core/services/reservations.service
   imports: [NgClass, DatePipe, CurrencyPipe, RouterLink, TableComponent, ColumnComponent],
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.css',
+  providers:[MessageService]
 })
 export class OverviewComponent implements OnInit {
   private readonly reservationsService = inject(ReservationsService);
