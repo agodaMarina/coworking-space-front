@@ -31,6 +31,8 @@ export class AdminEquipmentComponent {
   readonly page     = signal(1);
   readonly pageSize = 8;
 
+
+
   readonly form: FormGroup;
 
   readonly spaceOptions: SelectOption<string>[] = [
@@ -115,11 +117,11 @@ export class AdminEquipmentComponent {
     const id = this.editingId();
     if (id !== null) {
       this.equipment.update(list => list.map(e => e.id === id ? { ...e, ...v } : e));
-      this.toast.showSuccess('Equipment updated.');
+      this.toast.showSuccess('Equipement mis à jour.');
     } else {
       const newId = Math.max(0, ...this.equipment().map(e => e.id)) + 1;
       this.equipment.update(list => [...list, { id: newId, ...v }]);
-      this.toast.showSuccess('Equipment created.');
+      this.toast.showSuccess('Equipement créé.');
     }
     this.closeModal();
   }

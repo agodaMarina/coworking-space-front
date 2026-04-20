@@ -1,46 +1,49 @@
-import { Injectable, signal } from '@angular/core';
-import { Toast } from '../dtos/toast';
-
+import { Injectable } from '@angular/core';
+import { MessageService } from 'primeng/api';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ToastService {
-  private toasts = signal<Toast[]>([]);
-  readonly toastList = this.toasts.asReadonly();
+  constructor(private messageService: MessageService) {}
 
   showSuccess(message: string, duration = 3000): void {
-    this.show(message, 'success', duration);
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Succès',
+      detail: message,
+      life: duration,
+    });
   }
 
   showError(message: string, duration = 5000): void {
-    this.show(message, 'error', duration);
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Erreur',
+      detail: message,
+      life: duration,
+    });
   }
 
   showWarning(message: string, duration = 4000): void {
-    this.show(message, 'warning', duration);
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Avertissement',
+      detail: message,
+      life: duration,
+    });
   }
 
   showInfo(message: string, duration = 3000): void {
-    this.show(message, 'info', duration);
-  }
-
-  private show(message: string, severity: Toast['severity'], duration: number): void {
-    const id = `toast-${Date.now()}`;
-    const toast: Toast = { id, message, severity, duration };
-
-    this.toasts.update(toasts => [...toasts, toast]);
-
-    if (duration > 0) {
-      setTimeout(() => this.remove(id), duration);
-    }
-  }
-
-  remove(id: string): void {
-    this.toasts.update(toasts => toasts.filter(t => t.id !== id));
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Information',
+      detail: message,
+      life: duration,
+    });
   }
 
   clear(): void {
-    this.toasts.set([]);
+    this.messageService.clear();
   }
 }
