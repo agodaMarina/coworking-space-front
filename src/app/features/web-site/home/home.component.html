@@ -1,7 +1,7 @@
 <app-header></app-header>
 
 <section class="pt-24 pb-12 md:pt-32 md:pb-20 flex items-center relative overflow-hidden bg-white">
-  <div class="relative z-10 max-w-7xl mx-auto px-5 w-full">
+  <div class="relative z-10 site-container w-full">
     <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
 
       <div class="w-full max-w-[640px]">
@@ -38,7 +38,7 @@
 </section>
 
 <section id="about" class="py-24 md:py-28 relative bg-white flex flex-col items-center gap-20">
-  <div class="max-w-7xl mx-auto px-5 text-center mb-16">
+  <div class="site-container text-center mb-16">
     <div class="reveal flex flex-wrap justify-center items-center gap-3 md:gap-4">
       <h2 class="text-[32px] md:text-[48px] font-bold tracking-tight text-black">Pourquoi Choisir</h2>
       <div class="w-[120px] h-[40px] md:w-[160px] md:h-[50px] rounded-full bg-zinc-100 overflow-hidden inline-block align-middle">
@@ -48,7 +48,7 @@
     </div>
   </div>
 
-  <div class="max-w-[1312px] mx-auto px-5 grid sm:grid-cols-2 lg:grid-cols-3 gap-12">
+  <div class="site-container grid sm:grid-cols-2 lg:grid-cols-3 gap-12">
     <div *ngFor="let feature of features" class="reveal w-full flex flex-col items-center text-center group gap-6">
       <div class="w-14 h-14 rounded-2xl bg-[#E8F5E9] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
         <span class="iconify text-2xl text-green-700" data-icon="mdi:home-city-outline"></span>
@@ -64,7 +64,7 @@
 </section>
 
 <section id="spaces" class="py-24 md:py-28 relative bg-white">
-  <div class="max-w-[1312px] mx-auto px-5 flex flex-col items-center gap-20">
+  <div class="site-container flex flex-col items-center gap-20">
     <div class="reveal text-center flex flex-col items-center">
       <span class="text-xs font-bold uppercase tracking-[.2em] text-black mb-4 block">Une visite virtuel</span>
       <div class="flex flex-col items-center gap-1 md:gap-2 mb-6">
@@ -96,7 +96,7 @@
 </section>
 
 <section class="py-24 md:py-28 relative bg-white">
-  <div class="max-w-[1312px] mx-auto px-5 flex flex-col md:flex-row items-center justify-between gap-[80px]">
+  <div class="site-container flex flex-col md:flex-row items-center justify-between gap-[80px]">
 
     <div class="w-full md:w-[616px] flex-shrink-0">
       <span class="reveal text-xs font-bold font-space uppercase text-bold mb-4 block">Cowork en chiffres</span>
@@ -122,13 +122,13 @@
 </section>
 
 <section class="py-20 md:py-28 relative bg-white overflow-hidden">
-  <div class="max-w-7xl mx-auto px-5">
+  <div class="site-container">
     <div class="reveal text-center mb-16 md:mb-24">
       <span class="text-xs font-bold uppercase tracking-[.2em] text-black mb-3 block">Cowork en quelques mots</span>
       <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-black">Nos clients s'expriment</h2>
     </div>
 
-    <div class="flex flex-col items-center md:block gap-6 max-w-6xl mx-auto">
+    <div class="flex flex-col items-center md:block gap-6">
 
       <div class="w-full md:w-auto flex flex-col items-center md:flex-row gap-6 md:gap-0 md:justify-center md:items-start">
         <ng-container *ngFor="let t of testimonialsTop">
@@ -178,7 +178,7 @@
 </section>
 
 <section class="py-20 md:py-28 relative bg-white border-t border-zinc-100">
-  <div class="max-w-7xl mx-auto px-5">
+  <div class="site-container">
     <div class="grid md:grid-cols-12 gap-12 md:gap-20 items-start">
 
       <div class="reveal md:col-span-5 md:sticky md:top-24">
@@ -213,7 +213,7 @@
 </section>
 
 <section id="book" class="py-20 md:py-28 relative bg-white">
-  <div class="reveal relative max-w-6xl mx-auto px-5 text-center">
+  <div class="reveal relative site-container text-center">
     <div>
       <div class="flex flex-wrap justify-center items-center gap-3 md:gap-4 mb-4">
         <h2 class="text-4xl sm:text-5xl md:text-6xl lg:text-[96px] font-bold tracking-tight text-black leading-none">Seize</h2>
@@ -234,7 +234,7 @@
 </section>
 
 <section id="blog" class="py-16 md:py-24 bg-white">
-  <div class="max-w-7xl mx-auto px-5">
+  <div class="site-container">
     <div class="reveal text-center mb-16 md:mb-20 flex flex-col items-center">
       <span class="text-xs font-bold uppercase tracking-[.15em] text-black mb-4 block">Cowork Chronicles</span>
       <div class="flex flex-col items-center mb-6">

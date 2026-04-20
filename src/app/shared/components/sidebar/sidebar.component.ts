@@ -21,11 +21,11 @@ export class SidebarComponent {
   });
 
   readonly navItems = [
-    { label: 'Overview',    icon: 'lucide:layout-dashboard', path: 'overview',  activeClass: 'bg-[#AEE9F4] text-zinc-900 font-medium' },
-    { label: 'My Bookings', icon: 'lucide:calendar',         path: 'bookings',  activeClass: 'bg-[#CEF09D] text-zinc-900 font-medium' },
-    { label: 'Payments',    icon: 'lucide:credit-card',      path: 'payments',  activeClass: 'bg-[#FDD5AB] text-zinc-900 font-medium' },
-    { label: 'Spaces',      icon: 'lucide:grid-2x2',         path: 'spaces',    activeClass: 'bg-[#E2F89C] text-zinc-900 font-medium' },
-    { label: 'Profile',     icon: 'lucide:user',             path: 'profile',   activeClass: 'bg-[#FBCBE3] text-zinc-900 font-medium' },
+    { label: 'Overview',    icon: 'lucide:layout-dashboard', path: '/dashboard/overview',  activeClass: 'bg-[#AEE9F4] text-zinc-900 font-medium' },
+    { label: 'My Bookings', icon: 'lucide:calendar',         path: '/dashboard/bookings',  activeClass: 'bg-[#CEF09D] text-zinc-900 font-medium' },
+    { label: 'Payments',    icon: 'lucide:credit-card',      path: '/dashboard/payments',  activeClass: 'bg-[#FDD5AB] text-zinc-900 font-medium' },
+    { label: 'Spaces',      icon: 'lucide:grid-2x2',         path: '/dashboard/spaces',    activeClass: 'bg-[#E2F89C] text-zinc-900 font-medium' },
+    { label: 'Profile',     icon: 'lucide:user',             path: '/dashboard/profile',   activeClass: 'bg-[#FBCBE3] text-zinc-900 font-medium' },
   ];
 
   readonly bottomItems = [

@@ -12,7 +12,7 @@
     @if (!loading() && space(); as s) {
 
       <!-- Back -->
-      <div class="max-w-7xl mx-auto px-6 lg:px-10 mb-8">
+      <div class="site-container mb-8">
         <button (click)="goBack()"
           class="inline-flex items-center gap-2 text-sm font-semibold text-zinc-400 hover:text-black transition-colors duration-200">
           <span class="iconify" data-icon="lucide:arrow-left" data-width="15"></span>
@@ -21,7 +21,7 @@
       </div>
 
       <!-- Hero image -->
-      <div class="max-w-7xl mx-auto px-6 lg:px-10 mb-16">
+      <div class="site-container mb-16">
         <div class="rounded-[28px] overflow-hidden aspect-[16/7] relative bg-zinc-100">
             <img [src]="s.photo || (s.photos && s.photos.length ? s.photos[0] : getImageUrl(s.name, 1100, 700))" alt="{{ s.name }}" class="w-full h-full object-cover">
           <div class="absolute top-5 left-5 flex gap-2">
@@ -44,7 +44,7 @@
       </div>
 
       <!-- Content -->
-      <div class="max-w-7xl mx-auto px-6 lg:px-10">
+      <div class="site-container">
         <div class="grid lg:grid-cols-[1fr_360px] gap-16 xl:gap-24 items-start">
 
           <!-- Left -->
