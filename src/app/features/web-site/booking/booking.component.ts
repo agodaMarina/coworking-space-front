@@ -10,6 +10,7 @@ import { MessageService } from 'primeng/api';
 
 
 type BookingStep = 'details' | 'payment' | 'success';
+type PaymentMethod = 'card' | 'mobile_money' | 'paypal';
 
 interface BookingSpace {
   id: number;
@@ -35,9 +36,32 @@ export class BookingPageComponent implements OnInit {
 
   currentStep = signal<BookingStep>('details');
   isProcessingPayment = signal(false);
+  selectedPaymentMethod = signal<PaymentMethod>('card');
 
   spaceDropdownOpen = signal(false);
   recurrenceDropdownOpen = signal(false);
+
+  readonly paymentMethods = [
+    { value: 'card' as PaymentMethod,         label: 'Carte bancaire', icon: 'lucide:credit-card', desc: 'Visa · Mastercard', activeBg: 'bg-pastel-blue',   activeText: 'text-zinc-900', subText: 'text-zinc-600' },
+    { value: 'mobile_money' as PaymentMethod, label: 'Mobile Money',   icon: 'lucide:smartphone',  desc: 'Orange · Wave · Free', activeBg: 'bg-pastel-green',  activeText: 'text-zinc-900', subText: 'text-zinc-600' },
+    { value: 'paypal' as PaymentMethod,       label: 'PayPal',         icon: 'lucide:wallet',       desc: 'paypal.com', activeBg: 'bg-pastel-orange', activeText: 'text-zinc-900', subText: 'text-zinc-600' },
+  ];
+
+  readonly countries = [
+    { code: 'SN', name: 'Sénégal',        dial: '+221', flag: '🇸🇳' },
+    { code: 'CI', name: "Côte d'Ivoire",  dial: '+225', flag: '🇨🇮' },
+    { code: 'ML', name: 'Mali',           dial: '+223', flag: '🇲🇱' },
+    { code: 'GN', name: 'Guinée',         dial: '+224', flag: '🇬🇳' },
+    { code: 'BF', name: 'Burkina Faso',   dial: '+226', flag: '🇧🇫' },
+    { code: 'NE', name: 'Niger',          dial: '+227', flag: '🇳🇪' },
+    { code: 'TG', name: 'Togo',           dial: '+228', flag: '🇹🇬' },
+    { code: 'BJ', name: 'Bénin',          dial: '+229', flag: '🇧🇯' },
+    { code: 'CM', name: 'Cameroun',       dial: '+237', flag: '🇨🇲' },
+    { code: 'FR', name: 'France',         dial: '+33',  flag: '🇫🇷' },
+  ];
+
+  selectedCountry = signal(this.countries[0]);
+  countryDropdownOpen = signal(false);
 
   availableSpaces = signal<BookingSpace[]>([]);
 
@@ -57,6 +81,7 @@ export class BookingPageComponent implements OnInit {
   ngOnInit() {
     this.initializeForm();
     this.initializePaymentForm();
+    this.updatePaymentValidators('card');
     this.loadSpaces();
   }
 
@@ -102,6 +127,39 @@ export class BookingPageComponent implements OnInit {
   selectSpace(space: BookingSpace): void {
     this.bookingForm.get('spaceId')?.setValue(space.id);
     this.spaceDropdownOpen.set(false);
+  }
+
+  selectPaymentMethod(method: PaymentMethod): void {
+    this.selectedPaymentMethod.set(method);
+    this.paymentForm.reset();
+    this.updatePaymentValidators(method);
+  }
+
+  private updatePaymentValidators(method: PaymentMethod): void {
+    const cardFields = ['cardName', 'cardNumber', 'expiry', 'cvv'];
+    cardFields.forEach(f => {
+      this.paymentForm.get(f)?.clearValidators();
+      this.paymentForm.get(f)?.updateValueAndValidity();
+    });
+    this.paymentForm.get('phoneNumber')?.clearValidators();
+    this.paymentForm.get('phoneNumber')?.updateValueAndValidity();
+    this.paymentForm.get('paypalEmail')?.clearValidators();
+    this.paymentForm.get('paypalEmail')?.updateValueAndValidity();
+
+    if (method === 'card') {
+      this.paymentForm.get('cardName')?.setValidators(Validators.required);
+      this.paymentForm.get('cardNumber')?.setValidators([Validators.required, Validators.minLength(19)]);
+      this.paymentForm.get('expiry')?.setValidators([Validators.required, Validators.pattern(/^\d{2}\/\d{2}$/)]);
+      this.paymentForm.get('cvv')?.setValidators([Validators.required, Validators.pattern(/^\d{3,4}$/)]);
+    } else if (method === 'mobile_money') {
+      this.paymentForm.get('phoneNumber')?.setValidators([Validators.required, Validators.pattern(/^\+?[\d\s]{8,15}$/)]);
+    } else if (method === 'paypal') {
+      this.paymentForm.get('paypalEmail')?.setValidators([Validators.required, Validators.email]);
+    }
+
+    cardFields.forEach(f => this.paymentForm.get(f)?.updateValueAndValidity());
+    this.paymentForm.get('phoneNumber')?.updateValueAndValidity();
+    this.paymentForm.get('paypalEmail')?.updateValueAndValidity();
   }
 
   selectRecurrence(value: string): void {
@@ -167,6 +225,8 @@ export class BookingPageComponent implements OnInit {
   resetFlow() {
     this.bookingForm.reset({ billingType: 'daily', startTime: '09:00', endTime: '17:00', isRecurring: false, recurrencePattern: 'weekly' });
     this.paymentForm.reset();
+    this.selectedPaymentMethod.set('card');
+    this.updatePaymentValidators('card');
     this.currentStep.set('details');
   }
 
@@ -187,10 +247,12 @@ export class BookingPageComponent implements OnInit {
 
   initializePaymentForm() {
     this.paymentForm = this.fb.group({
-      cardName:   ['', Validators.required],
-      cardNumber: ['', [Validators.required, Validators.minLength(19)]],
-      expiry:     ['', [Validators.required, Validators.pattern(/^\d{2}\/\d{2}$/)]],
-      cvv:        ['', [Validators.required, Validators.pattern(/^\d{3,4}$/)]],
+      cardName:    ['', Validators.required],
+      cardNumber:  ['', [Validators.required, Validators.minLength(19)]],
+      expiry:      ['', [Validators.required, Validators.pattern(/^\d{2}\/\d{2}$/)]],
+      cvv:         ['', [Validators.required, Validators.pattern(/^\d{3,4}$/)]],
+      phoneNumber: [''],
+      paypalEmail: [''],
     });
   }
 
