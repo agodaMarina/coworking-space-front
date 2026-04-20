@@ -43,7 +43,7 @@ body {
 
 @layer components {
   .site-container {
-    @apply max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16;
+    @apply max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-16;
   }
 }
 
