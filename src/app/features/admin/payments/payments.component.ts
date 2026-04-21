@@ -1,13 +1,15 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import { NgClass, CurrencyPipe, DatePipe } from '@angular/common';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { TableComponent } from '../../../shared/components/table/table.component';
 import { ColumnComponent } from '../../../shared/components/table/column.component';
 import { ToastService } from '../../../core/services/toast.service';
+import { PaymentsService } from '../../../core/services/admin/payments.service';
+import { Payment as ApiPayment } from '../../../core/dtos/payment';
 import { MessageService } from 'primeng/api';
 
-export interface Payment {
+export interface AdminPayment {
   id: number;
   invoice: string;
   user: string;
@@ -26,15 +28,13 @@ const PAGE_SIZE = 8;
   selector: 'app-admin-payments',
   imports: [NgClass, CurrencyPipe, DatePipe, PaginationComponent, ConfirmDialogComponent, TableComponent, ColumnComponent],
   templateUrl: './payments.component.html',
-  providers:[MessageService]
+  providers: [MessageService]
 })
-export class AdminPaymentsComponent {
+export class AdminPaymentsComponent implements OnInit {
   readonly activeFilter = signal<'all' | 'paid' | 'pending' | 'refunded'>('all');
   readonly page         = signal(1);
   readonly pageSize     = PAGE_SIZE;
   readonly pendingAction = signal<StatusAction | null>(null);
-
-  constructor(private toast: ToastService) {}
 
   readonly filters = [
     { key: 'all' as const,      label: 'All'      },
@@ -43,18 +43,7 @@ export class AdminPaymentsComponent {
     { key: 'refunded' as const, label: 'Refunded' },
   ];
 
-  readonly payments = signal<Payment[]>([
-    { id: 1,  invoice: 'INV-0001', user: 'Alice Martin',  space: 'Open Space A',     date: '2024-04-10', amount: 240,  status: 'paid'     },
-    { id: 2,  invoice: 'INV-0002', user: 'Bob Johnson',   space: 'Meeting Room 1',   date: '2024-04-12', amount: 120,  status: 'pending'  },
-    { id: 3,  invoice: 'INV-0003', user: 'Carol White',   space: 'Private Office 3', date: '2024-04-01', amount: 1200, status: 'paid'     },
-    { id: 4,  invoice: 'INV-0004', user: 'David Brown',   space: 'Hot Desk B',       date: '2024-04-14', amount: 80,   status: 'refunded' },
-    { id: 5,  invoice: 'INV-0005', user: 'Eva Green',     space: 'Conference Hall',  date: '2024-04-20', amount: 350,  status: 'pending'  },
-    { id: 6,  invoice: 'INV-0006', user: 'Frank Taylor',  space: 'Open Space B',     date: '2024-04-22', amount: 400,  status: 'paid'     },
-    { id: 7,  invoice: 'INV-0007', user: 'Grace Wilson',  space: 'Hot Desk A',       date: '2024-04-08', amount: 80,   status: 'refunded' },
-    { id: 8,  invoice: 'INV-0008', user: 'Alice Martin',  space: 'Meeting Room 1',   date: '2024-04-25', amount: 240,  status: 'pending'  },
-    { id: 9,  invoice: 'INV-0009', user: 'Bob Johnson',   space: 'Open Space A',     date: '2024-04-26', amount: 50,   status: 'paid'     },
-    { id: 10, invoice: 'INV-0010', user: 'Eva Green',     space: 'Private Office 3', date: '2024-04-27', amount: 600,  status: 'pending'  },
-  ]);
+  readonly payments = signal<AdminPayment[]>([]);
 
   readonly allFiltered = computed(() => {
     const f = this.activeFilter();
@@ -71,6 +60,36 @@ export class AdminPaymentsComponent {
     pending:  this.payments().filter(p => p.status === 'pending').length,
     refunded: this.payments().filter(p => p.status === 'refunded').length,
   }));
+
+  constructor(
+    private toast: ToastService,
+    private paymentsService: PaymentsService
+  ) {}
+
+  ngOnInit(): void {
+    this.paymentsService.disableMocks();
+    this.loadPayments();
+  }
+
+  private loadPayments(): void {
+    this.paymentsService.getPayments().subscribe({
+      next: payments => this.payments.set(payments.map(p => this.mapToAdminPayment(p))),
+      error: () => this.toast.showError('Unable to load payments.'),
+    });
+  }
+
+  private mapToAdminPayment(p: ApiPayment): AdminPayment {
+    const reservationInfo = p.reservation_info as { space_name?: string };
+    return {
+      id: p.id,
+      invoice: p.transaction_id ?? `INV-${String(p.id).padStart(4, '0')}`,
+      user: p.user_email,
+      space: reservationInfo?.space_name ?? '—',
+      date: p.paid_at ?? p.created_at,
+      amount: p.amount,
+      status: p.status === 'completed' ? 'paid' : (p.status === 'pending' || p.status === 'refunded' ? p.status : 'pending'),
+    };
+  }
 
   setFilter(f: 'all' | 'paid' | 'pending' | 'refunded'): void {
     this.activeFilter.set(f);
@@ -93,13 +112,19 @@ export class AdminPaymentsComponent {
   confirmAction(): void {
     const a = this.pendingAction();
     if (!a) return;
-    this.payments.update(list =>
-      list.map(p => p.id === a.id ? { ...p, status: a.target } : p)
-    );
-    this.toast.showSuccess(
-      a.target === 'paid' ? 'Invoice marked as paid.' : 'Payment refunded.'
-    );
-    this.pendingAction.set(null);
+
+    const request = a.target === 'paid'
+      ? this.paymentsService.confirmPayment(a.id, { status: 'completed' })
+      : this.paymentsService.refundPayment(a.id);
+
+    request.subscribe({
+      next: () => {
+        this.loadPayments();
+        this.toast.showSuccess(a.target === 'paid' ? 'Invoice marked as paid.' : 'Payment refunded.');
+        this.pendingAction.set(null);
+      },
+      error: () => this.toast.showError('Unable to update the payment.'),
+    });
   }
 
   cancelAction(): void {
@@ -107,9 +132,7 @@ export class AdminPaymentsComponent {
   }
 
   get confirmTitle(): string {
-    return this.pendingAction()?.target === 'paid'
-      ? 'Mark as paid?'
-      : 'Refund this payment?';
+    return this.pendingAction()?.target === 'paid' ? 'Mark as paid?' : 'Refund this payment?';
   }
 
   get confirmMessage(): string {

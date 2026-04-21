@@ -117,6 +117,10 @@ export class ReservationsService extends ApiService {
     this.useMocks.set(true);
   }
 
+  disableMocks(): void {
+    this.useMocks.set(false);
+  }
+
   toggleMocks(): void {
     this.useMocks.set(!this.useMocks());
   }

@@ -1,7 +1,15 @@
 export interface User {
     id: string;
-    name: string;
     email: string;
+    username: string;
+    first_name: string;
+    last_name: string;
+    full_name?: string;
+    phone?: string | null;
+    avatar?: string | null;
+    role?: string;
+    is_verified?: boolean;
+    created_at?: string;
 }
 
 export interface AuthTokens {
@@ -15,9 +23,12 @@ export interface LoginPayload {
 }
 
 export interface RegisterPayload {
-    name: string;
+    first_name: string;
+    last_name: string;
+    username: string;
     email: string;
     password: string;
+    password_confirm: string;
 }
 
 export interface AuthResponse {

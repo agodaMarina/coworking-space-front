@@ -87,7 +87,7 @@
           [disabled]="submitting()"
           class="w-full py-4 rounded-full bg-black text-white text-sm font-bold hover:bg-zinc-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-1">
           @if (submitting()) {
-            <span class="iconify animate-spin" data-icon="lucide:loader-2" data-width="16"></span>
+            <span class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
           }
           {{ submitting() ? 'Signing in…' : 'Sign in' }}
         </button>

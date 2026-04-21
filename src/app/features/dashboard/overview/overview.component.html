@@ -4,7 +4,7 @@
     <p class="text-xs font-medium text-zinc-400 mb-1">Dashboard</p>
     <div class="flex flex-wrap items-center justify-between gap-3">
       <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">
-        Good morning, {{ (user()?.name ?? 'there').split(' ')[0] }}
+        Good morning, {{ (user()?.full_name ?? user()?.first_name ?? 'there').split(' ')[0] }}
       </h1>
       <a routerLink="/spaces"
         class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition-colors">

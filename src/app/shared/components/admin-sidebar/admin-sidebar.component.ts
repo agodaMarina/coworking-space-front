@@ -16,7 +16,7 @@ export class AdminSidebarComponent {
   readonly mobileOpen = signal(false);
 
   readonly userInitials = computed(() => {
-    const name = this.user()?.name ?? '';
+    const name = this.user()?.full_name ?? `${this.user()?.first_name ?? ''} ${this.user()?.last_name ?? ''}`.trim();
     return name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || 'A';
   });
 

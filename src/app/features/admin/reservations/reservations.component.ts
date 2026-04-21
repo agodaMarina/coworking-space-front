@@ -151,6 +151,7 @@ export class AdminReservationsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.reservationsService.disableMocks();
     this.loadReservations();
   }
 

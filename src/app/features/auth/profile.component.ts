@@ -22,7 +22,7 @@ import { MessageService } from 'primeng/api';
         <section class="profile-card">
           <div *ngIf="user(); else loading">
             <p class="profile-label">Nom complet</p>
-            <h2>{{ user()?.name }}</h2>
+            <h2>{{ user()?.full_name ?? (user()?.first_name + ' ' + user()?.last_name) }}</h2>
             <p class="profile-label">Email</p>
             <p>{{ user()?.email }}</p>
             <a routerLink="/booking" class="primary-button">Voir mes réservations</a>

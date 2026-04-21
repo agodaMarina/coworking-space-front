@@ -1,8 +1,11 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/guard/auth.guard';
+import { adminGuard } from './core/guard/admin.guard';
 
 export const routes: Routes = [
   {
     path: 'dashboard',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
     children: [
@@ -81,6 +84,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
+    canActivate: [adminGuard],
     loadComponent: () => import('./features/admin/admin.component').then((m) => m.AdminComponent),
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'overview' },

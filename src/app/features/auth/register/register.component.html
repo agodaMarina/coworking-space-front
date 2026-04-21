@@ -42,16 +42,40 @@
 
       <form [formGroup]="registerForm" (ngSubmit)="submit()" class="flex flex-col gap-5">
 
-        <!-- Full name -->
+        <!-- First name / Last name -->
+        <div class="flex gap-4">
+          <div class="flex flex-col gap-2 flex-1">
+            <label class="text-xs font-bold uppercase tracking-[.15em] text-zinc-500">First name</label>
+            <input
+              type="text"
+              formControlName="first_name"
+              placeholder="Jane"
+              class="w-full px-4 py-3.5 rounded-xl border text-sm font-medium text-black placeholder:text-zinc-300 focus:outline-none transition-colors bg-white"
+              [class.border-red-300]="registerForm.get('first_name')?.invalid && registerForm.get('first_name')?.touched"
+              [class.border-zinc-200]="!(registerForm.get('first_name')?.invalid && registerForm.get('first_name')?.touched)">
+          </div>
+          <div class="flex flex-col gap-2 flex-1">
+            <label class="text-xs font-bold uppercase tracking-[.15em] text-zinc-500">Last name</label>
+            <input
+              type="text"
+              formControlName="last_name"
+              placeholder="Dupont"
+              class="w-full px-4 py-3.5 rounded-xl border text-sm font-medium text-black placeholder:text-zinc-300 focus:outline-none transition-colors bg-white"
+              [class.border-red-300]="registerForm.get('last_name')?.invalid && registerForm.get('last_name')?.touched"
+              [class.border-zinc-200]="!(registerForm.get('last_name')?.invalid && registerForm.get('last_name')?.touched)">
+          </div>
+        </div>
+
+        <!-- Username -->
         <div class="flex flex-col gap-2">
-          <label class="text-xs font-bold uppercase tracking-[.15em] text-zinc-500">Full name</label>
+          <label class="text-xs font-bold uppercase tracking-[.15em] text-zinc-500">Username</label>
           <input
             type="text"
-            formControlName="name"
-            placeholder="Jane Dupont"
+            formControlName="username"
+            placeholder="janedupont"
             class="w-full px-4 py-3.5 rounded-xl border text-sm font-medium text-black placeholder:text-zinc-300 focus:outline-none transition-colors bg-white"
-            [class.border-red-300]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched"
-            [class.border-zinc-200]="!(registerForm.get('name')?.invalid && registerForm.get('name')?.touched)">
+            [class.border-red-300]="registerForm.get('username')?.invalid && registerForm.get('username')?.touched"
+            [class.border-zinc-200]="!(registerForm.get('username')?.invalid && registerForm.get('username')?.touched)">
         </div>
 
         <!-- Email -->
@@ -88,6 +112,18 @@
           </div>
         </div>
 
+        <!-- Password confirm -->
+        <div class="flex flex-col gap-2">
+          <label class="text-xs font-bold uppercase tracking-[.15em] text-zinc-500">Confirm password</label>
+          <input
+            type="password"
+            formControlName="password_confirm"
+            placeholder="••••••••"
+            class="w-full px-4 py-3.5 rounded-xl border text-sm font-medium text-black placeholder:text-zinc-300 focus:outline-none transition-colors bg-white"
+            [class.border-red-300]="registerForm.get('password_confirm')?.invalid && registerForm.get('password_confirm')?.touched"
+            [class.border-zinc-200]="!(registerForm.get('password_confirm')?.invalid && registerForm.get('password_confirm')?.touched)">
+        </div>
+
         <!-- Error message -->
         @if (error()) {
           <p class="text-sm text-red-600 font-medium font-general -mt-1">{{ error() }}</p>
@@ -99,7 +135,7 @@
           [disabled]="submitting()"
           class="w-full py-4 rounded-full bg-black text-white text-sm font-bold hover:bg-zinc-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-1">
           @if (submitting()) {
-            <span class="iconify animate-spin" data-icon="lucide:loader-2" data-width="16"></span>
+            <span class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
           }
           {{ submitting() ? 'Creating account…' : 'Create account' }}
         </button>

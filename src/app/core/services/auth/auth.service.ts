@@ -25,9 +25,9 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly useMocks = signal(false); // Variable pour switcher entre mocks et API
 
-  private readonly accessTokenSignal = signal<string | null>(localStorage.getItem('coworking_access_token') ?? 'mock_token');
-  private readonly refreshTokenSignal = signal<string | null>(localStorage.getItem('coworking_refresh_token') ?? 'mock_refresh');
-  private readonly userSignal = signal<User | null>(readStorageUser() ?? { id: '1', name: 'Demo User', email: 'demo@coworking.com' });
+  private readonly accessTokenSignal = signal<string | null>(localStorage.getItem('coworking_access_token') ?? null);
+  private readonly refreshTokenSignal = signal<string | null>(localStorage.getItem('coworking_refresh_token') ?? null);
+  private readonly userSignal = signal<User | null>(readStorageUser() ?? null);
 
   readonly isAuthenticated = computed(() => !!this.accessTokenSignal());
   readonly token = computed(() => this.accessTokenSignal());
@@ -76,7 +76,7 @@ export class AuthService {
       if (payload.email === 'admin@coworking.com' && payload.password === 'admin1234') {
         const mockResponse: AuthResponse = {
           message: 'Login successful',
-          user: { id: '1', name: 'Admin User', email: payload.email },
+          user: { id: '1', username: 'admin', first_name: 'Admin', last_name: 'User', email: payload.email },
           tokens: { access: 'mock_access_token', refresh: 'mock_refresh_token' }
         };
         this.setAuthPayload(mockResponse);
@@ -95,7 +95,7 @@ export class AuthService {
       // Mock register
       const mockResponse: AuthResponse = {
         message: 'Registration successful',
-        user: { id: Date.now().toString(), name: payload.name, email: payload.email },
+        user: { id: Date.now().toString(), username: payload.username, first_name: payload.first_name, last_name: payload.last_name, email: payload.email },
         tokens: { access: 'mock_access_token', refresh: 'mock_refresh_token' }
       };
       this.setAuthPayload(mockResponse);
