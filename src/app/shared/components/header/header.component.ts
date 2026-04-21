@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth/auth.service';
 
@@ -9,16 +9,21 @@ import { AuthService } from '../../../core/services/auth/auth.service';
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
+
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-  readonly isAuthenticated = this.authService.isAuthenticated;
+  isAuthenticated:any;
+
   isMobileMenuOpen = false;
 
   toggleMenu() { this.isMobileMenuOpen = !this.isMobileMenuOpen; }
   closeMenu()  { this.isMobileMenuOpen = false; }
 
+   ngOnInit(): void {
+this.isAuthenticated = this.authService.isAuthenticated;
+  }
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/home']);
