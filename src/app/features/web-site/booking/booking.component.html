@@ -1,4 +1,5 @@
 <div class="min-h-screen bg-zinc-50">
+  <p-toast></p-toast>
   <app-header></app-header>
 
   <main class="pt-20">
@@ -59,9 +60,12 @@
                     <div class="fixed inset-0 z-10" (click)="spaceDropdownOpen.set(false)"></div>
                   }
                   <!-- Trigger -->
-                  <button type="button" (click)="spaceDropdownOpen.set(!spaceDropdownOpen())"
-                    class="w-full flex items-center justify-between px-4 py-2.5 text-sm border rounded-xl bg-white transition-all"
-                    [ngClass]="spaceDropdownOpen() ? 'border-zinc-400 ring-2 ring-zinc-100' : 'border-zinc-200 hover:border-zinc-300'">
+                  <button type="button" (click)="!isSpacePreSelected() && spaceDropdownOpen.set(!spaceDropdownOpen())"
+                    class="w-full flex items-center justify-between px-4 py-2.5 text-sm border rounded-xl transition-all"
+                    [ngClass]="[
+                      spaceDropdownOpen() ? 'border-zinc-400 ring-2 ring-zinc-100 bg-white' : 'border-zinc-200',
+                      isSpacePreSelected() ? 'bg-zinc-50 cursor-default pointer-events-none' : 'bg-white hover:border-zinc-300'
+                    ]">
                     <div class="flex items-center gap-2.5">
                       <span class="iconify text-zinc-400 flex-shrink-0" data-icon="lucide:building-2" data-width="15"></span>
                       @if (getSelectedSpace(); as space) {
@@ -70,9 +74,11 @@
                         <span class="text-zinc-400">Select a workspace…</span>
                       }
                     </div>
-                    <span class="iconify text-zinc-400 flex-shrink-0 transition-transform duration-200"
-                      data-icon="lucide:chevron-down" data-width="15"
-                      [style.transform]="spaceDropdownOpen() ? 'rotate(180deg)' : 'rotate(0deg)'"></span>
+                    @if (!isSpacePreSelected()) {
+                      <span class="iconify text-zinc-400 flex-shrink-0 transition-transform duration-200"
+                        data-icon="lucide:chevron-down" data-width="15"
+                        [style.transform]="spaceDropdownOpen() ? 'rotate(180deg)' : 'rotate(0deg)'"></span>
+                    }
                   </button>
                   <!-- Panel -->
                   @if (spaceDropdownOpen()) {
@@ -295,59 +301,25 @@
             <!-- Payment method selector -->
             <div class="mb-7 pb-7 border-b border-zinc-100">
               <p class="text-sm font-medium text-zinc-700 mb-3">Choisissez un moyen de paiement</p>
-              <div class="grid grid-cols-3 gap-3">
-
-                <button type="button" (click)="selectPaymentMethod('card')"
-                  class="relative flex flex-col gap-4 p-5 rounded-2xl bg-[#AEE9F4] transition-all duration-200 text-left hover:shadow-lg hover:-translate-y-1"
-                  [ngClass]="selectedPaymentMethod() === 'card' ? 'shadow-lg -translate-y-1 ring-2 ring-offset-2 ring-zinc-900' : ''">
-                  @if (selectedPaymentMethod() === 'card') {
-                    <span class="absolute top-3 right-3 w-5 h-5 rounded-full bg-zinc-900 flex items-center justify-center">
-                      <span class="iconify text-white" data-icon="lucide:check" data-width="11"></span>
-                    </span>
-                  }
-                  <div class="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center">
-                    <span class="iconify text-zinc-800" data-icon="lucide:credit-card" data-width="17"></span>
-                  </div>
-                  <div>
-                    <p class="text-sm font-bold text-zinc-900">Carte</p>
-                    <p class="text-[11px] text-zinc-600 mt-0.5 font-general">Visa · Mastercard</p>
-                  </div>
-                </button>
-
-                <button type="button" (click)="selectPaymentMethod('mobile_money')"
-                  class="relative flex flex-col gap-4 p-5 rounded-2xl bg-[#CEF09D] transition-all duration-200 text-left hover:shadow-lg hover:-translate-y-1"
-                  [ngClass]="selectedPaymentMethod() === 'mobile_money' ? 'shadow-lg -translate-y-1 ring-2 ring-offset-2 ring-zinc-900' : ''">
-                  @if (selectedPaymentMethod() === 'mobile_money') {
-                    <span class="absolute top-3 right-3 w-5 h-5 rounded-full bg-zinc-900 flex items-center justify-center">
-                      <span class="iconify text-white" data-icon="lucide:check" data-width="11"></span>
-                    </span>
-                  }
-                  <div class="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center">
-                    <span class="iconify text-zinc-800" data-icon="lucide:smartphone" data-width="17"></span>
-                  </div>
-                  <div>
-                    <p class="text-sm font-bold text-zinc-900">Mobile Money</p>
-                    <p class="text-[11px] text-zinc-600 mt-0.5 font-general">Orange · Wave · Free</p>
-                  </div>
-                </button>
-
-                <button type="button" (click)="selectPaymentMethod('paypal')"
-                  class="relative flex flex-col gap-4 p-5 rounded-2xl bg-[#FDD5AB] transition-all duration-200 text-left hover:shadow-lg hover:-translate-y-1"
-                  [ngClass]="selectedPaymentMethod() === 'paypal' ? 'shadow-lg -translate-y-1 ring-2 ring-offset-2 ring-zinc-900' : ''">
-                  @if (selectedPaymentMethod() === 'paypal') {
-                    <span class="absolute top-3 right-3 w-5 h-5 rounded-full bg-zinc-900 flex items-center justify-center">
-                      <span class="iconify text-white" data-icon="lucide:check" data-width="11"></span>
-                    </span>
-                  }
-                  <div class="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center">
-                    <span class="iconify text-zinc-800" data-icon="lucide:wallet" data-width="17"></span>
-                  </div>
-                  <div>
-                    <p class="text-sm font-bold text-zinc-900">PayPal</p>
-                    <p class="text-[11px] text-zinc-600 mt-0.5 font-general">paypal.com</p>
-                  </div>
-                </button>
-
+              <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                @for (method of paymentMethods; track method.value) {
+                  <button type="button" (click)="selectPaymentMethod(method.value)"
+                    class="relative flex flex-col gap-4 p-5 rounded-2xl transition-all duration-200 text-left hover:shadow-lg hover:-translate-y-1 {{ method.activeBg }}"
+                    [ngClass]="selectedPaymentMethod() === method.value ? 'shadow-lg -translate-y-1 ring-2 ring-offset-2 ring-zinc-900' : ''">
+                    @if (selectedPaymentMethod() === method.value) {
+                      <span class="absolute top-3 right-3 w-5 h-5 rounded-full bg-zinc-900 flex items-center justify-center">
+                        <span class="iconify text-white" data-icon="lucide:check" data-width="11"></span>
+                      </span>
+                    }
+                    <div class="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center">
+                      <span class="iconify text-zinc-800" [attr.data-icon]="method.icon" data-width="17"></span>
+                    </div>
+                    <div>
+                      <p class="text-sm font-bold text-zinc-900">{{ method.label }}</p>
+                      <p class="text-[11px] text-zinc-600 mt-0.5 font-general">{{ method.desc }}</p>
+                    </div>
+                  </button>
+                }
               </div>
             </div>
 
@@ -466,30 +438,7 @@
                 </div>
               }
 
-              <!-- PayPal fields -->
-              @if (selectedPaymentMethod() === 'paypal') {
-                <div class="mb-7 pb-7 border-b border-zinc-100">
-                  <div class="flex items-center gap-3 mb-5">
-                    <div class="w-10 h-10 rounded-xl bg-[#003087] flex items-center justify-center">
-                      <span class="text-white font-bold text-sm">PP</span>
-                    </div>
-                    <div>
-                      <p class="text-sm font-semibold text-zinc-900">PayPal</p>
-                      <p class="text-xs text-zinc-400">Paiement sécurisé via PayPal</p>
-                    </div>
-                  </div>
-                  <label class="block text-sm font-medium text-zinc-700 mb-1.5">Adresse email PayPal</label>
-                  <input formControlName="paypalEmail" type="email" placeholder="alice@paypal.com"
-                    class="w-full px-3.5 py-2.5 text-sm border border-zinc-200 rounded-xl text-zinc-900 placeholder-zinc-300 focus:outline-none focus:border-zinc-400 transition-colors">
-                  @if (isPaymentFieldInvalid('paypalEmail')) {
-                    <small class="text-red-500 text-xs mt-1 block">Email PayPal invalide</small>
-                  }
-                  <p class="mt-3 text-xs text-zinc-400 flex items-center gap-1.5">
-                    <span class="iconify" data-icon="lucide:info" data-width="12"></span>
-                    Vous serez redirigé vers PayPal pour confirmer le paiement.
-                  </p>
-                </div>
-              }
+
 
               <!-- Order recap -->
               <div class="bg-[#AEE9F4]/30 border border-[#AEE9F4] rounded-xl p-5 mb-6">
@@ -505,8 +454,10 @@
                 <button type="submit" [disabled]="paymentForm.invalid || isProcessingPayment()"
                   class="flex-1 py-3 rounded-xl bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                   @if (isProcessingPayment()) {
-                    <span class="iconify animate-spin" data-icon="lucide:loader-circle" data-width="16"></span>
-                    Processing…
+                    <span class="flex items-center justify-center gap-2">
+                      <span class="iconify animate-spin" data-icon="lucide:loader-circle" data-width="16"></span>
+                      Processing…
+                    </span>
                   } @else {
                     Pay ${{ calculateTotal() | number:'1.2-2' }}
                   }

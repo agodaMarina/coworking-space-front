@@ -69,6 +69,7 @@ export class SpaceListPageComponent implements OnInit {
     constructor(public spacesService: SpacesService, private router: Router) {}
 
     ngOnInit() {
+        this.spacesService.disableMocks();
         this.loadSpaces();
     }
 

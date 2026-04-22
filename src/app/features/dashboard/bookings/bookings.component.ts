@@ -62,6 +62,7 @@ export class BookingsComponent implements OnInit {
   );
 
   ngOnInit(): void {
+    this.reservationsService.disableMocks();
     this.reservationsService.getReservations().subscribe({
       next: (res) => this.reservations.set(res),
     });

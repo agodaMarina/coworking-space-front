@@ -1,6 +1,7 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth/auth.service';
+import { NotificationsService } from '../../../core/services/admin/notifications.service';
 
 @Component({
   standalone: true,
@@ -8,9 +9,12 @@ import { AuthService } from '../../../core/services/auth/auth.service';
   imports: [RouterLink, RouterLinkActive],
   templateUrl: './sidebar.component.html',
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
   private readonly authService = inject(AuthService);
+  private readonly notificationsService = inject(NotificationsService);
   private readonly router = inject(Router);
+
+  readonly unreadCount = this.notificationsService.unreadCount;
 
   readonly user = this.authService.user;
   readonly mobileOpen = signal(false);
@@ -20,11 +24,19 @@ export class SidebarComponent {
     return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'U';
   });
 
+  ngOnInit(): void {
+    if (this.user()) {
+       this.notificationsService.disableMocks();
+       this.notificationsService.getStats().subscribe();
+    }
+  }
+
   readonly navItems = [
     { label: 'Overview',    icon: 'lucide:layout-dashboard', path: '/dashboard/overview',  activeClass: 'bg-[#AEE9F4] text-zinc-900 font-medium' },
     { label: 'My Bookings', icon: 'lucide:calendar',         path: '/dashboard/bookings',  activeClass: 'bg-[#CEF09D] text-zinc-900 font-medium' },
-    { label: 'Payments',    icon: 'lucide:credit-card',      path: '/dashboard/payments',  activeClass: 'bg-[#FDD5AB] text-zinc-900 font-medium' },
-    { label: 'Spaces',      icon: 'lucide:grid-2x2',         path: '/dashboard/spaces',    activeClass: 'bg-[#E2F89C] text-zinc-900 font-medium' },
+    { label: 'Payments',    icon: 'lucide:credit-card',      path: '/dashboard/payments',       activeClass: 'bg-[#FDD5AB] text-zinc-900 font-medium' },
+    { label: 'Notifications', icon: 'lucide:bell',            path: '/dashboard/notifications',  activeClass: 'bg-[#FBCBE3] text-zinc-900 font-medium' },
+    { label: 'Spaces',      icon: 'lucide:grid-2x2',         path: '/dashboard/spaces',         activeClass: 'bg-[#E2F89C] text-zinc-900 font-medium' },
     { label: 'Profile',     icon: 'lucide:user',             path: '/dashboard/profile',   activeClass: 'bg-[#FBCBE3] text-zinc-900 font-medium' },
   ];
 

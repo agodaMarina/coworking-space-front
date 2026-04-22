@@ -1,0 +1,81 @@
+<div class="min-h-full bg-white">
+
+  <!-- Header -->
+  <div class="px-4 md:px-8 pt-6 md:pt-10 pb-6 md:pb-8 border-b border-zinc-100">
+    <p class="text-xs font-medium text-zinc-400 mb-1">Dashboard</p>
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <div>
+        <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Notifications</h1>
+        @if (unreadCount() > 0) {
+          <p class="text-sm text-zinc-400 mt-1">{{ unreadCount() }} unread</p>
+        }
+      </div>
+      @if (unreadCount() > 0) {
+        <button (click)="markAllAsRead()"
+          [disabled]="markingAll()"
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition-colors disabled:opacity-40">
+          <span class="iconify" data-icon="lucide:check-check" data-width="14"></span>
+          {{ markingAll() ? 'Marking…' : 'Mark all read' }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="px-4 md:px-8 py-6 md:py-8">
+
+    @if (paginated().length === 0) {
+      <div class="text-center py-16">
+        <span class="iconify mx-auto text-zinc-200 mb-4" data-icon="lucide:bell-off" data-width="32"></span>
+        <p class="text-sm font-medium text-zinc-500">No notifications yet.</p>
+        <p class="text-xs text-zinc-400 mt-1">You'll see booking confirmations, payment updates, and reminders here.</p>
+      </div>
+    } @else {
+      <div class="space-y-2">
+        @for (n of paginated(); track n.id) {
+          <button (click)="markAsRead(n)"
+            class="w-full flex items-start gap-4 p-4 rounded-xl border transition-all text-left"
+            [ngClass]="n.status !== 'sent'
+              ? 'border-zinc-200 bg-zinc-50 hover:border-zinc-300'
+              : 'border-zinc-100 bg-white hover:bg-zinc-50'">
+
+            <!-- Icon -->
+            <span class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center"
+              [ngClass]="typeBg(n.notification_type)">
+              <span class="iconify text-zinc-700" [attr.data-icon]="typeIcon(n.notification_type)" data-width="15"></span>
+            </span>
+
+            <!-- Content -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-0.5">
+                <p class="text-sm font-medium text-zinc-900 truncate"
+                  [ngClass]="{ 'font-semibold': n.status !== 'sent' }">
+                  {{ n.type_display }}
+                </p>
+                @if (n.status !== 'sent') {
+                  <span class="w-1.5 h-1.5 rounded-full bg-zinc-900 flex-shrink-0"></span>
+                }
+              </div>
+              <p class="text-sm text-zinc-500 line-clamp-2">{{ n.message }}</p>
+              <p class="text-xs text-zinc-400 mt-1">
+                @if (n.sent_at) {
+                  {{ n.sent_at | date:'MMM d, y – HH:mm' }}
+                } @else {
+                  {{ n.created_at | date:'MMM d, y – HH:mm' }}
+                }
+              </p>
+            </div>
+
+            <!-- Channel badge -->
+            <span class="flex-shrink-0 text-[10px] font-medium text-zinc-400 uppercase tracking-wide mt-1">
+              {{ n.channel_display }}
+            </span>
+
+          </button>
+        }
+      </div>
+
+      <app-pagination [total]="notifications().length" [pageSize]="pageSize" [current]="page()" (pageChange)="page.set($event)"></app-pagination>
+    }
+
+  </div>
+</div>

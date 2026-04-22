@@ -1,69 +1,109 @@
 <div class="min-h-full bg-white">
 
+  <!-- Header -->
   <div class="px-4 md:px-8 pt-6 md:pt-10 pb-6 md:pb-8 border-b border-zinc-100">
     <p class="text-xs font-medium text-zinc-400 mb-1">Admin</p>
-    <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Overview</h1>
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Overview</h1>
+      <div class="flex flex-wrap items-center gap-2">
+        <!-- Date filter -->
+        <div class="flex items-center gap-1.5">
+          <input type="date" [(ngModel)]="dateFrom"
+            class="px-2.5 py-2 text-sm border border-zinc-200 rounded-lg text-zinc-900 focus:outline-none focus:border-zinc-400 transition-colors">
+          <span class="text-xs text-zinc-400">to</span>
+          <input type="date" [(ngModel)]="dateTo"
+            class="px-2.5 py-2 text-sm border border-zinc-200 rounded-lg text-zinc-900 focus:outline-none focus:border-zinc-400 transition-colors">
+          <button (click)="applyDateFilter()"
+            class="px-3 py-2 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition-colors">
+            <span class="iconify" data-icon="lucide:filter" data-width="13"></span>
+          </button>
+        </div>
+        <!-- Export -->
+        <button (click)="exportCsv()"
+          [disabled]="isExporting()"
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-zinc-200 text-sm font-medium text-zinc-700 hover:border-zinc-400 transition-colors disabled:opacity-40">
+          <span class="iconify" data-icon="lucide:download" data-width="13"></span>
+          {{ isExporting() ? 'Exporting…' : 'Export CSV' }}
+        </button>
+      </div>
+    </div>
   </div>
 
   <div class="px-4 md:px-8 py-6 md:py-8">
 
     <!-- Stats -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-      <div class="bg-[#AEE9F4] rounded-xl px-4 md:px-6 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
-        <p class="text-xs text-zinc-600 font-medium mb-3">Total users</p>
-        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().totalUsers }}</p>
+      <div class="bg-[#AEE9F4] rounded-xl px-5 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Total reservations</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().total_reservations }}</p>
       </div>
-      <div class="bg-[#CEF09D] rounded-xl px-4 md:px-6 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
-        <p class="text-xs text-zinc-600 font-medium mb-3">Total revenue</p>
-        <p class="text-2xl md:text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().totalRevenue | currency:'USD':'symbol':'1.0-0' }}</p>
+      <div class="bg-[#CEF09D] rounded-xl px-5 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Confirmed</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().confirmed }}</p>
       </div>
-      <div class="bg-[#FDD5AB] rounded-xl px-4 md:px-6 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
-        <p class="text-xs text-zinc-600 font-medium mb-3">Active reservations</p>
-        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().activeReservations }}</p>
+      <div class="bg-[#FDD5AB] rounded-xl px-5 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Today's bookings</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().today_reservations }}</p>
       </div>
-      <div class="bg-[#FBCBE3] rounded-xl px-4 md:px-6 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
-        <p class="text-xs text-zinc-600 font-medium mb-3">Available spaces</p>
-        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().availableSpaces }}</p>
+      <div class="bg-[#FBCBE3] rounded-xl px-5 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Revenue</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().total_revenue }} <span class="text-sm font-normal text-zinc-600">FCFA</span></p>
+      </div>
+    </div>
+
+    <!-- Secondary stats -->
+    <div class="grid grid-cols-3 gap-3 mb-8">
+      <div class="border border-zinc-100 rounded-xl px-5 py-4">
+        <p class="text-xs text-zinc-400 font-medium mb-2">Cancelled</p>
+        <p class="text-xl font-bold text-zinc-900">{{ stats().cancelled }}</p>
+      </div>
+      <div class="border border-zinc-100 rounded-xl px-5 py-4">
+        <p class="text-xs text-zinc-400 font-medium mb-2">Completed</p>
+        <p class="text-xl font-bold text-zinc-900">{{ stats().completed }}</p>
+      </div>
+      <div class="border border-zinc-100 rounded-xl px-5 py-4">
+        <p class="text-xs text-zinc-400 font-medium mb-2">Occupancy rate</p>
+        <p class="text-xl font-bold text-zinc-900">{{ stats().occupancy_rate }}%</p>
       </div>
     </div>
 
     <!-- Recent reservations -->
-    <div class="mb-3 flex items-center justify-between">
-      <p class="text-sm font-semibold text-zinc-900">Recent reservations</p>
-      <a routerLink="../reservations" class="text-xs text-zinc-400 hover:text-zinc-900 font-medium transition-colors">View all →</a>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-sm font-semibold text-zinc-900">Recent reservations</h2>
+      <a routerLink="/admin/reservations" class="text-xs text-zinc-400 hover:text-zinc-700 transition-colors">View all →</a>
     </div>
 
-    <app-table [rows]="recentReservations()" emptyMessage="No recent reservations.">
+    <app-table [rows]="recentReservations()" emptyMessage="No reservations yet.">
 
       <app-column label="User" flex="1">
         <ng-template let-r>
-          <p class="text-sm font-medium text-zinc-900 truncate pr-4">{{ r.user }}</p>
+          <p class="text-sm font-medium text-zinc-900 truncate pr-4">{{ r.user_detail?.email }}</p>
         </ng-template>
       </app-column>
 
-      <app-column label="Space" width="160px">
+      <app-column label="Space" flex="1">
         <ng-template let-r>
-          <p class="text-sm text-zinc-400 truncate">{{ r.space }}</p>
+          <p class="text-sm text-zinc-500 truncate">{{ r.space_detail?.name }}</p>
         </ng-template>
       </app-column>
 
       <app-column label="Date" width="120px">
         <ng-template let-r>
-          <p class="text-sm text-zinc-400">{{ r.date | date:'MMM d, y' }}</p>
+          <p class="text-sm text-zinc-400">{{ r.start_datetime | date:'MMM d, y' }}</p>
         </ng-template>
       </app-column>
 
-      <app-column label="Status" width="90px">
+      <app-column label="Status" width="100px">
         <ng-template let-r>
-          <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit" [ngClass]="statusBadge(r.status)">
-            {{ r.status }}
+          <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit capitalize" [ngClass]="statusBadge(r.status)">
+            {{ r.status_display }}
           </span>
         </ng-template>
       </app-column>
 
-      <app-column label="Amount" width="80px" align="right">
+      <app-column label="Amount" width="100px" align="right">
         <ng-template let-r>
-          <p class="text-sm font-semibold text-zinc-900">{{ r.amount | currency:'USD':'symbol':'1.0-0' }}</p>
+          <p class="text-sm font-semibold text-zinc-900">{{ r.total_price }} FCFA</p>
         </ng-template>
       </app-column>
 

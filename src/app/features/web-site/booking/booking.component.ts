@@ -1,16 +1,20 @@
 import { CommonModule, NgClass } from '@angular/common';
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ReservationsService } from '../../../core/services/reservations.service';
 import { SpacesService } from '../../../core/services/spaces.service';
+import { PaymentsService } from '../../../core/services/admin/payments.service';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
+import { ActivatedRoute } from '@angular/router';
 import { DatePickerComponent } from '../../../shared/components/date-picker/date-picker.component';
 import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+import { ToastService } from '../../../core/services/toast.service';
 
 
 type BookingStep = 'details' | 'payment' | 'success';
-type PaymentMethod = 'card' | 'mobile_money' | 'paypal';
+type PaymentMethod = 'card' | 'mobile_money' | 'cash' | 'bank_transfer';
 
 interface BookingSpace {
   id: number;
@@ -25,7 +29,7 @@ interface BookingSpace {
 @Component({
   standalone: true,
   selector: 'app-booking-page',
-  imports: [CommonModule, NgClass, FormsModule, ReactiveFormsModule, HeaderComponent, FooterComponent, DatePickerComponent],
+  imports: [CommonModule, NgClass, FormsModule, ReactiveFormsModule, HeaderComponent, FooterComponent, DatePickerComponent, ToastModule],
   templateUrl: './booking.component.html',
   styleUrls: ['./booking.component.css'],
   providers:[MessageService]
@@ -36,15 +40,16 @@ export class BookingPageComponent implements OnInit {
 
   currentStep = signal<BookingStep>('details');
   isProcessingPayment = signal(false);
-  selectedPaymentMethod = signal<PaymentMethod>('card');
+  selectedPaymentMethod = signal<PaymentMethod>('mobile_money');
 
   spaceDropdownOpen = signal(false);
+  isSpacePreSelected = signal(false);
   recurrenceDropdownOpen = signal(false);
 
   readonly paymentMethods = [
-    { value: 'card' as PaymentMethod,         label: 'Carte bancaire', icon: 'lucide:credit-card', desc: 'Visa · Mastercard', activeBg: 'bg-pastel-blue',   activeText: 'text-zinc-900', subText: 'text-zinc-600' },
-    { value: 'mobile_money' as PaymentMethod, label: 'Mobile Money',   icon: 'lucide:smartphone',  desc: 'Orange · Wave · Free', activeBg: 'bg-pastel-green',  activeText: 'text-zinc-900', subText: 'text-zinc-600' },
-    { value: 'paypal' as PaymentMethod,       label: 'PayPal',         icon: 'lucide:wallet',       desc: 'paypal.com', activeBg: 'bg-pastel-orange', activeText: 'text-zinc-900', subText: 'text-zinc-600' },
+    { value: 'mobile_money' as PaymentMethod,   label: 'Mobile Money',   icon: 'lucide:smartphone',  desc: 'Orange · Wave · Free', activeBg: 'bg-pastel-green',  activeText: 'text-zinc-900', subText: 'text-zinc-600' },
+    { value: 'cash' as PaymentMethod,           label: 'Espèces',        icon: 'lucide:banknote',    desc: 'Paiement sur place',   activeBg: 'bg-pastel-orange', activeText: 'text-zinc-900', subText: 'text-zinc-600' },
+    { value: 'bank_transfer' as PaymentMethod,  label: 'Virement',       icon: 'lucide:landmark',    desc: 'Virement bancaire',    activeBg: 'bg-pastel-orange', activeText: 'text-zinc-900', subText: 'text-zinc-600' },
   ];
 
   readonly countries = [
@@ -75,14 +80,27 @@ export class BookingPageComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     public spacesService: SpacesService,
-    public reservationsService: ReservationsService
+    public reservationsService: ReservationsService,
+    private paymentsService: PaymentsService,
+    private route: ActivatedRoute,
+    private toastService: ToastService
   ) {}
 
   ngOnInit() {
+    this.spacesService.disableMocks();
+    this.reservationsService.disableMocks();
     this.initializeForm();
     this.initializePaymentForm();
-    this.updatePaymentValidators('card');
+    this.updatePaymentValidators('mobile_money');
     this.loadSpaces();
+    
+    this.route.queryParams.subscribe(params => {
+      const spaceId = params['spaceId'];
+      if (spaceId) {
+        this.isSpacePreSelected.set(true);
+        this.bookingForm.patchValue({ spaceId: Number(spaceId) });
+      }
+    });
   }
 
   isFieldInvalid(fieldName: string): boolean {
@@ -153,9 +171,8 @@ export class BookingPageComponent implements OnInit {
       this.paymentForm.get('cvv')?.setValidators([Validators.required, Validators.pattern(/^\d{3,4}$/)]);
     } else if (method === 'mobile_money') {
       this.paymentForm.get('phoneNumber')?.setValidators([Validators.required, Validators.pattern(/^\+?[\d\s]{8,15}$/)]);
-    } else if (method === 'paypal') {
-      this.paymentForm.get('paypalEmail')?.setValidators([Validators.required, Validators.email]);
     }
+    // cash and bank_transfer require no extra fields
 
     cardFields.forEach(f => this.paymentForm.get(f)?.updateValueAndValidity());
     this.paymentForm.get('phoneNumber')?.updateValueAndValidity();
@@ -204,6 +221,8 @@ export class BookingPageComponent implements OnInit {
     if (fv.startTime) { const [h,m] = fv.startTime.split(':'); start.setHours(+h,+m); }
     if (fv.endTime)   { const [h,m] = fv.endTime.split(':');   end.setHours(+h,+m);   }
 
+    const method = this.selectedPaymentMethod();
+
     this.reservationsService.createReservation({
       space_id:        Number(fv.spaceId),
       start_datetime:  start.toISOString(),
@@ -213,20 +232,58 @@ export class BookingPageComponent implements OnInit {
       recurrence_rule: fv.isRecurring ? fv.recurrencePattern : 'none',
       notes:           fv.specialRequests,
     }).subscribe({
-      next: () => {
-        this.isProcessingPayment.set(false);
-        this.currentStep.set('success');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+      next: (reservation) => {
+        // Chain payment creation after reservation
+        this.paymentsService.disableMocks();
+        this.paymentsService.createPayment({
+          reservation_id: reservation.id,
+          method: method,
+        }).subscribe({
+          next: () => {
+            this.isProcessingPayment.set(false);
+            this.currentStep.set('success');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          },
+          error: (err) => {
+            this.isProcessingPayment.set(false);
+            const errMsg = this.extractErrorMessage(err);
+            this.toastService.showError(errMsg);
+          },
+        });
       },
-      error: () => this.isProcessingPayment.set(false),
+      error: (err) => {
+        this.isProcessingPayment.set(false);
+        const errMsg = this.extractErrorMessage(err);
+        this.toastService.showError(errMsg);
+      },
     });
+  }
+
+  private extractErrorMessage(err: any): string {
+    if (err?.error?.non_field_errors?.length) {
+      return err.error.non_field_errors[0];
+    }
+    if (err?.error?.error) {
+      return err.error.error;
+    }
+    if (err?.error?.reservation_id?.length) {
+      return err.error.reservation_id[0];
+    }
+    // General fallback
+    if (typeof err?.error === 'object') {
+       const firstKey = Object.keys(err.error)[0];
+       if (firstKey && Array.isArray(err.error[firstKey])) {
+          return err.error[firstKey][0];
+       }
+    }
+    return err?.message || 'Une erreur est survenue lors de la réservation.';
   }
 
   resetFlow() {
     this.bookingForm.reset({ billingType: 'daily', startTime: '09:00', endTime: '17:00', isRecurring: false, recurrencePattern: 'weekly' });
     this.paymentForm.reset();
-    this.selectedPaymentMethod.set('card');
-    this.updatePaymentValidators('card');
+    this.selectedPaymentMethod.set('mobile_money');
+    this.updatePaymentValidators('mobile_money');
     this.currentStep.set('details');
   }
 

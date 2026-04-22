@@ -43,6 +43,13 @@ export const routes: Routes = [
             (m) => m.DashboardPaymentsComponent,
           ),
       },
+      {
+        path: 'notifications',
+        loadComponent: () =>
+          import('./features/dashboard/notifications/notifications.component').then(
+            (m) => m.DashboardNotificationsComponent,
+          ),
+      },
     ],
   },
   { path: '', pathMatch: 'full', redirectTo: 'home' },
@@ -124,6 +131,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/admin/equipment/equipment.component').then(
             (m) => m.AdminEquipmentComponent,
+          ),
+      },
+      {
+        path: 'amenities',
+        loadComponent: () =>
+          import('./features/admin/amenities/amenities.component').then(
+            (m) => m.AdminAmenitiesComponent,
           ),
       },
       {

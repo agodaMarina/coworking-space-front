@@ -6,7 +6,8 @@ import {
   CreatePayment,
   Payment,
   PaymentListParams,
-  PaymentStats
+  PaymentStats,
+  RefundPaymentPayload
 } from '../../dtos/payment';
 import { PaginatedResponse } from '../../dtos/pagination';
 import { ApiService } from '../../http/api.service';
@@ -125,12 +126,21 @@ export class PaymentsService extends ApiService {
     );
   }
 
-  refundPayment(id: number): Observable<Payment> {
+  refundPayment(id: number, payload: RefundPaymentPayload = {}): Observable<Payment | any> {
     const source = this.useMocks()
       ? of(this.refundMockPayment(id))
-      : this.post<Payment>(`/payments/${id}/refund/`, {}).pipe(
-          map(payment => this.normalizePayment(payment))
-        );
+      : this.post<any>(`/payments/${id}/refund/`, payload);
+
+    return source.pipe(
+      tap(() => this.isLoading.set(true)),
+      finalize(() => this.isLoading.set(false))
+    );
+  }
+
+  downloadInvoice(id: number): Observable<string> {
+    const source = this.useMocks()
+      ? of("Facture simulée\nDate: 2026-04-22\nMontant: 15000 FCFA")
+      : this.http.get(`${this.baseUrl}/payments/${id}/invoice/`, { responseType: 'text' });
 
     return source.pipe(
       tap(() => this.isLoading.set(true)),
@@ -147,16 +157,7 @@ export class PaymentsService extends ApiService {
     );
   }
 
-  downloadInvoice(id: number): Observable<Blob> {
-    const source = this.useMocks()
-      ? of(new Blob([`Invoice ${id}`], { type: 'text/plain' }))
-      : this.http.get(`${this.baseUrl}/payments/${id}/invoice/`, { responseType: 'blob' });
 
-    return source.pipe(
-      tap(() => this.isLoading.set(true)),
-      finalize(() => this.isLoading.set(false))
-    );
-  }
 
   private buildParams(params?: PaymentListParams): HttpParams | undefined {
     if (!params) {

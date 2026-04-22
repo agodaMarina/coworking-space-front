@@ -26,6 +26,11 @@ export interface ConfirmPaymentPayload {
   status: PaymentConfirmStatus;
 }
 
+export interface RefundPaymentPayload {
+  amount?: string;
+  reason?: string;
+}
+
 export interface PaymentListParams {
   method?: PaymentMethod;
   page?: number;

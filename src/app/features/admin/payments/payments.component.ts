@@ -19,7 +19,7 @@ export interface AdminPayment {
   status: 'paid' | 'pending' | 'refunded';
 }
 
-type StatusAction = { id: number; target: 'paid' | 'refunded' };
+type StatusAction = { id: number; target: 'completed' | 'failed' | 'refunded' };
 
 const PAGE_SIZE = 8;
 
@@ -35,6 +35,7 @@ export class AdminPaymentsComponent implements OnInit {
   readonly page         = signal(1);
   readonly pageSize     = PAGE_SIZE;
   readonly pendingAction = signal<StatusAction | null>(null);
+  readonly apiStats     = signal<any>({ total_revenue: 0, pending_payments: 0, refunded_payments: 0 });
 
   readonly filters = [
     { key: 'all' as const,      label: 'All'      },
@@ -56,9 +57,9 @@ export class AdminPaymentsComponent implements OnInit {
   });
 
   readonly stats = computed(() => ({
-    total:    this.payments().reduce((sum, p) => sum + (p.status === 'paid' ? p.amount : 0), 0),
-    pending:  this.payments().filter(p => p.status === 'pending').length,
-    refunded: this.payments().filter(p => p.status === 'refunded').length,
+    total:    this.apiStats().total_revenue || 0,
+    pending:  this.apiStats().pending_payments || 0,
+    refunded: this.apiStats().refunded_payments || 0,
   }));
 
   constructor(
@@ -75,6 +76,9 @@ export class AdminPaymentsComponent implements OnInit {
     this.paymentsService.getPayments().subscribe({
       next: payments => this.payments.set(payments.map(p => this.mapToAdminPayment(p))),
       error: () => this.toast.showError('Unable to load payments.'),
+    });
+    this.paymentsService.getPaymentStats().subscribe({
+      next: stats => this.apiStats.set(stats),
     });
   }
 
@@ -105,7 +109,7 @@ export class AdminPaymentsComponent implements OnInit {
     return map[status] ?? 'bg-zinc-100 text-zinc-600';
   }
 
-  askAction(id: number, target: 'paid' | 'refunded'): void {
+  askAction(id: number, target: 'completed' | 'failed' | 'refunded'): void {
     this.pendingAction.set({ id, target });
   }
 
@@ -113,18 +117,25 @@ export class AdminPaymentsComponent implements OnInit {
     const a = this.pendingAction();
     if (!a) return;
 
-    const request = a.target === 'paid'
-      ? this.paymentsService.confirmPayment(a.id, { status: 'completed' })
-      : this.paymentsService.refundPayment(a.id);
-
-    request.subscribe({
-      next: () => {
-        this.loadPayments();
-        this.toast.showSuccess(a.target === 'paid' ? 'Invoice marked as paid.' : 'Payment refunded.');
-        this.pendingAction.set(null);
-      },
-      error: () => this.toast.showError('Unable to update the payment.'),
-    });
+    if (a.target === 'refunded') {
+      this.paymentsService.refundPayment(a.id, {}).subscribe({
+        next: () => {
+          this.loadPayments();
+          this.toast.showSuccess('Payment refunded.');
+          this.pendingAction.set(null);
+        },
+        error: () => this.toast.showError('Unable to update the payment.'),
+      });
+    } else {
+      this.paymentsService.confirmPayment(a.id, { status: a.target }).subscribe({
+        next: () => {
+          this.loadPayments();
+          this.toast.showSuccess(a.target === 'completed' ? 'Invoice marked as paid.' : 'Invoice rejected.');
+          this.pendingAction.set(null);
+        },
+        error: () => this.toast.showError('Unable to update the payment.'),
+      });
+    }
   }
 
   cancelAction(): void {
@@ -132,16 +143,22 @@ export class AdminPaymentsComponent implements OnInit {
   }
 
   get confirmTitle(): string {
-    return this.pendingAction()?.target === 'paid' ? 'Mark as paid?' : 'Refund this payment?';
+    if (!this.pendingAction()) return '';
+    const t = this.pendingAction()!.target;
+    return t === 'completed' ? 'Mark as paid?' : t === 'failed' ? 'Reject payment?' : 'Refund this payment?';
   }
 
   get confirmMessage(): string {
-    return this.pendingAction()?.target === 'paid'
-      ? 'This invoice will be marked as paid.'
-      : 'This payment will be marked as refunded. This cannot be undone.';
+    if (!this.pendingAction()) return '';
+    const t = this.pendingAction()!.target;
+    return t === 'completed' ? 'This invoice will be marked as paid.' 
+         : t === 'failed' ? 'This payment will be rejected.' 
+         : 'This payment will be marked as refunded. This cannot be undone.';
   }
 
   get confirmLabel(): string {
-    return this.pendingAction()?.target === 'paid' ? 'Mark as paid' : 'Refund';
+    if (!this.pendingAction()) return '';
+    const t = this.pendingAction()!.target;
+    return t === 'completed' ? 'Mark as paid' : t === 'failed' ? 'Reject' : 'Refund';
   }
 }

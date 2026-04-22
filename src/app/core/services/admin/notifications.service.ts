@@ -11,6 +11,7 @@ import { ApiService } from '../../http/api.service';
 export class NotificationsService extends ApiService {
   private readonly useMocks = signal(true);
   readonly isLoading = signal(false);
+  readonly unreadCount = signal(0);
 
   private mockNotifications: Notification[] = [
     {
@@ -41,6 +42,10 @@ export class NotificationsService extends ApiService {
 
   enableMocks(): void {
     this.useMocks.set(true);
+  }
+
+  disableMocks(): void {
+    this.useMocks.set(false);
   }
 
   toggleMocks(): void {
@@ -113,6 +118,7 @@ export class NotificationsService extends ApiService {
     return (this.useMocks()
       ? of(this.getMockStats())
       : this.get<NotificationStats>('/notifications/stats/')).pipe(
+      tap((stats: any) => this.unreadCount.set(stats.unread ?? 0)),
       tap(() => this.isLoading.set(true)),
       finalize(() => this.isLoading.set(false))
     );

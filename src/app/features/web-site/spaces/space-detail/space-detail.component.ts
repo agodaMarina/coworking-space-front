@@ -27,6 +27,7 @@ export class SpaceDetailPageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.spacesService.disableMocks();
     this.route.paramMap.subscribe(params => {
       const id = Number(params.get('id'));
       if (!id) return;

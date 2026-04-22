@@ -159,6 +159,16 @@ export class AuthService {
     return this.http.delete<void>(`${this.baseUrl}/auth/admin/users/${id}/delete/`);
   }
 
+  updateProfile(payload: { first_name?: string; last_name?: string; phone?: string }): Observable<User> {
+    return this.http.patch<User>(`${this.baseUrl}/auth/profile/`, payload).pipe(
+      tap(user => this.userSignal.set(user))
+    );
+  }
+
+  changePassword(payload: { old_password: string; new_password: string; new_password_confirm: string }): Observable<unknown> {
+    return this.http.post(`${this.baseUrl}/auth/change-password/`, payload);
+  }
+
   private setAuthPayload(response: AuthResponse): void {
     this.accessTokenSignal.set(response.tokens.access);
     this.refreshTokenSignal.set(response.tokens.refresh);

@@ -57,20 +57,40 @@ export class AdminProfileComponent implements OnInit {
   saveInfo(): void {
     if (this.infoForm.invalid) return;
     this.savingInfo.set(true);
-    // Simulate async save — replace with real API call
-    setTimeout(() => {
-      this.savingInfo.set(false);
-      this.toast.showSuccess('Profile updated.');
-    }, 600);
+    const v = this.infoForm.value;
+    const names = (v.name || '').trim().split(' ');
+    const firstName = names[0] || '';
+    const lastName  = names.slice(1).join(' ') || '';
+    this.auth.updateProfile({ first_name: firstName, last_name: lastName }).subscribe({
+      next: () => {
+        this.savingInfo.set(false);
+        this.toast.showSuccess('Profile updated.');
+      },
+      error: () => {
+        this.savingInfo.set(false);
+        this.toast.showError('Unable to update profile.');
+      },
+    });
   }
 
   savePassword(): void {
     if (this.passwordForm.invalid || this.passwordMismatch()) return;
     this.savingPassword.set(true);
-    setTimeout(() => {
-      this.savingPassword.set(false);
-      this.passwordForm.reset();
-      this.toast.showSuccess('Password changed successfully.');
-    }, 600);
+    const v = this.passwordForm.value;
+    this.auth.changePassword({
+      old_password: v.current,
+      new_password: v.next,
+      new_password_confirm: v.confirm,
+    }).subscribe({
+      next: () => {
+        this.savingPassword.set(false);
+        this.passwordForm.reset();
+        this.toast.showSuccess('Password changed successfully.');
+      },
+      error: () => {
+        this.savingPassword.set(false);
+        this.toast.showError('Unable to change password.');
+      },
+    });
   }
 }
