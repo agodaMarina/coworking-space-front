@@ -174,10 +174,33 @@ export class AdminSpacesComponent implements OnInit {
     const request = id !== null
       ? this.spacesService.updateSpace(id, payload)
       : this.spacesService.createSpace(payload);
+    const successMsg = id !== null ? 'Space updated.' : 'Space created.';
 
     this.isSaving.set(true);
     request.subscribe({
-      next: space => this.persistPendingPhoto(space, id !== null ? 'Space updated.' : 'Space created.'),
+      next: space => {
+        if (space?.id > 0) {
+          this.persistPendingPhoto(space, successMsg);
+        } else {
+          // Backend returned no id — reload list to find the real id
+          this.spacesService.getSpaces().subscribe({
+            next: spaces => {
+              this.spaces.set(spaces);
+              const resolved = (id !== null)
+                ? spaces.find(s => s.id === id)
+                : spaces.find(s => s.name === payload.name);
+              resolved
+                ? this.persistPendingPhoto(resolved, successMsg)
+                : (this.isSaving.set(false), this.closeModal(), this.toast.showSuccess(successMsg));
+            },
+            error: () => {
+              this.isSaving.set(false);
+              this.closeModal();
+              this.toast.showSuccess(successMsg);
+            }
+          });
+        }
+      },
       error: () => {
         this.isSaving.set(false);
         this.toast.showError(id !== null ? 'Unable to update the space.' : 'Unable to create the space.');
@@ -277,12 +300,27 @@ export class AdminSpacesComponent implements OnInit {
   }
 
   primaryPhoto(space: Space | null): string | undefined {
-    if (!space) {
-      return undefined;
-    }
-
+    if (!space) return undefined;
     const primary = space.photos.find(photo => photo.is_primary);
     return primary?.url ?? space.photo;
+  }
+
+  readonly previewSpace = signal<Space | null>(null);
+  readonly showPreview  = signal(false);
+
+  openPreview(space: Space): void {
+    this.previewSpace.set(space);
+    this.showPreview.set(true);
+  }
+
+  closePreview(): void {
+    this.showPreview.set(false);
+    this.previewSpace.set(null);
+  }
+
+  previewPhotoUrl(space: Space): string {
+    return this.primaryPhoto(space)
+      ?? `https://picsum.photos/seed/${encodeURIComponent(space.name)}/800/600.jpg`;
   }
 
   private buildPayload(): SpaceWritePayload {

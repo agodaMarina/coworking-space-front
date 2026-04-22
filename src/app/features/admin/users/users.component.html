@@ -38,7 +38,7 @@
     </div>
 
     <!-- Table -->
-    <app-table [rows]="paginated()" emptyMessage="No users found.">
+    <app-table [rows]="paginated()" [emptyMessage]="loading() ? 'Loading users…' : 'No users found.'">
 
       <app-column label="" width="32px" [hideOnMobile]="true">
         <ng-template let-u>
@@ -150,6 +150,11 @@
           <app-select formControlName="role" [options]="roleOptions" placeholder="Choose a role…"></app-select>
         </div>
 
+        <div>
+          <label class="block text-sm font-medium text-zinc-700 mb-1.5">Phone</label>
+          <app-input formControlName="phone" type="tel" placeholder="e.g. +33 6 12 34 56 78" icon="lucide:phone"></app-input>
+        </div>
+
         @if (isCreating()) {
           <div>
             <label class="block text-sm font-medium text-zinc-700 mb-1.5">Password <span class="text-red-400">*</span></label>
@@ -169,9 +174,9 @@
           Cancel
         </button>
         <button (click)="saveForm()"
-          [disabled]="form.invalid"
+          [disabled]="form.invalid || saving()"
           class="px-5 py-2 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-          {{ submitLabel() }}
+          {{ saving() ? 'Saving…' : submitLabel() }}
         </button>
       </div>
 

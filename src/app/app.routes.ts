@@ -133,6 +133,13 @@ export const routes: Routes = [
             (m) => m.AdminNotificationsComponent,
           ),
       },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/admin/profile/profile.component').then(
+            (m) => m.AdminProfileComponent,
+          ),
+      },
     ],
   },
   {

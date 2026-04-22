@@ -28,6 +28,7 @@ export class AdminSidebarComponent {
     { label: 'Payments',      icon: 'lucide:credit-card',      path: '/admin/payments',      activeClass: 'bg-[#E2F89C] text-zinc-900 font-medium' },
     { label: 'Equipment',     icon: 'lucide:package',          path: '/admin/equipment',     activeClass: 'bg-[#AEE9F4] text-zinc-900 font-medium' },
     { label: 'Notifications', icon: 'lucide:bell',             path: '/admin/notifications', activeClass: 'bg-[#CEF09D] text-zinc-900 font-medium' },
+    { label: 'Profile',       icon: 'lucide:user',             path: '/admin/profile',       activeClass: 'bg-[#FBCBE3] text-zinc-900 font-medium' },
   ];
 
   logout(): void {

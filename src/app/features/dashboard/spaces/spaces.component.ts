@@ -5,6 +5,7 @@ import { TableComponent } from '../../../shared/components/table/table.component
 import { ColumnComponent } from '../../../shared/components/table/column.component';
 import { Space } from '../../../core/dtos/space';
 import { SpacesService } from '../../../core/services/spaces.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { MessageService } from 'primeng/api';
 
 @Component({
@@ -16,6 +17,7 @@ import { MessageService } from 'primeng/api';
 })
 export class DashboardSpacesComponent implements OnInit {
   private readonly spacesService = inject(SpacesService);
+  private readonly toast = inject(ToastService);
 
   readonly spaces = signal<Space[]>([]);
   readonly isLoading = this.spacesService.isLoading;
@@ -62,8 +64,10 @@ export class DashboardSpacesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.spacesService.disableMocks();
     this.spacesService.getSpaces().subscribe({
       next: spaces => this.spaces.set(spaces),
+      error: () => this.toast.showError('Unable to load spaces.'),
     });
   }
 

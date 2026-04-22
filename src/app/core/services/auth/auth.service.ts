@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
-import { Observable, of, tap, throwError } from 'rxjs';
+import { Observable, map, of, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AuthResponse, LoginPayload, RegisterPayload, User } from '../../dtos/auth';
+import { AdminUserPayload, AdminUserUpdatePayload, AuthResponse, LoginPayload, RegisterPayload, User } from '../../dtos/auth';
 import { ApiService } from '../../http/api.service';
 
 
@@ -90,19 +90,21 @@ export class AuthService {
     );
   }
 
-  register(payload: RegisterPayload): Observable<AuthResponse> {
+  register(payload: RegisterPayload, loginOnSuccess = true): Observable<AuthResponse> {
     if (this.useMocks()) {
       // Mock register
       const mockResponse: AuthResponse = {
         message: 'Registration successful',
-        user: { id: Date.now().toString(), username: payload.username, first_name: payload.first_name, last_name: payload.last_name, email: payload.email },
+        user: { id: Date.now().toString(), username: payload.username, first_name: payload.first_name, last_name: payload.last_name, email: payload.email, role: payload.role },
         tokens: { access: 'mock_access_token', refresh: 'mock_refresh_token' }
       };
-      this.setAuthPayload(mockResponse);
+      if (loginOnSuccess) this.setAuthPayload(mockResponse);
       return of(mockResponse);
     }
     return this.http.post<AuthResponse>(this.baseUrl+'/auth/register/', payload).pipe(
-      tap((response) => this.setAuthPayload(response))
+      tap((response) => {
+        if (loginOnSuccess) this.setAuthPayload(response);
+      })
     );
   }
 
@@ -133,6 +135,28 @@ export class AuthService {
     return this.http.get<User>(this.baseUrl+'/auth/profile/').pipe(
       tap((user) => this.userSignal.set(user))
     );
+  }
+
+  getAdminUsers(): Observable<User[]> {
+    return this.http
+      .get<User[] | { count: number; results: User[] }>(`${this.baseUrl}/auth/admin/users/`)
+      .pipe(map(res => Array.isArray(res) ? res : (res.results ?? [])));
+  }
+
+  createAdminUser(payload: AdminUserPayload): Observable<User> {
+    return this.http
+      .post<User | { user: User }>(`${this.baseUrl}/auth/admin/users/create/`, payload)
+      .pipe(map(res => ('user' in res ? res.user : res) as User));
+  }
+
+  updateAdminUser(id: string, payload: AdminUserUpdatePayload): Observable<User> {
+    return this.http
+      .patch<User | { user: User }>(`${this.baseUrl}/auth/admin/users/${id}/`, payload)
+      .pipe(map(res => ('user' in res ? res.user : res) as User));
+  }
+
+  deleteAdminUser(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/auth/admin/users/${id}/delete/`);
   }
 
   private setAuthPayload(response: AuthResponse): void {

@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
 import { NgClass, DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputComponent } from '../../../shared/components/input/input.component';
@@ -10,12 +10,15 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
 import { TableComponent } from '../../../shared/components/table/table.component';
 import { ColumnComponent } from '../../../shared/components/table/column.component';
 import { MessageService } from 'primeng/api';
+import { AuthService } from '../../../core/services/auth/auth.service';
+import { AdminUserPayload, AdminUserUpdatePayload, User } from '../../../core/dtos/auth';
 
 export interface AdminUser {
-  id: number;
+  id: string;
   name: string;
   email: string;
-  role: 'admin' | 'manager' | 'user';
+  phone?: string;
+  role: 'admin' | 'manager' | 'client';
   status: 'active' | 'inactive';
   joined: string;
 }
@@ -25,34 +28,27 @@ export interface AdminUser {
   selector: 'app-admin-users',
   imports: [NgClass, DatePipe, ReactiveFormsModule, InputComponent, SelectComponent, ToggleComponent, ConfirmDialogComponent, PaginationComponent, TableComponent, ColumnComponent],
   templateUrl: './users.component.html',
-  providers:[MessageService]
+  providers: [MessageService]
 })
-export class AdminUsersComponent {
-  readonly search   = signal('');
-  readonly page     = signal(1);
-  readonly pageSize = 8;
+export class AdminUsersComponent implements OnInit {
+  readonly search    = signal('');
+  readonly page      = signal(1);
+  readonly pageSize  = 8;
   readonly showModal = signal(false);
-  readonly editingId = signal<number | null>(null);
-  readonly pendingDeleteId = signal<number | null>(null);
-
+  readonly editingId = signal<string | null>(null);
+  readonly pendingDeleteId = signal<string | null>(null);
+  readonly loading   = signal(false);
+  readonly saving    = signal(false);
 
   readonly form: FormGroup;
 
-  readonly roleOptions: SelectOption<'admin' | 'manager' | 'user'>[] = [
-    { label: 'User',    value: 'user',    badge: 'bg-[#AEE9F4] text-zinc-800' },
+  readonly roleOptions: SelectOption<'admin' | 'manager' | 'client'>[] = [
+    { label: 'Client',  value: 'client',  badge: 'bg-[#AEE9F4] text-zinc-800' },
     { label: 'Manager', value: 'manager', badge: 'bg-[#FDD5AB] text-zinc-800' },
     { label: 'Admin',   value: 'admin',   badge: 'bg-[#FBCBE3] text-zinc-800' },
   ];
 
-  readonly users = signal<AdminUser[]>([
-    { id: 1, name: 'Alice Martin',  email: 'alice@cowork.io',   role: 'admin',   status: 'active',   joined: '2024-01-15' },
-    { id: 2, name: 'Bob Johnson',   email: 'bob@gmail.com',     role: 'user',    status: 'active',   joined: '2024-02-20' },
-    { id: 3, name: 'Carol White',   email: 'carol@gmail.com',   role: 'user',    status: 'inactive', joined: '2024-03-05' },
-    { id: 4, name: 'David Brown',   email: 'david@outlook.com', role: 'user',    status: 'active',   joined: '2024-03-18' },
-    { id: 5, name: 'Eva Green',     email: 'eva@cowork.io',     role: 'manager', status: 'active',   joined: '2024-04-02' },
-    { id: 6, name: 'Frank Taylor',  email: 'frank@gmail.com',   role: 'user',    status: 'active',   joined: '2024-04-10' },
-    { id: 7, name: 'Grace Wilson',  email: 'grace@outlook.com', role: 'user',    status: 'inactive', joined: '2024-04-15' },
-  ]);
+  readonly users = signal<AdminUser[]>([]);
 
   readonly filtered = computed(() => {
     const q = this.search().toLowerCase();
@@ -72,29 +68,63 @@ export class AdminUsersComponent {
     admins: this.users().filter(u => u.role === 'admin' || u.role === 'manager').length,
   }));
 
-  readonly modalTitle = computed(() => this.editingId() !== null ? 'Edit user' : 'New user');
-  readonly submitLabel = computed(() => this.editingId() !== null ? 'Save changes' : 'Create user');
-  readonly isCreating = computed(() => this.editingId() === null);
+  readonly modalTitle   = computed(() => this.editingId() !== null ? 'Edit user' : 'New user');
+  readonly submitLabel  = computed(() => this.editingId() !== null ? 'Save changes' : 'Create user');
+  readonly isCreating   = computed(() => this.editingId() === null);
 
-  constructor(private fb: FormBuilder, private toast: ToastService) {
+  constructor(private fb: FormBuilder, private toast: ToastService, private authService: AuthService) {
     this.form = this.fb.group({
       name:     ['', Validators.required],
       email:    ['', [Validators.required, Validators.email]],
-      role:     ['user', Validators.required],
+      role:     ['client', Validators.required],
+      phone:    [''],
       status:   [true],
       password: [''],
     });
   }
 
+  ngOnInit(): void {
+    this.loadUsers();
+  }
+
+  private loadUsers(): void {
+    this.loading.set(true);
+    this.authService.getAdminUsers().subscribe({
+      next: (users) => {
+        this.users.set(users.map(u => this.mapUser(u)));
+        this.loading.set(false);
+      },
+      error: () => {
+        this.toast.showError('Failed to load users.');
+        this.loading.set(false);
+      }
+    });
+  }
+
+  private mapUser(u: User): AdminUser {
+    const first = u?.first_name ?? '';
+    const last  = u?.last_name  ?? '';
+    return {
+      id:     u?.id     ?? '',
+      name:   (u?.full_name || `${first} ${last}`.trim() || u?.email) ?? '',
+      email:  u?.email  ?? '',
+      phone:  u?.phone  ?? undefined,
+      role:   (u?.role as 'admin' | 'manager' | 'client') || 'client',
+      status: u?.is_active !== false ? 'active' : 'inactive',
+      joined: u?.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
+    };
+  }
+
   initials(name: string): string {
-    return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+    if (!name) return '?';
+    return name.split(' ').map(n => n[0]).filter(Boolean).join('').slice(0, 2).toUpperCase() || '?';
   }
 
   roleBadge(role: string): string {
     return this.roleOptions.find(o => o.value === role)?.badge ?? 'bg-zinc-100 text-zinc-600';
   }
 
-  toggleStatus(id: number): void {
+  toggleStatus(id: string): void {
     this.users.update(list =>
       list.map(u => u.id === id ? { ...u, status: u.status === 'active' ? 'inactive' : 'active' } : u)
     );
@@ -103,7 +133,7 @@ export class AdminUsersComponent {
 
   openCreate(): void {
     this.editingId.set(null);
-    this.form.reset({ role: 'user', status: true });
+    this.form.reset({ role: 'client', status: true, phone: '' });
     this.form.get('password')?.setValidators(Validators.required);
     this.form.get('password')?.updateValueAndValidity();
     this.showModal.set(true);
@@ -124,36 +154,84 @@ export class AdminUsersComponent {
   saveForm(): void {
     if (this.form.invalid) return;
     const v = this.form.value;
-    const status: 'active' | 'inactive' = v.status ? 'active' : 'inactive';
     const id = this.editingId();
+    const names = v.name.trim().split(' ');
+    const firstName = names[0] || '';
+    const lastName  = names.slice(1).join(' ') || '';
 
     if (id !== null) {
-      this.users.update(list =>
-        list.map(u => u.id === id ? { ...u, name: v.name, email: v.email, role: v.role, status } : u)
-      );
-      this.toast.showSuccess('User updated successfully.');
+      const payload: AdminUserUpdatePayload = {
+        first_name: firstName,
+        last_name:  lastName,
+        email:      v.email,
+        username:   v.email.split('@')[0],
+        role:       v.role,
+        ...(v.phone ? { phone: v.phone } : {}),
+      };
+      this.saving.set(true);
+      this.authService.updateAdminUser(id, payload).subscribe({
+        next: () => {
+          this.loadUsers();
+          this.toast.showSuccess('User updated successfully.');
+          this.closeModal();
+          this.saving.set(false);
+        },
+        error: (err) => {
+          const msg = err.error && typeof err.error === 'object'
+            ? (Object.values(err.error) as string[][]).flat().join(' ')
+            : 'Error updating user.';
+          this.toast.showError(msg);
+          this.saving.set(false);
+        }
+      });
     } else {
-      const newId = Math.max(0, ...this.users().map(u => u.id)) + 1;
-      this.users.update(list => [...list, {
-        id: newId, name: v.name, email: v.email,
-        role: v.role, status,
-        joined: new Date().toISOString().split('T')[0],
-      }]);
-      this.toast.showSuccess('User created successfully.');
+      const payload: AdminUserPayload = {
+        first_name:       firstName,
+        last_name:        lastName,
+        username:         v.email.split('@')[0],
+        email:            v.email,
+        password:         v.password,
+        password_confirm: v.password,
+        role:             v.role,
+        ...(v.phone ? { phone: v.phone } : {}),
+      };
+      this.saving.set(true);
+      this.authService.createAdminUser(payload).subscribe({
+        next: () => {
+          this.loadUsers();
+          this.toast.showSuccess('User created successfully.');
+          this.closeModal();
+          this.saving.set(false);
+        },
+        error: (err) => {
+          const msg = err.error && typeof err.error === 'object'
+            ? (Object.values(err.error) as string[][]).flat().join(' ')
+            : 'Error creating user.';
+          this.toast.showError(msg);
+          this.saving.set(false);
+        }
+      });
     }
-    this.closeModal();
   }
 
-  askDelete(id: number): void {
+  askDelete(id: string): void {
     this.pendingDeleteId.set(id);
   }
 
   confirmDelete(): void {
     const id = this.pendingDeleteId();
     if (id === null) return;
-    this.users.update(list => list.filter(u => u.id !== id));
-    this.pendingDeleteId.set(null);
-    this.toast.showSuccess('User deleted.');
+    this.authService.deleteAdminUser(id).subscribe({
+      next: () => {
+        this.users.update(list => list.filter(u => u.id !== id));
+        this.pendingDeleteId.set(null);
+        this.toast.showSuccess('User deleted.');
+      },
+      error: () => {
+        this.pendingDeleteId.set(null);
+        this.toast.showError('Unable to delete user.');
+      }
+    });
   }
 
   cancelDelete(): void {
