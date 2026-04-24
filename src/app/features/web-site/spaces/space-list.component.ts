@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common';
+import { CurrencyPipe, NgClass } from '@angular/common';
 import { Component, computed, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -13,6 +13,7 @@ import { MessageService } from 'primeng/api';
     selector: 'app-space-list-page',
     imports: [
         NgClass,
+        CurrencyPipe,
         HeaderComponent,
         FooterComponent,
         ProgressSpinnerModule,
@@ -28,11 +29,11 @@ export class SpaceListPageComponent implements OnInit {
     selectedCapacityMin = signal<number>(0);
 
     typeOptions = [
-        { label: 'Hot Desk', value: 'desk' },
+        { label: 'Bureau partagé', value: 'desk' },
         { label: 'Open Space', value: 'open_space' },
-        { label: 'Meeting Room', value: 'meeting_room' },
-        { label: 'Private Office', value: 'private' },
-        { label: 'Conference Room', value: 'conference' },
+        { label: 'Salle de réunion', value: 'meeting_room' },
+        { label: 'Bureau privé', value: 'private' },
+        { label: 'Salle de conférence', value: 'conference' },
     ];
 
     private readonly typeBadgeColors: Record<string, string> = {
@@ -48,7 +49,7 @@ export class SpaceListPageComponent implements OnInit {
     }
 
     capacityOptions = [
-        { label: 'Any', value: 0 },
+        { label: 'Tous', value: 0 },
         { label: '5+', value: 5 },
         { label: '10+', value: 10 },
         { label: '20+', value: 20 },
@@ -106,6 +107,6 @@ export class SpaceListPageComponent implements OnInit {
         const primary = space.photos?.find((p: any) => p.is_primary);
         if (primary?.url) return primary.url;
         if (space.photos?.length) return space.photos[0].url;
-        return 'assets/images/space-placeholder.jpg';
+        return 'icons/space-placeholder.svg';
     }
 }

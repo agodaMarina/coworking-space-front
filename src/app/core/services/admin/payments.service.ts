@@ -4,6 +4,7 @@ import { finalize, map, Observable, of, tap } from 'rxjs';
 import {
   ConfirmPaymentPayload,
   CreatePayment,
+  CreatePaymentResponse,
   Payment,
   PaymentListParams,
   PaymentStats,
@@ -100,16 +101,22 @@ export class PaymentsService extends ApiService {
     );
   }
 
-  createPayment(payload: CreatePayment): Observable<Payment> {
+  createPayment(payload: CreatePayment): Observable<CreatePaymentResponse> {
     const source = this.useMocks()
-      ? of(this.createMockPayment(payload))
-      : this.post<Payment>('/payments/create/', payload).pipe(
-          map(payment => this.normalizePayment(payment))
+      ? of(this.createMockPayment(payload) as CreatePaymentResponse)
+      : this.post<CreatePaymentResponse>('/payments/create/', payload).pipe(
+          map(payment => ({ ...this.normalizePayment(payment), client_secret: payment.client_secret }))
         );
 
     return source.pipe(
       tap(() => this.isLoading.set(true)),
       finalize(() => this.isLoading.set(false))
+    );
+  }
+
+  stripeConfirmPayment(id: number): Observable<Payment> {
+    return this.post<Payment>(`/payments/${id}/stripe-confirm/`, {}).pipe(
+      map(payment => this.normalizePayment(payment))
     );
   }
 

@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f4f4f5"/>
+      <stop offset="100%" stop-color="#e4e4e7"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="600" fill="url(#bg)"/>
+
+  <!-- Subtle dot grid -->
+  <pattern id="dots" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
+    <circle cx="1" cy="1" r="1" fill="#d4d4d8" opacity="0.8"/>
+  </pattern>
+  <rect width="800" height="600" fill="url(#dots)"/>
+
+  <!-- Icon group — centered -->
+  <g transform="translate(400, 272)">
+
+    <!-- Building shadow -->
+    <ellipse cx="0" cy="118" rx="96" ry="7" fill="#d4d4d8" opacity="0.6"/>
+
+    <!-- Left building -->
+    <rect x="-114" y="18" width="48" height="100" rx="4" fill="#e4e4e7" stroke="#d4d4d8" stroke-width="1.5"/>
+    <rect x="-114" y="4"  width="48" height="18"  rx="3" fill="#d4d4d8"/>
+    <rect x="-106" y="30" width="13" height="13" rx="2.5" fill="#a1a1aa"/>
+    <rect x="-88"  y="30" width="13" height="13" rx="2.5" fill="#a1a1aa"/>
+    <rect x="-106" y="52" width="13" height="13" rx="2.5" fill="#a1a1aa"/>
+    <rect x="-88"  y="52" width="13" height="13" rx="2.5" fill="#a1a1aa"/>
+    <rect x="-100" y="78" width="26" height="40" rx="2" fill="#d4d4d8"/>
+
+    <!-- Right building -->
+    <rect x="66" y="28" width="48" height="90" rx="4" fill="#e4e4e7" stroke="#d4d4d8" stroke-width="1.5"/>
+    <rect x="66" y="14"  width="48" height="18"  rx="3" fill="#d4d4d8"/>
+    <rect x="74"  y="40" width="13" height="13" rx="2.5" fill="#a1a1aa"/>
+    <rect x="92"  y="40" width="13" height="13" rx="2.5" fill="#a1a1aa"/>
+    <rect x="74"  y="62" width="13" height="13" rx="2.5" fill="#a1a1aa"/>
+    <rect x="92"  y="62" width="13" height="13" rx="2.5" fill="#a1a1aa"/>
+    <rect x="76"  y="86" width="26" height="32" rx="2" fill="#d4d4d8"/>
+
+    <!-- Main building -->
+    <rect x="-60" y="-48" width="120" height="166" rx="5" fill="#ffffff" stroke="#e4e4e7" stroke-width="1.5"/>
+    <rect x="-70" y="-62" width="140" height="18"  rx="4" fill="#e4e4e7" stroke="#d4d4d8" stroke-width="1"/>
+
+    <!-- Windows row 1 -->
+    <rect x="-46" y="-30" width="26" height="22" rx="3" fill="#f4f4f5" stroke="#e4e4e7" stroke-width="1"/>
+    <rect x="-10" y="-30" width="26" height="22" rx="3" fill="#f4f4f5" stroke="#e4e4e7" stroke-width="1"/>
+    <rect x="26"  y="-30" width="26" height="22" rx="3" fill="#f4f4f5" stroke="#e4e4e7" stroke-width="1"/>
+    <!-- Windows row 2 -->
+    <rect x="-46" y="4"  width="26" height="22" rx="3" fill="#f4f4f5" stroke="#e4e4e7" stroke-width="1"/>
+    <rect x="-10" y="4"  width="26" height="22" rx="3" fill="#f4f4f5" stroke="#e4e4e7" stroke-width="1"/>
+    <rect x="26"  y="4"  width="26" height="22" rx="3" fill="#f4f4f5" stroke="#e4e4e7" stroke-width="1"/>
+    <!-- Windows row 3 -->
+    <rect x="-46" y="38" width="26" height="22" rx="3" fill="#f4f4f5" stroke="#e4e4e7" stroke-width="1"/>
+    <rect x="-10" y="38" width="26" height="22" rx="3" fill="#f4f4f5" stroke="#e4e4e7" stroke-width="1"/>
+    <rect x="26"  y="38" width="26" height="22" rx="3" fill="#f4f4f5" stroke="#e4e4e7" stroke-width="1"/>
+
+    <!-- Door -->
+    <rect x="-18" y="72" width="36" height="46" rx="3" fill="#f4f4f5" stroke="#e4e4e7" stroke-width="1"/>
+    <circle cx="14" cy="96" r="2.5" fill="#d4d4d8"/>
+
+    <!-- Ground -->
+    <line x1="-130" y1="118" x2="130" y2="118" stroke="#d4d4d8" stroke-width="1.5"/>
+  </g>
+
+  <!-- Label -->
+  <text x="400" y="494" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" font-weight="600" letter-spacing="0.2em" fill="#a1a1aa">AUCUNE IMAGE</text>
+</svg>

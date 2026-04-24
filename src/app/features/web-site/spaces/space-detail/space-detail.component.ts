@@ -51,12 +51,12 @@ export class SpaceDetailPageComponent implements OnInit {
 
   getActivePhotoUrl(s: Space): string {
     const photos = s.photos ?? [];
-    if (photos.length) return photos[this.activePhotoIndex()]?.url ?? 'assets/images/space-placeholder.jpg';
-    return s.photo ?? 'assets/images/space-placeholder.jpg';
+    if (photos.length) return photos[this.activePhotoIndex()]?.url ?? 'icons/space-placeholder.svg';
+    return s.photo ?? 'icons/space-placeholder.svg';
   }
 
   getPhotoUrl(photo: any): string {
-    return photo?.url ?? 'assets/images/space-placeholder.jpg';
+    return photo?.url ?? 'icons/space-placeholder.svg';
   }
 
   selectPhoto(index: number): void {

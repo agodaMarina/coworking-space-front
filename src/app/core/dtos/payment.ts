@@ -22,6 +22,10 @@ export interface CreatePayment {
   method: PaymentMethod;
 }
 
+export interface CreatePaymentResponse extends Payment {
+  client_secret?: string; // présent uniquement pour method === 'card'
+}
+
 export interface ConfirmPaymentPayload {
   status: PaymentConfirmStatus;
 }
