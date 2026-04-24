@@ -64,11 +64,11 @@ export class AdminProfileComponent implements OnInit {
     this.auth.updateProfile({ first_name: firstName, last_name: lastName }).subscribe({
       next: () => {
         this.savingInfo.set(false);
-        this.toast.showSuccess('Profile updated.');
+        this.toast.showSuccess('Profil mis à jour.');
       },
       error: () => {
         this.savingInfo.set(false);
-        this.toast.showError('Unable to update profile.');
+        this.toast.showError('Impossible de mettre à jour le profil.');
       },
     });
   }
@@ -85,11 +85,11 @@ export class AdminProfileComponent implements OnInit {
       next: () => {
         this.savingPassword.set(false);
         this.passwordForm.reset();
-        this.toast.showSuccess('Password changed successfully.');
+        this.toast.showSuccess('Mot de passe modifié avec succès.');
       },
       error: () => {
         this.savingPassword.set(false);
-        this.toast.showError('Unable to change password.');
+        this.toast.showError('Impossible de modifier le mot de passe.');
       },
     });
   }

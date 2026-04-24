@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common';
+import { CurrencyPipe, NgClass } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -11,7 +11,7 @@ import { MessageService } from 'primeng/api';
 @Component({
   standalone: true,
   selector: 'app-space-detail-page',
-  imports: [NgClass, HeaderComponent, FooterComponent, ProgressSpinnerModule],
+  imports: [NgClass, CurrencyPipe, HeaderComponent, FooterComponent, ProgressSpinnerModule],
   templateUrl: './space-detail.component.html',
   styleUrls: ['./space-detail.component.css'],
   providers:[MessageService]
@@ -19,6 +19,7 @@ import { MessageService } from 'primeng/api';
 export class SpaceDetailPageComponent implements OnInit {
   space = signal<Space | null>(null);
   loading = signal(false);
+  activePhotoIndex = signal(0);
 
   constructor(
     private route: ActivatedRoute,
@@ -33,7 +34,11 @@ export class SpaceDetailPageComponent implements OnInit {
       if (!id) return;
       this.loading.set(true);
       this.spacesService.getSpace(id).subscribe({
-        next: (s) => this.space.set(s),
+        next: (s) => {
+          this.space.set(s);
+          const primaryIndex = s.photos?.findIndex((p: any) => p.is_primary);
+          this.activePhotoIndex.set(primaryIndex > 0 ? primaryIndex : 0);
+        },
         error: (e) => console.error('Error loading space detail', e),
         complete: () => this.loading.set(false)
       });
@@ -44,14 +49,19 @@ export class SpaceDetailPageComponent implements OnInit {
     this.router.navigate(['/spaces']);
   }
 
-      // Utility to build seeded picsum URLs safely (encodes names)
-      getImageUrl(seed: string, w: number = 800, h: number = 600): string {
-        try {
-          return `https://picsum.photos/seed/${encodeURIComponent(seed)}/${w}/${h}.jpg`;
-        } catch (e) {
-          return `https://picsum.photos/${w}/${h}`;
-        }
-      }
+  getActivePhotoUrl(s: Space): string {
+    const photos = s.photos ?? [];
+    if (photos.length) return photos[this.activePhotoIndex()]?.url ?? 'assets/images/space-placeholder.jpg';
+    return s.photo ?? 'assets/images/space-placeholder.jpg';
+  }
+
+  getPhotoUrl(photo: any): string {
+    return photo?.url ?? 'assets/images/space-placeholder.jpg';
+  }
+
+  selectPhoto(index: number): void {
+    this.activePhotoIndex.set(index);
+  }
 
   goToBooking(): void {
     const s = this.space();

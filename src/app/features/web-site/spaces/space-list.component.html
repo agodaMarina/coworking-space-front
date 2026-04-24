@@ -89,7 +89,7 @@
                 <!-- Image -->
                 <div class="md:w-[58%] overflow-hidden aspect-[4/3] md:aspect-auto relative flex-shrink-0">
                   <img
-                    [src]="getImageUrl(space.name, 800, 600)"
+                    [src]="getSpaceImage(space)"
                     [alt]="space.name"
                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
                   <div class="absolute bottom-4 right-4">
@@ -136,7 +136,7 @@
 
                 <div class="rounded-[24px] overflow-hidden mb-6 aspect-[4/3] shadow-sm relative">
                   <img
-                    [src]="getImageUrl(space.name, 600, 450)"
+                    [src]="getSpaceImage(space)"
                     [alt]="space.name"
                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
                   <div class="absolute bottom-3 right-3">

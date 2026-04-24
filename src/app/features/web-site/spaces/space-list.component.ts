@@ -101,12 +101,11 @@ export class SpaceListPageComponent implements OnInit {
         this.router.navigate(['/booking'], { queryParams: { spaceId: space.id } });
     }
 
-    // Utility to build seeded picsum URLs safely (encodes names)
-    getImageUrl(seed: string, w: number = 600, h: number = 450): string {
-        try {
-            return `https://picsum.photos/seed/${encodeURIComponent(seed)}/${w}/${h}.jpg`;
-        } catch (e) {
-            return `https://picsum.photos/${w}/${h}`;
-        }
+    getSpaceImage(space: Space): string {
+        if (space.photo) return space.photo;
+        const primary = space.photos?.find((p: any) => p.is_primary);
+        if (primary?.url) return primary.url;
+        if (space.photos?.length) return space.photos[0].url;
+        return 'assets/images/space-placeholder.jpg';
     }
 }

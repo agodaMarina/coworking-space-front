@@ -1,5 +1,6 @@
 import { Component, computed, OnInit, signal } from '@angular/core';
 import { NgClass } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputComponent } from '../../../shared/components/input/input.component';
 import { TextareaComponent } from '../../../shared/components/textarea/textarea.component';
@@ -265,8 +266,19 @@ export class AdminSpacesComponent implements OnInit {
   onPhotoSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
+    input.value = '';
 
-    if (!file) {
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      this.toast.showError('Format non supporté. Utilisez JPEG, PNG, WebP ou GIF.');
+      return;
+    }
+
+    const maxSizeMb = 5;
+    if (file.size > maxSizeMb * 1024 * 1024) {
+      this.toast.showError(`La photo est trop lourde (maximum ${maxSizeMb} Mo). Taille actuelle : ${(file.size / 1024 / 1024).toFixed(1)} Mo.`);
       return;
     }
 
@@ -387,14 +399,15 @@ export class AdminSpacesComponent implements OnInit {
         this.closeModal();
         this.toast.showSuccess(successMessage);
       },
-      error: () => {
+      error: (err: unknown) => {
         this.isUploadingPhoto.set(false);
         this.isSaving.set(false);
         this.loadSpaces();
         this.loadSpaceDetail(space.id);
         this.editingId.set(space.id);
         this.currentSpace.set(space);
-        this.toast.showError('Space saved, but the photo upload failed.');
+        const detail = this.extractPhotoUploadError(err);
+        this.toast.showError(`Espace enregistré, mais l'upload a échoué : ${detail}`, 7000);
       },
     });
   }
@@ -412,6 +425,21 @@ export class AdminSpacesComponent implements OnInit {
     if (this.currentSpace()?.id === updated.id) {
       this.currentSpace.set(updated);
     }
+  }
+
+  private extractPhotoUploadError(err: unknown): string {
+    if (err instanceof HttpErrorResponse && err.error && typeof err.error === 'object') {
+      const messages: string[] = [];
+      for (const value of Object.values(err.error as Record<string, unknown>)) {
+        if (Array.isArray(value)) {
+          messages.push(...value.map(String));
+        } else if (typeof value === 'string') {
+          messages.push(value);
+        }
+      }
+      if (messages.length) return messages.join(' ');
+    }
+    return 'Erreur inconnue.';
   }
 
   private clearSelectedPhoto(): void {
