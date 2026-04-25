@@ -91,6 +91,7 @@ export class BookingsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.reservationsService.disableMocks();
+    this.paymentsService.disableMocks();
     this.reservationsService.getReservations().subscribe({
       next: res => this.reservations.set(res),
     });

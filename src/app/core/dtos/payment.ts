@@ -20,6 +20,8 @@ export interface Payment {
 export interface CreatePayment {
   reservation_id: number;
   method: PaymentMethod;
+  phone_number?: string;
+  operator?: 'mtn' | 'moov';
 }
 
 export interface CreatePaymentResponse extends Payment {
