@@ -32,16 +32,16 @@ export class SidebarComponent implements OnInit {
   }
 
   readonly navItems = [
-    { label: 'Overview',    icon: 'lucide:layout-dashboard', path: '/dashboard/overview',  activeClass: 'bg-[#AEE9F4] text-zinc-900 font-medium' },
-    { label: 'My Bookings', icon: 'lucide:calendar',         path: '/dashboard/bookings',  activeClass: 'bg-[#CEF09D] text-zinc-900 font-medium' },
-    { label: 'Payments',    icon: 'lucide:credit-card',      path: '/dashboard/payments',       activeClass: 'bg-[#FDD5AB] text-zinc-900 font-medium' },
+    { label: 'Aperçu',    icon: 'lucide:layout-dashboard', path: '/dashboard/overview',  activeClass: 'bg-[#AEE9F4] text-zinc-900 font-medium' },
+    { label: 'Mes réservations', icon: 'lucide:calendar',         path: '/dashboard/bookings',  activeClass: 'bg-[#CEF09D] text-zinc-900 font-medium' },
+    { label: 'Paiements',    icon: 'lucide:credit-card',      path: '/dashboard/payments',       activeClass: 'bg-[#FDD5AB] text-zinc-900 font-medium' },
     { label: 'Notifications', icon: 'lucide:bell',            path: '/dashboard/notifications',  activeClass: 'bg-[#FBCBE3] text-zinc-900 font-medium' },
-    { label: 'Spaces',      icon: 'lucide:grid-2x2',         path: '/dashboard/spaces',         activeClass: 'bg-[#E2F89C] text-zinc-900 font-medium' },
-    { label: 'Profile',     icon: 'lucide:user',             path: '/dashboard/profile',   activeClass: 'bg-[#FBCBE3] text-zinc-900 font-medium' },
+    { label: 'Espaces',      icon: 'lucide:grid-2x2',         path: '/dashboard/spaces',         activeClass: 'bg-[#E2F89C] text-zinc-900 font-medium' },
+    { label: 'Profil',     icon: 'lucide:user',             path: '/dashboard/profile',   activeClass: 'bg-[#FBCBE3] text-zinc-900 font-medium' },
   ];
 
   readonly bottomItems = [
-    { label: 'Browse public', icon: 'lucide:arrow-up-right', path: '/spaces' },
+    { label: 'Parcourir les espaces', icon: 'lucide:arrow-up-right', path: '/spaces' },
   ];
 
   logout(): void {

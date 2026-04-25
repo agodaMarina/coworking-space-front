@@ -48,8 +48,8 @@ export class AdminEquipmentComponent {
   ];
 
   readonly conditionOptions: SelectOption<'good' | 'fair' | 'maintenance'>[] = [
-    { label: 'Good',        value: 'good',        badge: 'bg-[#CEF09D] text-zinc-800' },
-    { label: 'Fair',        value: 'fair',        badge: 'bg-[#FDD5AB] text-zinc-800' },
+    { label: 'Bon',         value: 'good',        badge: 'bg-[#CEF09D] text-zinc-800' },
+    { label: 'Passable',    value: 'fair',        badge: 'bg-[#FDD5AB] text-zinc-800' },
     { label: 'Maintenance', value: 'maintenance', badge: 'bg-[#FBCBE3] text-zinc-800' },
   ];
 
@@ -82,8 +82,8 @@ export class AdminEquipmentComponent {
     maintenance: this.equipment().filter(e => e.condition === 'maintenance').length,
   }));
 
-  readonly modalTitle = computed(() => this.editingId() !== null ? 'Edit equipment' : 'New equipment');
-  readonly submitLabel = computed(() => this.editingId() !== null ? 'Save changes' : 'Create equipment');
+  readonly modalTitle = computed(() => this.editingId() !== null ? 'Modifier l\'équipement' : 'Nouvel équipement');
+  readonly submitLabel = computed(() => this.editingId() !== null ? 'Enregistrer' : 'Créer l\'équipement');
 
   constructor(private fb: FormBuilder, private toast: ToastService,private spaceService:SpacesService) {
     this.form = this.fb.group({
@@ -96,6 +96,10 @@ export class AdminEquipmentComponent {
 
   conditionBadge(condition: string): string {
     return this.conditionOptions.find(o => o.value === condition)?.badge ?? 'bg-zinc-100 text-zinc-600';
+  }
+
+  conditionLabel(condition: string): string {
+    return this.conditionOptions.find(o => o.value === condition)?.label ?? condition;
   }
 
   openCreate(): void {
@@ -120,11 +124,11 @@ export class AdminEquipmentComponent {
     const id = this.editingId();
     if (id !== null) {
       this.equipment.update(list => list.map(e => e.id === id ? { ...e, ...v } : e));
-      this.toast.showSuccess('Equipement mis à jour.');
+      this.toast.showSuccess('Équipement mis à jour.');
     } else {
       const newId = Math.max(0, ...this.equipment().map(e => e.id)) + 1;
       this.equipment.update(list => [...list, { id: newId, ...v }]);
-      this.toast.showSuccess('Equipement créé.');
+      this.toast.showSuccess('Équipement créé.');
     }
     this.closeModal();
   }
@@ -138,7 +142,7 @@ export class AdminEquipmentComponent {
     if (id === null) return;
     this.equipment.update(list => list.filter(e => e.id !== id));
     this.pendingDeleteId.set(null);
-    this.toast.showSuccess('Equipment deleted.');
+    this.toast.showSuccess('Équipement supprimé.');
   }
 
   cancelDelete(): void {

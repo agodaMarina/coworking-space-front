@@ -7,7 +7,7 @@
       <div>
         <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Notifications</h1>
         @if (unreadCount() > 0) {
-          <p class="text-sm text-zinc-400 mt-1">{{ unreadCount() }} unread</p>
+          <p class="text-sm text-zinc-400 mt-1">{{ unreadCount() }} non lue(s)</p>
         }
       </div>
       @if (unreadCount() > 0) {
@@ -15,7 +15,7 @@
           [disabled]="markingAll()"
           class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition-colors disabled:opacity-40">
           <span class="iconify" data-icon="lucide:check-check" data-width="14"></span>
-          {{ markingAll() ? 'Marking…' : 'Mark all read' }}
+          {{ markingAll() ? 'En cours…' : 'Tout marquer comme lu' }}
         </button>
       }
     </div>
@@ -26,8 +26,8 @@
     @if (paginated().length === 0) {
       <div class="text-center py-16">
         <span class="iconify mx-auto text-zinc-200 mb-4" data-icon="lucide:bell-off" data-width="32"></span>
-        <p class="text-sm font-medium text-zinc-500">No notifications yet.</p>
-        <p class="text-xs text-zinc-400 mt-1">You'll see booking confirmations, payment updates, and reminders here.</p>
+        <p class="text-sm font-medium text-zinc-500">Aucune notification pour l'instant.</p>
+        <p class="text-xs text-zinc-400 mt-1">Vos confirmations de réservation, mises à jour de paiement et rappels apparaîtront ici.</p>
       </div>
     } @else {
       <div class="space-y-2">
@@ -38,13 +38,13 @@
               ? 'border-zinc-200 bg-zinc-50 hover:border-zinc-300'
               : 'border-zinc-100 bg-white hover:bg-zinc-50'">
 
-            <!-- Icon -->
+            <!-- Icône -->
             <span class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center"
               [ngClass]="typeBg(n.notification_type)">
               <span class="iconify text-zinc-700" [attr.data-icon]="typeIcon(n.notification_type)" data-width="15"></span>
             </span>
 
-            <!-- Content -->
+            <!-- Contenu -->
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 mb-0.5">
                 <p class="text-sm font-medium text-zinc-900 truncate"
@@ -65,7 +65,7 @@
               </p>
             </div>
 
-            <!-- Channel badge -->
+            <!-- Badge canal -->
             <span class="flex-shrink-0 text-[10px] font-medium text-zinc-400 uppercase tracking-wide mt-1">
               {{ n.channel_display }}
             </span>

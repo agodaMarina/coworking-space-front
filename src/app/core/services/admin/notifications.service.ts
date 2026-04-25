@@ -1,6 +1,6 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
-import { finalize, map, Observable, of, tap } from 'rxjs';
+import { finalize, interval, map, Observable, of, startWith, switchMap, tap } from 'rxjs';
 import { Notification, NotificationListParams, NotificationStats } from '../../dtos/notification';
 import { PaginatedResponse } from '../../dtos/pagination';
 import { ApiService } from '../../http/api.service';
@@ -9,9 +9,19 @@ import { ApiService } from '../../http/api.service';
   providedIn: 'root'
 })
 export class NotificationsService extends ApiService {
-  private readonly useMocks = signal(true);
-  readonly isLoading = signal(false);
-  readonly unreadCount = signal(0);
+  private readonly useMocks    = signal(true);
+  readonly isLoading           = signal(false);
+  private readonly _unreadCount = signal(0);
+  readonly unreadCount          = this._unreadCount.asReadonly();
+  readonly recentNotifications  = signal<Notification[]>([]);
+
+  decrementUnreadCount(): void {
+    this._unreadCount.update(c => Math.max(0, c - 1));
+  }
+
+  resetUnreadCount(): void {
+    this._unreadCount.set(0);
+  }
 
   private mockNotifications: Notification[] = [
     {
@@ -118,10 +128,20 @@ export class NotificationsService extends ApiService {
     return (this.useMocks()
       ? of(this.getMockStats())
       : this.get<NotificationStats>('/notifications/stats/')).pipe(
-      tap((stats: any) => this.unreadCount.set(stats.unread ?? 0)),
+      tap((stats: any) => this._unreadCount.set(stats.unread ?? 0)),
       tap(() => this.isLoading.set(true)),
       finalize(() => this.isLoading.set(false))
     );
+  }
+
+  startPolling(): void {
+    interval(30000).pipe(
+      startWith(0),
+      switchMap(() => this.getStats()),
+    ).subscribe();
+
+    // Charger les notifications récentes au démarrage
+    this.getNotifications().subscribe(notifs => this.recentNotifications.set(notifs.slice(0, 10)));
   }
 
   private buildParams(params?: NotificationListParams): HttpParams | undefined {

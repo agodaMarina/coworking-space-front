@@ -45,20 +45,20 @@ export class AdminSpacesComponent implements OnInit {
   readonly form: FormGroup;
 
   readonly filterOptions: SelectOption<string | null>[] = [
-    { label: 'All types',      value: null },
-    { label: 'Hot Desk',       value: 'desk' },
-    { label: 'Open Space',     value: 'open_space' },
-    { label: 'Meeting Room',   value: 'meeting_room' },
-    { label: 'Private Office', value: 'private' },
-    { label: 'Conference',     value: 'conference' },
+    { label: 'Tous les types',  value: null },
+    { label: 'Hot Desk',        value: 'desk' },
+    { label: 'Open Space',      value: 'open_space' },
+    { label: 'Salle de réunion', value: 'meeting_room' },
+    { label: 'Bureau privé',    value: 'private' },
+    { label: 'Conférence',      value: 'conference' },
   ];
 
   readonly typeOptions: SelectOption<string>[] = [
-    { label: 'Hot Desk',       value: 'desk',         badge: 'bg-[#CEF09D] text-black' },
-    { label: 'Open Space',     value: 'open_space',   badge: 'bg-[#AEE9F4] text-black' },
-    { label: 'Meeting Room',   value: 'meeting_room', badge: 'bg-[#FBCBE3] text-black' },
-    { label: 'Private Office', value: 'private',      badge: 'bg-[#FDD5AB] text-black' },
-    { label: 'Conference',     value: 'conference',   badge: 'bg-[#E2F89C] text-black' },
+    { label: 'Hot Desk',        value: 'desk',         badge: 'bg-[#CEF09D] text-black' },
+    { label: 'Open Space',      value: 'open_space',   badge: 'bg-[#AEE9F4] text-black' },
+    { label: 'Salle de réunion', value: 'meeting_room', badge: 'bg-[#FBCBE3] text-black' },
+    { label: 'Bureau privé',    value: 'private',      badge: 'bg-[#FDD5AB] text-black' },
+    { label: 'Conférence',      value: 'conference',   badge: 'bg-[#E2F89C] text-black' },
   ];
 
   readonly filtered = computed(() => {
@@ -76,8 +76,8 @@ export class AdminSpacesComponent implements OnInit {
     unavailable: this.spaces().filter(s => !s.is_available).length,
   }));
 
-  readonly modalTitle = computed(() => this.editingId() !== null ? 'Edit space' : 'New space');
-  readonly submitLabel = computed(() => this.editingId() !== null ? 'Save changes' : 'Create space');
+  readonly modalTitle = computed(() => this.editingId() !== null ? 'Modifier l\'espace' : 'Nouvel espace');
+  readonly submitLabel = computed(() => this.editingId() !== null ? 'Enregistrer' : 'Créer l\'espace');
 
   readonly paginated = computed(() => {
     const start = (this.page() - 1) * this.pageSize;
@@ -121,14 +121,14 @@ export class AdminSpacesComponent implements OnInit {
   loadSpaces(): void {
     this.spacesService.getSpaces().subscribe({
       next: spaces => this.spaces.set(spaces),
-      error: () => this.toast.showError('Unable to load spaces.'),
+      error: () => this.toast.showError('Impossible de charger les espaces.'),
     });
   }
 
   loadAmenities(): void {
     this.spacesService.getAmenities().subscribe({
       next: amenities => this.amenities.set(amenities),
-      error: () => this.toast.showError('Unable to load amenities.'),
+      error: () => this.toast.showError('Impossible de charger les équipements.'),
     });
   }
 
@@ -136,9 +136,9 @@ export class AdminSpacesComponent implements OnInit {
     this.spacesService.patchSpace(space.id, { is_available: !space.is_available }).subscribe({
       next: updated => {
         this.mergeSpace(updated);
-        this.toast.showSuccess('Space availability updated.');
+        this.toast.showSuccess('Disponibilité mise à jour.');
       },
-      error: () => this.toast.showError('Unable to update availability.'),
+      error: () => this.toast.showError('Impossible de mettre à jour la disponibilité.'),
     });
   }
 
@@ -175,7 +175,7 @@ export class AdminSpacesComponent implements OnInit {
     const request = id !== null
       ? this.spacesService.updateSpace(id, payload)
       : this.spacesService.createSpace(payload);
-    const successMsg = id !== null ? 'Space updated.' : 'Space created.';
+    const successMsg = id !== null ? 'Espace mis à jour.' : 'Espace créé.';
 
     this.isSaving.set(true);
     request.subscribe({
@@ -204,7 +204,7 @@ export class AdminSpacesComponent implements OnInit {
       },
       error: () => {
         this.isSaving.set(false);
-        this.toast.showError(id !== null ? 'Unable to update the space.' : 'Unable to create the space.');
+        this.toast.showError(id !== null ? 'Impossible de mettre à jour l\'espace.' : 'Impossible de créer l\'espace.');
       }
     });
   }
@@ -224,9 +224,9 @@ export class AdminSpacesComponent implements OnInit {
         if (this.currentSpace()?.id === id) {
           this.closeModal();
         }
-        this.toast.showSuccess('Space deleted.');
+        this.toast.showSuccess('Espace supprimé.');
       },
-      error: () => this.toast.showError('Unable to delete the space.'),
+      error: () => this.toast.showError('Impossible de supprimer l\'espace.'),
     });
   }
 
@@ -244,7 +244,7 @@ export class AdminSpacesComponent implements OnInit {
       },
       error: () => {
         this.isLoadingDetails.set(false);
-        this.toast.showError('Unable to load space details.');
+        this.toast.showError('Impossible de charger les détails de l\'espace.');
       },
     });
   }
@@ -302,11 +302,11 @@ export class AdminSpacesComponent implements OnInit {
         this.loadSpaces();
         this.loadSpaceDetail(spaceId);
         this.isUploadingPhoto.set(false);
-        this.toast.showSuccess('Photo deleted.');
+        this.toast.showSuccess('Photo supprimée.');
       },
       error: () => {
         this.isUploadingPhoto.set(false);
-        this.toast.showError('Unable to delete the photo.');
+        this.toast.showError('Impossible de supprimer la photo.');
       },
     });
   }

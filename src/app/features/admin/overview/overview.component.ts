@@ -23,10 +23,10 @@ export class AdminOverviewComponent implements OnInit {
   private readonly toast               = inject(ToastService);
 
   readonly stats = signal<DashboardStats>({
-    total_reservations: 0,
-    confirmed: 0,
-    cancelled: 0,
-    completed: 0,
+    total_bookings: 0,
+    confirmed_bookings: 0,
+    cancelled_bookings: 0,
+    completed_bookings: 0,
     total_revenue: 0,
     occupancy_rate: 0,
     today_reservations: 0,

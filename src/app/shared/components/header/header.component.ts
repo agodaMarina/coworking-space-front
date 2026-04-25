@@ -1,6 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth/auth.service';
+import { NotificationsService } from '../../../core/services/admin/notifications.service';
 
 @Component({
   standalone: true,
@@ -11,19 +12,30 @@ import { AuthService } from '../../../core/services/auth/auth.service';
 })
 export class HeaderComponent implements OnInit {
 
-  private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
+  private readonly authService   = inject(AuthService);
+  private readonly router        = inject(Router);
+  readonly notifService          = inject(NotificationsService);
 
-  isAuthenticated:any;
+  isAuthenticated: any;
+  isMobileMenuOpen   = false;
+  showNotifPanel     = signal(false);
 
-  isMobileMenuOpen = false;
+  toggleMenu()  { this.isMobileMenuOpen = !this.isMobileMenuOpen; }
+  closeMenu()   { this.isMobileMenuOpen = false; }
 
-  toggleMenu() { this.isMobileMenuOpen = !this.isMobileMenuOpen; }
-  closeMenu()  { this.isMobileMenuOpen = false; }
-
-   ngOnInit(): void {
-this.isAuthenticated = this.authService.isAuthenticated;
+  toggleNotifications(): void {
+    this.showNotifPanel.update(v => !v);
   }
+
+  markAllRead(): void {
+    this.notifService.markAllAsRead().subscribe();
+  }
+
+  ngOnInit(): void {
+    this.isAuthenticated = this.authService.isAuthenticated;
+    this.notifService.startPolling();
+  }
+
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/home']);

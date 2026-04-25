@@ -4,7 +4,7 @@ export interface Reservation {
     space_detail: any;
     start_datetime: string;
     end_datetime: string;
-    status: string;
+    status: 'pending' | 'confirmed' | 'rejected' | 'payment_pending' | 'paid' | 'cancelled' | 'completed';
     status_display: string;
     total_price: number;
     billing_type: string;
@@ -13,6 +13,9 @@ export interface Reservation {
     is_recurring: boolean;
     recurrence_rule: string;
     notes: string;
+    can_pay: boolean;
+    confirmed_at: string | null;
+    confirmed_by: any | null;
     created_at: string;
     updated_at: string;
 }
@@ -32,11 +35,11 @@ export interface ReservationListParams {
     is_recurring?: boolean;
     ordering?: string;
     page?: number;
-    status?: 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'rejected';
+    status?: 'pending' | 'confirmed' | 'rejected' | 'payment_pending' | 'paid' | 'cancelled' | 'completed';
 }
 
 export interface ReservationUpdatePayload {
-    status?: 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'rejected';
+    status?: 'pending' | 'confirmed' | 'rejected' | 'payment_pending' | 'paid' | 'cancelled' | 'completed';
     notes?: string;
 }
 

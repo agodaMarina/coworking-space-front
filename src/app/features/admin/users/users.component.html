@@ -3,17 +3,17 @@
   <div class="px-4 md:px-8 pt-6 md:pt-10 pb-6 md:pb-8 border-b border-zinc-100">
     <p class="text-xs font-medium text-zinc-400 mb-1">Admin</p>
     <div class="flex flex-wrap items-start justify-between gap-3">
-      <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Users</h1>
+      <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Utilisateurs</h1>
       <div class="flex flex-wrap items-center gap-2">
         <div class="relative">
           <span class="iconify absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" data-icon="lucide:search" data-width="13"></span>
-          <input type="text" placeholder="Search users…" [value]="search()" (input)="search.set($any($event.target).value)"
-            class="pl-8 pr-3 py-2 text-sm bg-white border border-zinc-200 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition-colors w-44">
+          <input type="text" placeholder="Rechercher un utilisateur…" [value]="search()" (input)="search.set($any($event.target).value)"
+            class="pl-8 pr-3 py-2 text-sm bg-white border border-zinc-200 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition-colors w-48">
         </div>
         <button (click)="openCreate()"
           class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition-colors">
           <span class="iconify" data-icon="lucide:user-plus" data-width="14"></span>
-          Add user
+          Ajouter un utilisateur
         </button>
       </div>
     </div>
@@ -24,11 +24,11 @@
     <!-- Stats -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
       <div class="bg-[#AEE9F4] rounded-xl px-6 py-5">
-        <p class="text-xs text-zinc-600 font-medium mb-3">Total users</p>
+        <p class="text-xs text-zinc-600 font-medium mb-3">Total utilisateurs</p>
         <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().total }}</p>
       </div>
       <div class="bg-[#CEF09D] rounded-xl px-6 py-5">
-        <p class="text-xs text-zinc-600 font-medium mb-3">Active</p>
+        <p class="text-xs text-zinc-600 font-medium mb-3">Actifs</p>
         <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().active }}</p>
       </div>
       <div class="bg-[#FBCBE3] rounded-xl px-6 py-5">
@@ -37,8 +37,8 @@
       </div>
     </div>
 
-    <!-- Table -->
-    <app-table [rows]="paginated()" [emptyMessage]="loading() ? 'Loading users…' : 'No users found.'">
+    <!-- Tableau -->
+    <app-table [rows]="paginated()" [emptyMessage]="loading() ? 'Chargement…' : 'Aucun utilisateur trouvé.'">
 
       <app-column label="" width="32px" [hideOnMobile]="true">
         <ng-template let-u>
@@ -48,52 +48,52 @@
         </ng-template>
       </app-column>
 
-      <app-column label="Name" flex="1">
+      <app-column label="Nom" flex="1">
         <ng-template let-u>
           <p class="text-sm font-medium text-zinc-900 truncate">{{ u.name }}</p>
         </ng-template>
       </app-column>
 
-      <app-column label="Email" width="160px">
+      <app-column label="Email" width="180px">
         <ng-template let-u>
           <p class="text-sm text-zinc-400 truncate">{{ u.email }}</p>
         </ng-template>
       </app-column>
 
-      <app-column label="Role" width="90px">
+      <app-column label="Rôle" width="90px">
         <ng-template let-u>
           <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit" [ngClass]="roleBadge(u.role)">
-            {{ u.role }}
+            {{ roleLabel(u.role) }}
           </span>
         </ng-template>
       </app-column>
 
-      <app-column label="Status" width="80px">
+      <app-column label="Statut" width="90px">
         <ng-template let-u>
           <div class="flex items-center gap-1.5">
             <span class="w-1.5 h-1.5 rounded-full flex-shrink-0"
               [ngClass]="u.status === 'active' ? 'bg-emerald-400' : 'bg-zinc-300'"></span>
-            <span class="text-sm text-zinc-500">{{ u.status }}</span>
+            <span class="text-sm text-zinc-500">{{ u.status === 'active' ? 'Actif' : 'Inactif' }}</span>
           </div>
         </ng-template>
       </app-column>
 
-      <app-column label="Joined" width="100px">
+      <app-column label="Inscrit le" width="110px">
         <ng-template let-u>
-          <p class="text-sm text-zinc-400">{{ u.joined | date:'MMM d, y' }}</p>
+          <p class="text-sm text-zinc-400">{{ u.joined | date:'d MMM y' }}</p>
         </ng-template>
       </app-column>
 
-      <app-column label="Actions" width="90px" align="right">
+      <app-column label="Actions" width="110px" align="right">
         <ng-template let-u>
           <div class="flex items-center gap-2">
-            <button (click)="openEdit(u)" class="text-xs text-zinc-400 hover:text-zinc-900 transition-colors font-medium">Edit</button>
+            <button (click)="openEdit(u)" class="text-xs text-zinc-400 hover:text-zinc-900 transition-colors font-medium">Modifier</button>
             <button (click)="toggleStatus(u.id)"
               class="text-xs font-medium transition-colors"
               [ngClass]="u.status === 'active' ? 'text-zinc-400 hover:text-red-500' : 'text-zinc-400 hover:text-emerald-600'">
-              {{ u.status === 'active' ? 'Disable' : 'Enable' }}
+              {{ u.status === 'active' ? 'Désactiver' : 'Activer' }}
             </button>
-            <button (click)="askDelete(u.id)" class="text-xs text-zinc-400 hover:text-red-500 transition-colors font-medium">Del</button>
+            <button (click)="askDelete(u.id)" class="text-xs text-zinc-400 hover:text-red-500 transition-colors font-medium">Suppr.</button>
           </div>
         </ng-template>
       </app-column>
@@ -105,12 +105,12 @@
   </div>
 </div>
 
-<!-- Confirm delete -->
+<!-- Confirmer la suppression -->
 @if (pendingDeleteId() !== null) {
   <app-confirm-dialog
-    title="Delete user?"
-    message="This user will be permanently removed. This action cannot be undone."
-    confirmLabel="Delete"
+    title="Supprimer l'utilisateur ?"
+    message="Cet utilisateur sera définitivement supprimé. Cette action est irréversible."
+    confirmLabel="Supprimer"
     (confirmed)="confirmDelete()"
     (cancelled)="cancelDelete()">
   </app-confirm-dialog>
@@ -125,7 +125,7 @@
 
       <div class="px-5 md:px-8 pt-6 md:pt-8 pb-5 md:pb-6 border-b border-zinc-100 flex items-center justify-between flex-shrink-0">
         <div>
-          <p class="text-xs font-medium text-zinc-400 mb-0.5">Admin · Users</p>
+          <p class="text-xs font-medium text-zinc-400 mb-0.5">Admin · Utilisateurs</p>
           <h2 class="text-xl font-semibold text-zinc-900 tracking-tight">{{ modalTitle() }}</h2>
         </div>
         <button (click)="closeModal()" class="text-zinc-400 hover:text-zinc-700 transition-colors">
@@ -136,47 +136,47 @@
       <div class="flex-1 overflow-y-auto px-5 md:px-8 py-5 md:py-6 space-y-5" [formGroup]="form">
 
         <div>
-          <label class="block text-sm font-medium text-zinc-700 mb-1.5">Full name <span class="text-red-400">*</span></label>
-          <app-input formControlName="name" placeholder="e.g. Alice Martin" icon="lucide:user"></app-input>
+          <label class="block text-sm font-medium text-zinc-700 mb-1.5">Nom complet <span class="text-red-400">*</span></label>
+          <app-input formControlName="name" placeholder="ex. Alice Martin" icon="lucide:user"></app-input>
         </div>
 
         <div>
           <label class="block text-sm font-medium text-zinc-700 mb-1.5">Email <span class="text-red-400">*</span></label>
-          <app-input formControlName="email" type="email" placeholder="e.g. alice@cowork.io" icon="lucide:mail"></app-input>
+          <app-input formControlName="email" type="email" placeholder="ex. alice@cowork.io" icon="lucide:mail"></app-input>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-zinc-700 mb-1.5">Role <span class="text-red-400">*</span></label>
-          <app-select formControlName="role" [options]="roleOptions" placeholder="Choose a role…"></app-select>
+          <label class="block text-sm font-medium text-zinc-700 mb-1.5">Rôle <span class="text-red-400">*</span></label>
+          <app-select formControlName="role" [options]="roleOptions" placeholder="Choisir un rôle…"></app-select>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-zinc-700 mb-1.5">Phone</label>
-          <app-input formControlName="phone" type="tel" placeholder="e.g. +33 6 12 34 56 78" icon="lucide:phone"></app-input>
+          <label class="block text-sm font-medium text-zinc-700 mb-1.5">Téléphone</label>
+          <app-input formControlName="phone" type="tel" placeholder="ex. +237 6 12 34 56 78" icon="lucide:phone"></app-input>
         </div>
 
         @if (isCreating()) {
           <div>
-            <label class="block text-sm font-medium text-zinc-700 mb-1.5">Password <span class="text-red-400">*</span></label>
-            <app-input formControlName="password" type="password" placeholder="Min. 8 characters" icon="lucide:lock"></app-input>
+            <label class="block text-sm font-medium text-zinc-700 mb-1.5">Mot de passe <span class="text-red-400">*</span></label>
+            <app-input formControlName="password" type="password" placeholder="Min. 8 caractères" icon="lucide:lock"></app-input>
           </div>
         }
 
         <div class="pt-1">
-          <label class="block text-sm font-medium text-zinc-700 mb-3">Account status</label>
-          <app-toggle formControlName="status" label="Account is active"></app-toggle>
+          <label class="block text-sm font-medium text-zinc-700 mb-3">Statut du compte</label>
+          <app-toggle formControlName="status" label="Compte actif"></app-toggle>
         </div>
 
       </div>
 
       <div class="px-5 md:px-8 py-4 md:py-5 border-t border-zinc-100 flex items-center justify-end gap-3 flex-shrink-0 bg-white">
         <button (click)="closeModal()" class="px-4 py-2 text-sm font-medium text-zinc-600 hover:text-zinc-900 transition-colors">
-          Cancel
+          Annuler
         </button>
         <button (click)="saveForm()"
           [disabled]="form.invalid || saving()"
           class="px-5 py-2 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-          {{ saving() ? 'Saving…' : submitLabel() }}
+          {{ saving() ? 'Enregistrement…' : submitLabel() }}
         </button>
       </div>
 

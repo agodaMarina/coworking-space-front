@@ -3,11 +3,11 @@
   <div class="px-4 md:px-8 pt-6 md:pt-10 pb-6 md:pb-8 border-b border-zinc-100">
     <p class="text-xs font-medium text-zinc-400 mb-1">Dashboard</p>
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Spaces</h1>
+      <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Espaces</h1>
       <div class="flex flex-wrap items-center gap-2">
         <div class="relative">
           <span class="iconify absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" data-icon="lucide:search" data-width="13"></span>
-          <input type="text" placeholder="Search…" [value]="search()" (input)="search.set($any($event.target).value)"
+          <input type="text" placeholder="Rechercher…" [value]="search()" (input)="search.set($any($event.target).value)"
             class="pl-8 pr-3 py-2 text-sm bg-white border border-zinc-200 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition-colors w-40">
         </div>
         <select [value]="filterType()" (change)="filterType.set($any($event.target).value || null)"
@@ -30,18 +30,18 @@
     <!-- Stats -->
     <div class="grid grid-cols-3 gap-px bg-zinc-100 rounded-xl overflow-hidden border border-zinc-100 mb-8">
       <div class="bg-white px-4 md:px-6 py-5">
-        <p class="text-xs text-zinc-400 mb-3">Total spaces</p>
+        <p class="text-xs text-zinc-400 mb-3">Total espaces</p>
         <p class="text-2xl md:text-3xl font-semibold text-zinc-900 tracking-tight">{{ stats().total }}</p>
       </div>
       <div class="bg-white px-4 md:px-6 py-5">
-        <p class="text-xs text-zinc-400 mb-3">Available</p>
+        <p class="text-xs text-zinc-400 mb-3">Disponibles</p>
         <div class="flex items-baseline gap-1.5">
           <p class="text-2xl md:text-3xl font-semibold text-zinc-900 tracking-tight">{{ stats().available }}</p>
-          <span class="text-xs text-zinc-400 hidden sm:inline">open</span>
+          <span class="text-xs text-zinc-400 hidden sm:inline">libre(s)</span>
         </div>
       </div>
       <div class="bg-white px-4 md:px-6 py-5">
-        <p class="text-xs text-zinc-400 mb-3">Unavailable</p>
+        <p class="text-xs text-zinc-400 mb-3">Indisponibles</p>
         <p class="text-2xl md:text-3xl font-semibold text-zinc-900 tracking-tight">{{ stats().unavailable }}</p>
       </div>
     </div>
@@ -56,9 +56,9 @@
         }
       </div>
     } @else {
-      <app-table [rows]="filtered()" emptyMessage="No spaces match your search.">
+      <app-table [rows]="filtered()" emptyMessage="Aucun espace ne correspond à votre recherche.">
 
-        <app-column label="Name" flex="1">
+        <app-column label="Nom" flex="1">
           <ng-template let-space>
             <div class="min-w-0 pr-4">
               <p class="text-sm font-medium text-zinc-900 truncate">{{ space.name }}</p>
@@ -75,24 +75,24 @@
           </ng-template>
         </app-column>
 
-        <app-column label="Capacity" width="80px">
+        <app-column label="Capacité" width="80px">
           <ng-template let-space>
             <p class="text-sm text-zinc-500">{{ space.capacity }} pax</p>
           </ng-template>
         </app-column>
 
-        <app-column label="Price / day" width="90px">
+        <app-column label="Prix / jour" width="90px">
           <ng-template let-space>
-            <p class="text-sm font-medium text-zinc-900">${{ space.price_per_day }}</p>
+            <p class="text-sm font-medium text-zinc-900">{{ space.price_per_day }} XOF</p>
           </ng-template>
         </app-column>
 
-        <app-column label="Status" width="70px">
+        <app-column label="Statut" width="70px">
           <ng-template let-space>
             <div class="flex items-center gap-1.5">
               <span class="w-1.5 h-1.5 rounded-full flex-shrink-0"
                 [ngClass]="space.is_available ? 'bg-emerald-400' : 'bg-zinc-300'"></span>
-              <span class="text-sm text-zinc-500">{{ space.is_available ? 'Open' : 'Closed' }}</span>
+              <span class="text-sm text-zinc-500">{{ space.is_available ? 'Ouvert' : 'Fermé' }}</span>
             </div>
           </ng-template>
         </app-column>
@@ -101,7 +101,7 @@
           <ng-template let-space>
             <button (click)="toggleAvailability(space)"
               class="text-xs font-medium text-zinc-400 hover:text-zinc-900 transition-colors">
-              {{ space.is_available ? 'Close' : 'Open' }}
+              {{ space.is_available ? 'Fermer' : 'Ouvrir' }}
             </button>
           </ng-template>
         </app-column>

@@ -144,10 +144,10 @@ export class PaymentsService extends ApiService {
     );
   }
 
-  downloadInvoice(id: number): Observable<string> {
+  downloadInvoice(id: number): Observable<Blob> {
     const source = this.useMocks()
-      ? of("Facture simulée\nDate: 2026-04-22\nMontant: 15000 FCFA")
-      : this.http.get(`${this.baseUrl}/payments/${id}/invoice/`, { responseType: 'text' });
+      ? of(new Blob(["Facture simulée\nDate: 2026-04-22\nMontant: 15000 FCFA"], { type: 'text/plain' }))
+      : this.http.get(`${this.baseUrl}/payments/${id}/invoice/`, { responseType: 'blob' });
 
     return source.pipe(
       tap(() => this.isLoading.set(true)),

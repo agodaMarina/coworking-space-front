@@ -1,5 +1,5 @@
 import { Component, computed, signal, OnInit } from '@angular/core';
-import { NgClass, CurrencyPipe, DatePipe } from '@angular/common';
+import { NgClass, CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputComponent } from '../../../shared/components/input/input.component';
 import { TextareaComponent } from '../../../shared/components/textarea/textarea.component';
@@ -21,7 +21,7 @@ export interface AdminReservation {
   start: string;
   end: string;
   billing: string;
-  status: 'confirmed' | 'pending' | 'cancelled';
+  status: 'pending' | 'confirmed' | 'rejected' | 'payment_pending' | 'paid' | 'cancelled' | 'completed';
   amount: number;
   notes?: string;
 }
@@ -33,6 +33,7 @@ export interface AdminReservation {
     NgClass,
     CurrencyPipe,
     DatePipe,
+    DecimalPipe,
     ReactiveFormsModule,
     InputComponent,
     TextareaComponent,
@@ -47,7 +48,7 @@ export interface AdminReservation {
   providers: [MessageService],
 })
 export class AdminReservationsComponent implements OnInit {
-  readonly activeFilter = signal<'all' | 'confirmed' | 'pending' | 'cancelled'>('all');
+  readonly activeFilter = signal<'all' | 'confirmed' | 'pending' | 'rejected' | 'paid' | 'cancelled'>('all');
   readonly page = signal(1);
   readonly pageSize = 8;
   readonly showModal = signal(false);
@@ -58,10 +59,12 @@ export class AdminReservationsComponent implements OnInit {
   readonly form: FormGroup;
 
   readonly filters = [
-    { key: 'all' as const, label: 'All' },
-    { key: 'confirmed' as const, label: 'Confirmed' },
-    { key: 'pending' as const, label: 'Pending' },
-    { key: 'cancelled' as const, label: 'Cancelled' },
+    { key: 'all' as const,       label: 'Tous'      },
+    { key: 'pending' as const,   label: 'En attente' },
+    { key: 'confirmed' as const, label: 'Confirmées' },
+    { key: 'paid' as const,      label: 'Payées'     },
+    { key: 'rejected' as const,  label: 'Rejetées'   },
+    { key: 'cancelled' as const, label: 'Annulées'   },
   ];
 
   readonly userOptions: SelectOption<number>[] = [
@@ -93,15 +96,19 @@ export class AdminReservationsComponent implements OnInit {
   // ];
 
   readonly billingOptions: SelectOption<string>[] = [
-    { label: 'Hourly', value: 'Hourly' },
-    { label: 'Daily', value: 'Daily' },
-    { label: 'Monthly', value: 'Monthly' },
+    { label: 'Horaire',    value: 'Hourly' },
+    { label: 'Journalier', value: 'Daily' },
+    { label: 'Mensuel',    value: 'Monthly' },
   ];
 
-  readonly statusOptions: SelectOption<'confirmed' | 'pending' | 'cancelled'>[] = [
-    { label: 'Confirmed', value: 'confirmed', badge: 'bg-[#CEF09D] text-zinc-800' },
-    { label: 'Pending', value: 'pending', badge: 'bg-[#FDD5AB] text-zinc-800' },
-    { label: 'Cancelled', value: 'cancelled', badge: 'bg-zinc-100 text-zinc-500' },
+  readonly statusOptions: SelectOption<string>[] = [
+    { label: 'En attente',        value: 'pending',         badge: 'bg-yellow-100 text-yellow-800' },
+    { label: 'Confirmée',         value: 'confirmed',       badge: 'bg-blue-100 text-blue-800'    },
+    { label: 'Rejetée',           value: 'rejected',        badge: 'bg-red-100 text-red-800'      },
+    { label: 'Paiement en cours', value: 'payment_pending', badge: 'bg-orange-100 text-orange-800' },
+    { label: 'Payée',             value: 'paid',            badge: 'bg-green-100 text-green-800'  },
+    { label: 'Annulée',           value: 'cancelled',       badge: 'bg-zinc-100 text-zinc-500'    },
+    { label: 'Terminée',          value: 'completed',       badge: 'bg-purple-100 text-purple-800' },
   ];
 
   readonly reservations = signal<AdminReservation[]>([]);
@@ -124,10 +131,10 @@ export class AdminReservationsComponent implements OnInit {
   }));
 
   readonly modalTitle = computed(() =>
-    this.editingId() !== null ? 'Edit reservation' : 'New reservation',
+    this.editingId() !== null ? 'Modifier la réservation' : 'Nouvelle réservation',
   );
   readonly submitLabel = computed(() =>
-    this.editingId() !== null ? 'Save changes' : 'Create reservation',
+    this.editingId() !== null ? 'Enregistrer' : 'Créer la réservation',
   );
   readonly detail = computed(
     () => this.reservations().find((r) => r.id === this.detailId()) ?? null,
@@ -164,12 +171,12 @@ export class AdminReservationsComponent implements OnInit {
   private mapToAdminReservation(res: Reservation): AdminReservation {
     return {
       id: res.id,
-      user: res.user_detail.email,
-      space: res.space_detail.name,
+      user: res.user_detail?.full_name ?? res.user_detail?.email ?? '—',
+      space: res.space_detail?.name ?? '—',
       start: this.formatDate(res.start_datetime),
       end: this.formatDate(res.end_datetime),
       billing: this.capitalize(res.billing_type),
-      status: res.status as 'confirmed' | 'pending' | 'cancelled',
+      status: res.status as AdminReservation['status'],
       amount: res.total_price,
       notes: res.notes,
     };
@@ -193,6 +200,10 @@ export class AdminReservationsComponent implements OnInit {
 
   statusBadge(status: string): string {
     return this.statusOptions.find((o) => o.value === status)?.badge ?? 'bg-zinc-100 text-zinc-600';
+  }
+
+  statusLabel(status: string): string {
+    return this.statusOptions.find((o) => o.value === status)?.label ?? status;
   }
 
   openDetail(id: number): void {
@@ -232,7 +243,7 @@ export class AdminReservationsComponent implements OnInit {
       const payload = { status: v.status, notes: v.notes };
       this.reservationsService.updateReservation(id, payload).subscribe(() => {
         this.loadReservations();
-        this.toast.showSuccess('Reservation updated.');
+        this.toast.showSuccess('Réservation mise à jour.');
         this.closeModal();
       });
     }
@@ -247,7 +258,7 @@ export class AdminReservationsComponent implements OnInit {
       };
       this.reservationsService.createReservation(payload).subscribe(() => {
         this.loadReservations();
-        this.toast.showSuccess('Reservation created.');
+        this.toast.showSuccess('Réservation créée.');
         this.closeModal();
       });
     }
@@ -256,10 +267,18 @@ export class AdminReservationsComponent implements OnInit {
 
 
 
-  updateStatus(id: number, status: 'confirmed' | 'pending' | 'cancelled'): void {
-    this.reservationsService.updateReservation(id, { status }).subscribe(() => {
-      this.loadReservations();
-      this.toast.showSuccess(`Reservation marked as ${status}.`);
+  updateStatus(id: number, status: AdminReservation['status']): void {
+    this.reservationsService.updateReservation(id, { status }).subscribe({
+      next: () => {
+        this.loadReservations();
+        const labels: Record<string, string> = {
+          confirmed: 'Réservation confirmée.',
+          rejected:  'Réservation rejetée.',
+          cancelled: 'Réservation annulée.',
+        };
+        this.toast.showSuccess(labels[status] ?? `Statut mis à jour : ${status}.`);
+      },
+      error: () => this.toast.showError('Impossible de mettre à jour la réservation.'),
     });
   }
 
@@ -273,7 +292,7 @@ export class AdminReservationsComponent implements OnInit {
     this.reservationsService.cancelReservation(id).subscribe(() => {
       this.loadReservations();
       this.pendingDeleteId.set(null);
-      this.toast.showSuccess('Reservation cancelled.');
+      this.toast.showSuccess('Réservation annulée.');
     });
   }
 

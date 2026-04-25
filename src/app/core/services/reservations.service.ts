@@ -28,16 +28,19 @@ export class ReservationsService extends ApiService {
       start_datetime: '2026-04-28T09:00:00Z',
       end_datetime: '2026-04-28T17:00:00Z',
       status: 'confirmed',
-      status_display: 'Confirmed',
-      total_price: 75,
+      status_display: 'Confirmée',
+      total_price: 75000,
       billing_type: 'daily',
-      billing_type_display: 'Per day',
+      billing_type_display: 'Par jour',
       duration_hours: 8,
       is_recurring: false,
       recurrence_rule: 'none',
       notes: 'Team weekly sync',
+      can_pay: true,
+      confirmed_at: '2026-04-15T10:00:00Z',
+      confirmed_by: { id: 2, full_name: 'Admin User' },
       created_at: '2026-04-10T00:00:00Z',
-      updated_at: '2026-04-10T00:00:00Z'
+      updated_at: '2026-04-15T10:00:00Z'
     },
     {
       id: 2,
@@ -46,14 +49,17 @@ export class ReservationsService extends ApiService {
       start_datetime: '2026-05-05T09:00:00Z',
       end_datetime: '2026-05-07T17:00:00Z',
       status: 'pending',
-      status_display: 'Pending',
-      total_price: 360,
+      status_display: 'En attente',
+      total_price: 360000,
       billing_type: 'daily',
-      billing_type_display: 'Per day',
+      billing_type_display: 'Par jour',
       duration_hours: 48,
       is_recurring: false,
       recurrence_rule: 'none',
       notes: '',
+      can_pay: false,
+      confirmed_at: null,
+      confirmed_by: null,
       created_at: '2026-04-12T00:00:00Z',
       updated_at: '2026-04-12T00:00:00Z'
     },
@@ -63,15 +69,18 @@ export class ReservationsService extends ApiService {
       space_detail: { id: 5, name: 'The Boardroom', space_type_display: 'Salle de conférence' },
       start_datetime: '2026-05-12T09:00:00Z',
       end_datetime: '2026-05-12T18:00:00Z',
-      status: 'confirmed',
-      status_display: 'Confirmed',
-      total_price: 350,
+      status: 'paid',
+      status_display: 'Payée',
+      total_price: 350000,
       billing_type: 'daily',
-      billing_type_display: 'Per day',
+      billing_type_display: 'Par jour',
       duration_hours: 9,
       is_recurring: false,
       recurrence_rule: 'none',
       notes: 'Q2 board meeting',
+      can_pay: false,
+      confirmed_at: '2026-04-13T08:00:00Z',
+      confirmed_by: { id: 2, full_name: 'Admin User' },
       created_at: '2026-04-14T00:00:00Z',
       updated_at: '2026-04-14T00:00:00Z'
     },
@@ -81,15 +90,18 @@ export class ReservationsService extends ApiService {
       space_detail: { id: 1, name: 'Downtown Desk #1', space_type_display: 'Bureau individuel' },
       start_datetime: '2026-03-20T09:00:00Z',
       end_datetime: '2026-03-22T17:00:00Z',
-      status: 'confirmed',
-      status_display: 'Confirmed',
-      total_price: 75,
+      status: 'rejected',
+      status_display: 'Rejetée',
+      total_price: 75000,
       billing_type: 'daily',
-      billing_type_display: 'Per day',
+      billing_type_display: 'Par jour',
       duration_hours: 48,
       is_recurring: false,
       recurrence_rule: 'none',
       notes: '',
+      can_pay: false,
+      confirmed_at: null,
+      confirmed_by: null,
       created_at: '2026-03-15T00:00:00Z',
       updated_at: '2026-03-15T00:00:00Z'
     },
@@ -100,14 +112,17 @@ export class ReservationsService extends ApiService {
       start_datetime: '2026-02-10T10:00:00Z',
       end_datetime: '2026-02-10T14:00:00Z',
       status: 'cancelled',
-      status_display: 'Cancelled',
-      total_price: 200,
+      status_display: 'Annulée',
+      total_price: 200000,
       billing_type: 'daily',
-      billing_type_display: 'Per day',
+      billing_type_display: 'Par jour',
       duration_hours: 4,
       is_recurring: false,
       recurrence_rule: 'none',
       notes: '',
+      can_pay: false,
+      confirmed_at: null,
+      confirmed_by: null,
       created_at: '2026-02-01T00:00:00Z',
       updated_at: '2026-02-10T00:00:00Z'
     },
@@ -209,6 +224,17 @@ export class ReservationsService extends ApiService {
     );
   }
 
+  initiatePayment(reservationId: number): Observable<any> {
+    const source = this.useMocks()
+      ? of({ reservation_id: reservationId, status: 'payment_pending' })
+      : this.post<any>(`/reservations/${reservationId}/initiate-payment/`, {});
+
+    return source.pipe(
+      tap(() => this.isLoading.set(true)),
+      finalize(() => this.isLoading.set(false))
+    );
+  }
+
   checkAvailability(spaceId: number, payload: ReservationAvailabilityPayload = {}): Observable<Record<string, unknown>> {
     const source = this.useMocks()
       ? of(this.checkMockAvailability(spaceId, payload))
@@ -279,13 +305,16 @@ export class ReservationsService extends ApiService {
       end_datetime: data.end_datetime,
       status: 'pending',
       status_display: 'En attente',
-      total_price: 100, // Mock calculation
+      total_price: 100000,
       billing_type: data.billing_type,
       billing_type_display: data.billing_type === 'hourly' ? 'Par heure' : 'Par jour',
       duration_hours: 8,
       is_recurring: data.is_recurring || false,
       recurrence_rule: data.recurrence_rule || 'none',
       notes: data.notes || '',
+      can_pay: false,
+      confirmed_at: null,
+      confirmed_by: null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };

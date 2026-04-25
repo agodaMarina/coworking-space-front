@@ -57,7 +57,7 @@
       [class.border-b]="!last"
       [class.border-zinc-100]="!last">
       @for (col of cols(); track col.label) {
-        <div [ngClass]="{
+        <div class="min-w-0 overflow-hidden" [ngClass]="{
           'flex justify-end':    col.align === 'right',
           'flex justify-center': col.align === 'center'
         }">

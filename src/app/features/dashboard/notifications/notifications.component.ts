@@ -52,7 +52,7 @@ export class DashboardNotificationsComponent implements OnInit {
         this.notifications.update(list =>
           list.map(item => item.id === n.id ? { ...item, status: 'sent' as const, status_display: 'Sent' } : item)
         );
-        this.notificationsService.unreadCount.update(c => Math.max(0, c - 1));
+        this.notificationsService.decrementUnreadCount();
       },
     });
   }
@@ -64,7 +64,7 @@ export class DashboardNotificationsComponent implements OnInit {
         this.notifications.update(list =>
           list.map(item => ({ ...item, status: 'sent' as const, status_display: 'Sent', sent_at: item.sent_at ?? new Date().toISOString() }))
         );
-        this.notificationsService.unreadCount.set(0);
+        this.notificationsService.resetUnreadCount();
         this.markingAll.set(false);
         this.toast.showSuccess('All notifications marked as read.');
       },

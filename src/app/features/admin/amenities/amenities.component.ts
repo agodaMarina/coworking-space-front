@@ -30,31 +30,29 @@ export class AdminAmenitiesComponent implements OnInit {
 
   readonly form: FormGroup;
 
-  /** Lucide icons available for quick selection */
-  readonly iconOptions: string[] = [
-    'lucide:wifi',
-    'lucide:monitor',
-    'lucide:tv-2',
-    'lucide:printer',
-    'lucide:phone',
-    'lucide:coffee',
-    'lucide:sun',
-    'lucide:lock',
-    'lucide:volume-2',
-    'lucide:video',
-    'lucide:projector',
-    'lucide:users',
-    'lucide:zap',
-    'lucide:wind',
-    'lucide:box',
-    'lucide:layers',
-    'lucide:file-text',
-    'lucide:headphones',
-    'lucide:sparkles',
-    'lucide:star',
+  /** PrimeIcons clés disponibles pour les amenities */
+  readonly iconOptions: { key: string; label: string }[] = [
+    { key: 'wifi',          label: 'WiFi'        },
+    { key: 'desktop',       label: 'PC/Écran'    },
+    { key: 'video',         label: 'Vidéo'       },
+    { key: 'print',         label: 'Imprimante'  },
+    { key: 'phone',         label: 'Téléphone'   },
+    { key: 'coffee',        label: 'Café'        },
+    { key: 'sun',           label: 'Lumière'     },
+    { key: 'lock',          label: 'Sécurité'    },
+    { key: 'volume-up',     label: 'Audio'       },
+    { key: 'users',         label: 'Salle'       },
+    { key: 'bolt',          label: 'Énergie'     },
+    { key: 'car',           label: 'Parking'     },
+    { key: 'box',           label: 'Stockage'    },
+    { key: 'file',          label: 'Documents'   },
+    { key: 'headphones',    label: 'Casque'      },
+    { key: 'star',          label: 'Premium'     },
+    { key: 'building',      label: 'Salle conf.' },
+    { key: 'circle',        label: 'Autre'       },
   ];
 
-  readonly selectedIcon = signal('lucide:sparkles');
+  readonly selectedIcon = signal('circle');
 
   readonly filtered = computed(() => {
     const q = this.search().toLowerCase();
@@ -78,11 +76,11 @@ export class AdminAmenitiesComponent implements OnInit {
     private spacesService: SpacesService,
   ) {
     this.form = this.fb.group({
-      name: ['', Validators.required],
-      icon: ['lucide:sparkles'],
+      name:     ['', Validators.required],
+      icon_key: ['circle'],
     });
 
-    this.form.get('icon')!.valueChanges.subscribe(v => {
+    this.form.get('icon_key')!.valueChanges.subscribe(v => {
       if (v) this.selectedIcon.set(v);
     });
   }
@@ -95,13 +93,13 @@ export class AdminAmenitiesComponent implements OnInit {
   loadAmenities(): void {
     this.spacesService.getAmenities().subscribe({
       next: amenities => this.amenities.set(amenities),
-      error: () => this.toast.showError('Unable to load amenities.'),
+      error: () => this.toast.showError('Impossible de charger les équipements.'),
     });
   }
 
   openCreate(): void {
-    this.form.reset({ name: '', icon: 'lucide:sparkles' });
-    this.selectedIcon.set('lucide:sparkles');
+    this.form.reset({ name: '', icon_key: 'circle' });
+    this.selectedIcon.set('circle');
     this.showModal.set(true);
   }
 
@@ -110,26 +108,26 @@ export class AdminAmenitiesComponent implements OnInit {
     this.isSaving.set(false);
   }
 
-  selectIcon(icon: string): void {
-    this.selectedIcon.set(icon);
-    this.form.patchValue({ icon });
+  selectIcon(iconKey: string): void {
+    this.selectedIcon.set(iconKey);
+    this.form.patchValue({ icon_key: iconKey });
   }
 
   saveForm(): void {
     if (this.form.invalid || this.isSaving()) return;
-    const { name, icon } = this.form.value as { name: string; icon: string };
+    const { name, icon_key } = this.form.value as { name: string; icon_key: string };
 
     this.isSaving.set(true);
-    this.spacesService.createAmenity({ name: name.trim(), icon: icon || 'lucide:sparkles' }).subscribe({
+    this.spacesService.createAmenity({ name: name.trim(), icon: icon_key || 'circle' }).subscribe({
       next: created => {
         this.amenities.update(list => [created, ...list]);
         this.isSaving.set(false);
         this.closeModal();
-        this.toast.showSuccess('Amenity created.');
+        this.toast.showSuccess('Équipement créé.');
       },
       error: () => {
         this.isSaving.set(false);
-        this.toast.showError('Unable to create amenity.');
+        this.toast.showError('Impossible de créer l\'équipement.');
       },
     });
   }
@@ -144,7 +142,7 @@ export class AdminAmenitiesComponent implements OnInit {
     // No delete endpoint defined — remove locally
     this.amenities.update(list => list.filter(a => a.id !== id));
     this.pendingDeleteId.set(null);
-    this.toast.showSuccess('Amenity removed.');
+    this.toast.showSuccess('Équipement supprimé.');
   }
 
   cancelDelete(): void {

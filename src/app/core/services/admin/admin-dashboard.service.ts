@@ -4,10 +4,10 @@ import { Observable } from 'rxjs';
 import { ApiService } from '../../http/api.service';
 
 export interface DashboardStats {
-  total_reservations: number;
-  confirmed: number;
-  cancelled: number;
-  completed: number;
+  total_bookings: number;
+  confirmed_bookings: number;
+  cancelled_bookings: number;
+  completed_bookings: number;
   total_revenue: number;
   occupancy_rate: number;
   today_reservations: number;

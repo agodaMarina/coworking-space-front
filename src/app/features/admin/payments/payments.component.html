@@ -3,7 +3,7 @@
   <div class="px-4 md:px-8 pt-6 md:pt-10 pb-0 border-b border-zinc-100">
     <p class="text-xs font-medium text-zinc-400 mb-1">Admin</p>
     <div class="flex items-end justify-between gap-4 mb-6">
-      <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Payments</h1>
+      <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Paiements</h1>
     </div>
 
     <div class="flex gap-0">
@@ -25,39 +25,39 @@
     <!-- Stats -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
       <div class="bg-[#CEF09D] rounded-xl px-6 py-5">
-        <p class="text-xs text-zinc-600 font-medium mb-3">Total revenue</p>
-        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().total | currency:'USD':'symbol':'1.0-0' }}</p>
+        <p class="text-xs text-zinc-600 font-medium mb-3">Revenu total</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().total | currency:'XAF':'symbol':'1.0-0' }}</p>
       </div>
       <div class="bg-[#FDD5AB] rounded-xl px-6 py-5">
-        <p class="text-xs text-zinc-600 font-medium mb-3">Pending</p>
+        <p class="text-xs text-zinc-600 font-medium mb-3">En attente</p>
         <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().pending }}</p>
       </div>
       <div class="bg-[#FBCBE3] rounded-xl px-6 py-5">
-        <p class="text-xs text-zinc-600 font-medium mb-3">Refunded</p>
+        <p class="text-xs text-zinc-600 font-medium mb-3">Remboursés</p>
         <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().refunded }}</p>
       </div>
     </div>
 
     @if (allFiltered().length === 0) {
       <div class="border border-zinc-100 rounded-xl py-20 text-center">
-        <p class="text-sm text-zinc-400">No payments in this category.</p>
+        <p class="text-sm text-zinc-400">Aucun paiement dans cette catégorie.</p>
       </div>
     } @else {
-      <app-table [rows]="paginated()" emptyMessage="No payments in this category.">
+      <app-table [rows]="paginated()" emptyMessage="Aucun paiement dans cette catégorie.">
 
-        <app-column label="Invoice" width="100px">
+        <app-column label="Facture" width="110px">
           <ng-template let-p>
-            <p class="text-sm font-mono text-zinc-400">{{ p.invoice }}</p>
+            <p class="text-sm font-mono text-zinc-400 truncate">{{ p.invoice }}</p>
           </ng-template>
         </app-column>
 
-        <app-column label="User" flex="1">
+        <app-column label="Utilisateur" flex="1">
           <ng-template let-p>
             <p class="text-sm font-medium text-zinc-900 truncate pr-4">{{ p.user }}</p>
           </ng-template>
         </app-column>
 
-        <app-column label="Space" width="150px">
+        <app-column label="Espace" width="150px">
           <ng-template let-p>
             <p class="text-sm text-zinc-400 truncate">{{ p.space }}</p>
           </ng-template>
@@ -65,25 +65,25 @@
 
         <app-column label="Date" width="110px">
           <ng-template let-p>
-            <p class="text-sm text-zinc-400">{{ p.date | date:'MMM d, y' }}</p>
+            <p class="text-sm text-zinc-400">{{ p.date | date:'d MMM y' }}</p>
           </ng-template>
         </app-column>
 
-        <app-column label="Status" width="90px">
+        <app-column label="Statut" width="100px">
           <ng-template let-p>
             <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit" [ngClass]="statusBadge(p.status)">
-              {{ p.status }}
+              {{ statusLabel(p.status) }}
             </span>
           </ng-template>
         </app-column>
 
-        <app-column label="Amount" width="70px" align="right">
+        <app-column label="Montant" width="80px" align="right">
           <ng-template let-p>
-            <p class="text-sm font-semibold text-zinc-900">{{ p.amount | currency:'USD':'symbol':'1.0-0' }}</p>
+            <p class="text-sm font-semibold text-zinc-900 whitespace-nowrap">{{ p.amount | number:'1.0-0' }} FCFA</p>
           </ng-template>
         </app-column>
 
-        <app-column label="Actions" width="100px" align="right">
+        <app-column label="Actions" width="110px" align="right">
           <ng-template let-p>
             @if (p.status === 'pending') {
               <div class="flex gap-3 justify-end items-center">
@@ -111,7 +111,7 @@
   </div>
 </div>
 
-<!-- Confirm action -->
+<!-- Confirmer l'action -->
 @if (pendingAction() !== null) {
   <app-confirm-dialog
     [title]="confirmTitle"

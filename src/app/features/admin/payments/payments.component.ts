@@ -1,5 +1,5 @@
 import { Component, computed, OnInit, signal } from '@angular/core';
-import { NgClass, CurrencyPipe, DatePipe } from '@angular/common';
+import { NgClass, CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { TableComponent } from '../../../shared/components/table/table.component';
@@ -26,7 +26,7 @@ const PAGE_SIZE = 8;
 @Component({
   standalone: true,
   selector: 'app-admin-payments',
-  imports: [NgClass, CurrencyPipe, DatePipe, PaginationComponent, ConfirmDialogComponent, TableComponent, ColumnComponent],
+  imports: [NgClass, CurrencyPipe, DatePipe, DecimalPipe, PaginationComponent, ConfirmDialogComponent, TableComponent, ColumnComponent],
   templateUrl: './payments.component.html',
   providers: [MessageService]
 })
@@ -38,10 +38,10 @@ export class AdminPaymentsComponent implements OnInit {
   readonly apiStats     = signal<any>({ total_revenue: 0, pending_payments: 0, refunded_payments: 0 });
 
   readonly filters = [
-    { key: 'all' as const,      label: 'All'      },
-    { key: 'paid' as const,     label: 'Paid'     },
-    { key: 'pending' as const,  label: 'Pending'  },
-    { key: 'refunded' as const, label: 'Refunded' },
+    { key: 'all' as const,      label: 'Tous'        },
+    { key: 'paid' as const,     label: 'Payés'       },
+    { key: 'pending' as const,  label: 'En attente'  },
+    { key: 'refunded' as const, label: 'Remboursés'  },
   ];
 
   readonly payments = signal<AdminPayment[]>([]);
@@ -75,7 +75,7 @@ export class AdminPaymentsComponent implements OnInit {
   private loadPayments(): void {
     this.paymentsService.getPayments().subscribe({
       next: payments => this.payments.set(payments.map(p => this.mapToAdminPayment(p))),
-      error: () => this.toast.showError('Unable to load payments.'),
+      error: () => this.toast.showError('Impossible de charger les paiements.'),
     });
     this.paymentsService.getPaymentStats().subscribe({
       next: stats => this.apiStats.set(stats),
@@ -109,6 +109,15 @@ export class AdminPaymentsComponent implements OnInit {
     return map[status] ?? 'bg-zinc-100 text-zinc-600';
   }
 
+  statusLabel(status: string): string {
+    const map: Record<string, string> = {
+      paid:     'Payé',
+      pending:  'En attente',
+      refunded: 'Remboursé',
+    };
+    return map[status] ?? status;
+  }
+
   askAction(id: number, target: 'completed' | 'failed' | 'refunded'): void {
     this.pendingAction.set({ id, target });
   }
@@ -121,19 +130,19 @@ export class AdminPaymentsComponent implements OnInit {
       this.paymentsService.refundPayment(a.id, {}).subscribe({
         next: () => {
           this.loadPayments();
-          this.toast.showSuccess('Payment refunded.');
+          this.toast.showSuccess('Paiement remboursé.');
           this.pendingAction.set(null);
         },
-        error: () => this.toast.showError('Unable to update the payment.'),
+        error: () => this.toast.showError('Impossible de mettre à jour le paiement.'),
       });
     } else {
       this.paymentsService.confirmPayment(a.id, { status: a.target }).subscribe({
         next: () => {
           this.loadPayments();
-          this.toast.showSuccess(a.target === 'completed' ? 'Invoice marked as paid.' : 'Invoice rejected.');
+          this.toast.showSuccess(a.target === 'completed' ? 'Facture marquée comme payée.' : 'Facture rejetée.');
           this.pendingAction.set(null);
         },
-        error: () => this.toast.showError('Unable to update the payment.'),
+        error: () => this.toast.showError('Impossible de mettre à jour le paiement.'),
       });
     }
   }
@@ -145,20 +154,20 @@ export class AdminPaymentsComponent implements OnInit {
   get confirmTitle(): string {
     if (!this.pendingAction()) return '';
     const t = this.pendingAction()!.target;
-    return t === 'completed' ? 'Mark as paid?' : t === 'failed' ? 'Reject payment?' : 'Refund this payment?';
+    return t === 'completed' ? 'Marquer comme payé ?' : t === 'failed' ? 'Rejeter le paiement ?' : 'Rembourser ce paiement ?';
   }
 
   get confirmMessage(): string {
     if (!this.pendingAction()) return '';
     const t = this.pendingAction()!.target;
-    return t === 'completed' ? 'This invoice will be marked as paid.' 
-         : t === 'failed' ? 'This payment will be rejected.' 
-         : 'This payment will be marked as refunded. This cannot be undone.';
+    return t === 'completed' ? 'Cette facture sera marquée comme payée.'
+         : t === 'failed' ? 'Ce paiement sera rejeté.'
+         : 'Ce paiement sera marqué comme remboursé. Cette action est irréversible.';
   }
 
   get confirmLabel(): string {
     if (!this.pendingAction()) return '';
     const t = this.pendingAction()!.target;
-    return t === 'completed' ? 'Mark as paid' : t === 'failed' ? 'Reject' : 'Refund';
+    return t === 'completed' ? 'Marquer payé' : t === 'failed' ? 'Rejeter' : 'Rembourser';
   }
 }

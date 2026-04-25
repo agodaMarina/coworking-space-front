@@ -58,16 +58,16 @@ export class DashboardPaymentsComponent implements OnInit {
 
   downloadInvoice(payment: Payment): void {
     this.paymentsService.downloadInvoice(payment.id).subscribe({
-      next: text => {
-        const blob = new Blob([text], { type: 'text/plain' });
+      next: (blob: Blob) => {
+        const ext = blob.type.includes('pdf') ? 'pdf' : 'txt';
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `invoice-${payment.id}.txt`;
+        a.download = `facture-${payment.id}.${ext}`;
         a.click();
         URL.revokeObjectURL(url);
       },
-      error: () => this.toast.showError('Unable to download invoice.'),
+      error: () => this.toast.showError('Impossible de télécharger la facture.'),
     });
   }
 
@@ -75,7 +75,7 @@ export class DashboardPaymentsComponent implements OnInit {
     this.paymentsService.disableMocks();
     this.paymentsService.getPayments().subscribe({
       next: p => this.payments.set(p),
-      error: () => this.toast.showError('Unable to load payments.'),
+      error: () => this.toast.showError('Impossible de charger les paiements.'),
     });
   }
 }

@@ -68,8 +68,8 @@ export class AdminUsersComponent implements OnInit {
     admins: this.users().filter(u => u.role === 'admin' || u.role === 'manager').length,
   }));
 
-  readonly modalTitle   = computed(() => this.editingId() !== null ? 'Edit user' : 'New user');
-  readonly submitLabel  = computed(() => this.editingId() !== null ? 'Save changes' : 'Create user');
+  readonly modalTitle   = computed(() => this.editingId() !== null ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur');
+  readonly submitLabel  = computed(() => this.editingId() !== null ? 'Enregistrer' : 'Créer l\'utilisateur');
   readonly isCreating   = computed(() => this.editingId() === null);
 
   constructor(private fb: FormBuilder, private toast: ToastService, private authService: AuthService) {
@@ -95,7 +95,7 @@ export class AdminUsersComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.toast.showError('Failed to load users.');
+        this.toast.showError('Impossible de charger les utilisateurs.');
         this.loading.set(false);
       }
     });
@@ -124,11 +124,15 @@ export class AdminUsersComponent implements OnInit {
     return this.roleOptions.find(o => o.value === role)?.badge ?? 'bg-zinc-100 text-zinc-600';
   }
 
+  roleLabel(role: string): string {
+    return this.roleOptions.find(o => o.value === role)?.label ?? role;
+  }
+
   toggleStatus(id: string): void {
     this.users.update(list =>
       list.map(u => u.id === id ? { ...u, status: u.status === 'active' ? 'inactive' : 'active' } : u)
     );
-    this.toast.showSuccess('User status updated.');
+    this.toast.showSuccess('Statut de l\'utilisateur mis à jour.');
   }
 
   openCreate(): void {
@@ -172,14 +176,14 @@ export class AdminUsersComponent implements OnInit {
       this.authService.updateAdminUser(id, payload).subscribe({
         next: () => {
           this.loadUsers();
-          this.toast.showSuccess('User updated successfully.');
+          this.toast.showSuccess('Utilisateur mis à jour avec succès.');
           this.closeModal();
           this.saving.set(false);
         },
         error: (err) => {
           const msg = err.error && typeof err.error === 'object'
             ? (Object.values(err.error) as string[][]).flat().join(' ')
-            : 'Error updating user.';
+            : 'Erreur lors de la mise à jour.';
           this.toast.showError(msg);
           this.saving.set(false);
         }
@@ -199,14 +203,14 @@ export class AdminUsersComponent implements OnInit {
       this.authService.createAdminUser(payload).subscribe({
         next: () => {
           this.loadUsers();
-          this.toast.showSuccess('User created successfully.');
+          this.toast.showSuccess('Utilisateur créé avec succès.');
           this.closeModal();
           this.saving.set(false);
         },
         error: (err) => {
           const msg = err.error && typeof err.error === 'object'
             ? (Object.values(err.error) as string[][]).flat().join(' ')
-            : 'Error creating user.';
+            : 'Erreur lors de la création.';
           this.toast.showError(msg);
           this.saving.set(false);
         }
@@ -225,11 +229,11 @@ export class AdminUsersComponent implements OnInit {
       next: () => {
         this.users.update(list => list.filter(u => u.id !== id));
         this.pendingDeleteId.set(null);
-        this.toast.showSuccess('User deleted.');
+        this.toast.showSuccess('Utilisateur supprimé.');
       },
       error: () => {
         this.pendingDeleteId.set(null);
-        this.toast.showError('Unable to delete user.');
+        this.toast.showError('Impossible de supprimer l\'utilisateur.');
       }
     });
   }

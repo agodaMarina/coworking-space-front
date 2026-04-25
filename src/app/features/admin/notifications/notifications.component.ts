@@ -39,16 +39,16 @@ export class AdminNotificationsComponent {
   readonly form: FormGroup;
 
   readonly typeOptions: SelectOption<'info' | 'warning' | 'promo' | 'system'>[] = [
-    { label: 'Info',    value: 'info',    badge: 'bg-[#AEE9F4] text-zinc-800' },
-    { label: 'Warning', value: 'warning', badge: 'bg-[#FDD5AB] text-zinc-800' },
-    { label: 'Promo',   value: 'promo',   badge: 'bg-[#CEF09D] text-zinc-800' },
-    { label: 'System',  value: 'system',  badge: 'bg-[#E2F89C] text-zinc-800' },
+    { label: 'Info',     value: 'info',    badge: 'bg-[#AEE9F4] text-zinc-800' },
+    { label: 'Alerte',   value: 'warning', badge: 'bg-[#FDD5AB] text-zinc-800' },
+    { label: 'Promo',    value: 'promo',   badge: 'bg-[#CEF09D] text-zinc-800' },
+    { label: 'Système',  value: 'system',  badge: 'bg-[#E2F89C] text-zinc-800' },
   ];
 
   readonly targetOptions: SelectOption<string>[] = [
-    { label: 'All users',         value: 'all'    },
-    { label: 'Admins & managers', value: 'admins' },
-    { label: 'Specific user…',    value: 'custom' },
+    { label: 'Tous les utilisateurs',   value: 'all'    },
+    { label: 'Admins & managers',       value: 'admins' },
+    { label: 'Utilisateur spécifique…', value: 'custom' },
   ];
 
   readonly notifications = signal<AdminNotification[]>([
@@ -88,6 +88,10 @@ export class AdminNotificationsComponent {
     return this.typeOptions.find(o => o.value === type)?.badge ?? 'bg-zinc-100 text-zinc-600';
   }
 
+  typeLabel(type: string): string {
+    return this.typeOptions.find(o => o.value === type)?.label ?? type;
+  }
+
   statusBadge(status: string): string {
     const map: Record<string, string> = {
       sent:      'bg-[#CEF09D] text-zinc-800',
@@ -95,6 +99,15 @@ export class AdminNotificationsComponent {
       failed:    'bg-[#FBCBE3] text-zinc-800',
     };
     return map[status] ?? 'bg-zinc-100 text-zinc-600';
+  }
+
+  statusLabel(status: string): string {
+    const map: Record<string, string> = {
+      sent:      'Envoyée',
+      scheduled: 'Planifiée',
+      failed:    'Échouée',
+    };
+    return map[status] ?? status;
   }
 
   openCreate(): void {
@@ -120,7 +133,7 @@ export class AdminNotificationsComponent {
       type: v.type, target, date, status,
     }]);
 
-    this.toast.showSuccess(sendNow ? 'Notification sent.' : 'Notification scheduled.');
+    this.toast.showSuccess(sendNow ? 'Notification envoyée.' : 'Notification planifiée.');
     this.closeModal();
   }
 
@@ -133,7 +146,7 @@ export class AdminNotificationsComponent {
     if (id === null) return;
     this.notifications.update(list => list.filter(n => n.id !== id));
     this.pendingDeleteId.set(null);
-    this.toast.showSuccess('Notification deleted.');
+    this.toast.showSuccess('Notification supprimée.');
   }
 
   cancelDelete(): void {

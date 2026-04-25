@@ -1,6 +1,6 @@
-import { NgClass } from '@angular/common';
+import { CurrencyPipe, NgClass, NgIf } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TableComponent } from '../../../shared/components/table/table.component';
 import { ColumnComponent } from '../../../shared/components/table/column.component';
 import { Space } from '../../../core/dtos/space';
@@ -11,26 +11,29 @@ import { MessageService } from 'primeng/api';
 @Component({
   standalone: true,
   selector: 'app-dashboard-spaces',
-  imports: [NgClass, RouterLink, TableComponent, ColumnComponent],
+  imports: [NgClass, NgIf, CurrencyPipe, RouterLink, TableComponent, ColumnComponent],
   templateUrl: './spaces.component.html',
   providers:[MessageService]
 })
 export class DashboardSpacesComponent implements OnInit {
   private readonly spacesService = inject(SpacesService);
-  private readonly toast = inject(ToastService);
+  private readonly router        = inject(Router);
+  private readonly toast         = inject(ToastService);
 
-  readonly spaces = signal<Space[]>([]);
-  readonly isLoading = this.spacesService.isLoading;
-  readonly search = signal('');
-  readonly filterType = signal<string | null>(null);
+  readonly spaces         = signal<Space[]>([]);
+  readonly isLoading      = this.spacesService.isLoading;
+  readonly search         = signal('');
+  readonly filterType     = signal<string | null>(null);
+  readonly selectedSpace  = signal<Space | null>(null);
+  readonly showDetailModal = signal(false);
 
   readonly typeOptions = [
-    { label: 'All types', value: null },
-    { label: 'Hot Desk', value: 'desk' },
+    { label: 'Tous les types', value: null },
+    { label: 'Bureau partagé', value: 'desk' },
     { label: 'Open Space', value: 'open_space' },
-    { label: 'Meeting Room', value: 'meeting_room' },
-    { label: 'Private Office', value: 'private' },
-    { label: 'Conference', value: 'conference' },
+    { label: 'Salle de réunion', value: 'meeting_room' },
+    { label: 'Bureau privé', value: 'private' },
+    { label: 'Conférence', value: 'conference' },
   ];
 
   readonly filtered = computed(() => {
@@ -67,7 +70,7 @@ export class DashboardSpacesComponent implements OnInit {
     this.spacesService.disableMocks();
     this.spacesService.getSpaces().subscribe({
       next: spaces => this.spaces.set(spaces),
-      error: () => this.toast.showError('Unable to load spaces.'),
+      error: () => this.toast.showError('Impossible de charger les espaces.'),
     });
   }
 
@@ -75,5 +78,20 @@ export class DashboardSpacesComponent implements OnInit {
     this.spaces.update(list =>
       list.map(s => s.id === space.id ? { ...s, is_available: !s.is_available } : s)
     );
+  }
+
+  onRowClick(space: Space): void {
+    this.selectedSpace.set(space);
+    this.showDetailModal.set(true);
+  }
+
+  closeDetailModal(): void {
+    this.showDetailModal.set(false);
+    this.selectedSpace.set(null);
+  }
+
+  bookSpace(spaceId: number): void {
+    this.closeDetailModal();
+    this.router.navigate(['/booking'], { queryParams: { spaceId } });
   }
 }

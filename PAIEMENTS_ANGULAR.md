@@ -1,6 +1,6 @@
 # Intégration Paiements — Guide Angular
 
-> Backend Django · API REST · Base URL : `http://localhost:8000`  
+> Backend Django · API REST · Base URL : `http://localhost:8000`
 > Authentification : **JWT Bearer Token** requis sur tous les endpoints (sauf webhooks)
 
 ---
@@ -83,7 +83,7 @@ interface Payment {
   currency: string;        // "XOF"
   status: 'pending' | 'completed' | 'failed' | 'refunded' | 'cancelled';
   status_display: string;  // "En attente" | "Complété" | ...
-  method: 'card' | 'mobile_money' | 'cash' | 'bank_transfer';
+  method: 'card' | 'mobile_money' | 'cash' | 'bank_transfer'; 
   method_display: string;
   transaction_id: string;  // "pi_xxx" (Stripe) | "FEDA-xxx" (FedaPay) | "TXN-xxx" (local)
   paid_at: string | null;  // ISO 8601
@@ -263,7 +263,7 @@ window.open(response.fedapay.payment_url, '_blank');
 
 ### Étape 3 — Vérifier le statut après retour
 
-L'utilisateur est redirigé vers `FEDAPAY_CALLBACK_URL` (configuré dans `.env`) après paiement.  
+L'utilisateur est redirigé vers `FEDAPAY_CALLBACK_URL` (configuré dans `.env`) après paiement.
 Votre route Angular de callback doit récupérer le statut du paiement :
 
 ```http
@@ -771,5 +771,5 @@ export class PaymentCallbackComponent implements OnInit {
 
 ## Documentation interactive
 
-Swagger UI disponible sur : `http://localhost:8000/api/docs/`  
+Swagger UI disponible sur : `http://localhost:8000/api/docs/`
 ReDoc disponible sur : `http://localhost:8000/api/redoc/`
