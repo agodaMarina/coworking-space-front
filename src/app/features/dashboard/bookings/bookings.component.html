@@ -225,7 +225,7 @@
 
       <div class="flex-1 overflow-y-auto px-8 py-6 space-y-6">
 
-        <!-- Success state -->
+        <!-- Success state (Stripe card) -->
         @if (paymentSuccess()) {
           <div class="text-center py-8">
             <div class="w-16 h-16 bg-[#CEF09D] rounded-full flex items-center justify-center mx-auto mb-4">
@@ -233,6 +233,26 @@
             </div>
             <h3 class="text-xl font-semibold text-zinc-900 mb-2">Paiement réussi !</h3>
             <p class="text-sm text-zinc-500">Votre réservation est maintenant confirmée et payée.</p>
+          </div>
+
+        <!-- Mobile Money pending state -->
+        } @else if (mobilePending()) {
+          <div class="text-center py-8">
+            <div class="w-16 h-16 bg-[#AEE9F4] rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="iconify text-zinc-900" data-icon="lucide:smartphone" data-width="28"></span>
+            </div>
+            <h3 class="text-xl font-semibold text-zinc-900 mb-2">Validation en cours</h3>
+            <p class="text-sm text-zinc-500 mb-4">
+              Une notification de paiement a été envoyée sur votre téléphone.<br>
+              Confirmez le paiement sur votre appareil pour finaliser la réservation.
+            </p>
+            <div class="bg-zinc-50 rounded-xl px-5 py-3 text-xs text-zinc-500 text-left">
+              <p class="font-semibold text-zinc-700 mb-1">Opérateur : {{ selectedOperator() === 'mtn' ? 'MTN Mobile Money' : 'Moov Money' }}</p>
+              <p>Le statut de votre réservation sera mis à jour automatiquement après confirmation.</p>
+            </div>
+            <button (click)="closePaymentModal()" class="mt-6 w-full py-2.5 rounded-xl border border-zinc-200 text-sm text-zinc-600 hover:bg-zinc-50 transition-colors">
+              Fermer
+            </button>
           </div>
 
         } @else {
@@ -290,19 +310,49 @@
             </div>
           }
 
-          <!-- Mobile Money phone -->
+          <!-- Mobile Money operator + phone -->
           @if (selectedMethod() === 'mobile_money') {
-            <div [formGroup]="mobileForm">
-              <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Numéro de téléphone</p>
-              <input formControlName="phoneNumber" type="tel" placeholder="77 000 00 00"
-                class="w-full px-4 py-3 text-sm border border-zinc-200 rounded-xl text-zinc-900 placeholder-zinc-300 focus:outline-none focus:border-zinc-400 transition-colors">
-              @if (mobileForm.get('phoneNumber')?.invalid && mobileForm.get('phoneNumber')?.touched) {
-                <small class="text-red-500 text-xs mt-1 block">Numéro invalide (8 à 15 chiffres)</small>
-              }
-              <p class="mt-2 text-xs text-zinc-400 flex items-center gap-1.5">
-                <span class="iconify" data-icon="lucide:info" data-width="11"></span>
-                Vous recevrez une notification de paiement sur ce numéro.
-              </p>
+            <div [formGroup]="mobileForm" class="space-y-4">
+
+              <div>
+                <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Opérateur</p>
+                <div class="grid grid-cols-2 gap-2">
+                  <button type="button" (click)="selectedOperator.set('mtn')"
+                    class="flex items-center gap-2.5 px-4 py-3 rounded-xl border-2 transition-all"
+                    [ngClass]="selectedOperator() === 'mtn' ? 'border-zinc-900 bg-zinc-50' : 'border-zinc-100 hover:border-zinc-200 bg-white'">
+                    <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0"
+                      [ngClass]="selectedOperator() === 'mtn' ? 'bg-yellow-400 text-zinc-900' : 'bg-zinc-100 text-zinc-500'">M</div>
+                    <div>
+                      <p class="text-sm font-medium text-zinc-900 leading-none">MTN</p>
+                      <p class="text-[11px] text-zinc-400">Mobile Money</p>
+                    </div>
+                  </button>
+                  <button type="button" (click)="selectedOperator.set('moov')"
+                    class="flex items-center gap-2.5 px-4 py-3 rounded-xl border-2 transition-all"
+                    [ngClass]="selectedOperator() === 'moov' ? 'border-zinc-900 bg-zinc-50' : 'border-zinc-100 hover:border-zinc-200 bg-white'">
+                    <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0"
+                      [ngClass]="selectedOperator() === 'moov' ? 'bg-blue-500 text-white' : 'bg-zinc-100 text-zinc-500'">V</div>
+                    <div>
+                      <p class="text-sm font-medium text-zinc-900 leading-none">Moov</p>
+                      <p class="text-[11px] text-zinc-400">Money</p>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Numéro de téléphone</p>
+                <input formControlName="phoneNumber" type="tel" placeholder="77 000 00 00"
+                  class="w-full px-4 py-3 text-sm border border-zinc-200 rounded-xl text-zinc-900 placeholder-zinc-300 focus:outline-none focus:border-zinc-400 transition-colors">
+                @if (mobileForm.get('phoneNumber')?.invalid && mobileForm.get('phoneNumber')?.touched) {
+                  <small class="text-red-500 text-xs mt-1 block">Numéro invalide (8 à 15 chiffres)</small>
+                }
+                <p class="mt-2 text-xs text-zinc-400 flex items-center gap-1.5">
+                  <span class="iconify" data-icon="lucide:info" data-width="11"></span>
+                  Vous recevrez une notification USSD sur ce numéro pour valider le paiement.
+                </p>
+              </div>
+
             </div>
           }
 
@@ -326,7 +376,7 @@
       </div>
 
       <!-- Footer -->
-      @if (!paymentSuccess()) {
+      @if (!paymentSuccess() && !mobilePending()) {
         <div class="px-8 py-5 border-t border-zinc-100 flex-shrink-0 bg-white">
           <button (click)="submitPayment()" [disabled]="isProcessingPayment()"
             class="w-full py-3 rounded-xl bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition-colors disabled:opacity-40 flex items-center justify-center gap-2">

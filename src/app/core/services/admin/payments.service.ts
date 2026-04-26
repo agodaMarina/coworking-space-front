@@ -114,24 +114,26 @@ export class PaymentsService extends ApiService {
   //   );
   // }
   createPayment(payload: CreatePayment): Observable<CreatePaymentResponse> {
-  const source = this.useMocks()
-    ? of(this.createMockPayment(payload) as CreatePaymentResponse)
-    : this.post<{
-        message: string;
-        payment: any;               // ou le type précis de ton payment brut
-        stripe: { client_secret: string };
-      }>('/payments/create/', payload).pipe(
-        map(response => ({
-          ...this.normalizePayment(response.payment),   // ← on normalise l'objet payment interne
-          client_secret: response.stripe.client_secret  // ← on lit dans l'objet stripe
-        }))
-      );
+    const source = this.useMocks()
+      ? of(this.createMockPayment(payload) as CreatePaymentResponse)
+      : this.post<{
+          message: string;
+          payment: any;
+          stripe?: { client_secret: string };
+          fedapay?: { transaction_id: string; operator: string; payment_url?: string; note: string };
+        }>('/payments/create/', payload).pipe(
+          map(response => ({
+            ...this.normalizePayment(response.payment),
+            client_secret: response.stripe?.client_secret,
+            fedapay: response.fedapay,
+          }))
+        );
 
-  return source.pipe(
-    tap(() => this.isLoading.set(true)),
-    finalize(() => this.isLoading.set(false))
-  );
-}
+    return source.pipe(
+      tap(() => this.isLoading.set(true)),
+      finalize(() => this.isLoading.set(false))
+    );
+  }
 
   stripeConfirmPayment(id: number): Observable<Payment> {
     return this.post<Payment>(`/payments/${id}/stripe-confirm/`, {}).pipe(

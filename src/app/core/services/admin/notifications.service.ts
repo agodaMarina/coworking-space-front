@@ -9,11 +9,12 @@ import { ApiService } from '../../http/api.service';
   providedIn: 'root'
 })
 export class NotificationsService extends ApiService {
-  private readonly useMocks    = signal(true);
-  readonly isLoading           = signal(false);
+  private readonly useMocks     = signal(true);
+  readonly isLoading            = signal(false);
   private readonly _unreadCount = signal(0);
   readonly unreadCount          = this._unreadCount.asReadonly();
   readonly recentNotifications  = signal<Notification[]>([]);
+  private _polling              = false;
 
   decrementUnreadCount(): void {
     this._unreadCount.update(c => Math.max(0, c - 1));
@@ -135,13 +136,18 @@ export class NotificationsService extends ApiService {
   }
 
   startPolling(): void {
+    if (this._polling) return;
+    this._polling = true;
+
     interval(30000).pipe(
       startWith(0),
       switchMap(() => this.getStats()),
     ).subscribe();
 
-    // Charger les notifications récentes au démarrage
-    this.getNotifications().subscribe(notifs => this.recentNotifications.set(notifs.slice(0, 10)));
+    interval(30000).pipe(
+      startWith(0),
+      switchMap(() => this.getNotifications()),
+    ).subscribe(notifs => this.recentNotifications.set(notifs.slice(0, 10)));
   }
 
   private buildParams(params?: NotificationListParams): HttpParams | undefined {

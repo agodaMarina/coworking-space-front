@@ -43,12 +43,14 @@ export class BookingsComponent implements OnInit, OnDestroy {
   readonly pageSize        = PAGE_SIZE;
 
   // Payment modal
-  readonly showPaymentModal    = signal(false);
-  readonly payingReservation   = signal<Reservation | null>(null);
-  readonly selectedMethod      = signal<PayMethod>('card');
-  readonly isProcessingPayment = signal(false);
-  readonly stripeError         = signal<string | null>(null);
-  readonly paymentSuccess      = signal(false);
+  readonly showPaymentModal     = signal(false);
+  readonly payingReservation    = signal<Reservation | null>(null);
+  readonly selectedMethod       = signal<PayMethod>('card');
+  readonly selectedOperator     = signal<'mtn' | 'moov'>('mtn');
+  readonly isProcessingPayment  = signal(false);
+  readonly stripeError          = signal<string | null>(null);
+  readonly paymentSuccess       = signal(false);
+  readonly mobilePending        = signal(false);
 
   readonly paymentMethods: { value: PayMethod; label: string; icon: string; desc: string }[] = [
     { value: 'card',          label: 'Carte bancaire', icon: 'lucide:credit-card', desc: 'Visa, Mastercard'    },
@@ -177,8 +179,10 @@ export class BookingsComponent implements OnInit, OnDestroy {
   openPaymentModal(reservation: Reservation): void {
     this.payingReservation.set(reservation);
     this.selectedMethod.set('card');
+    this.selectedOperator.set('mtn');
     this.stripeError.set(null);
     this.paymentSuccess.set(false);
+    this.mobilePending.set(false);
     this.mobileForm.reset();
     this.showPaymentModal.set(true);
     setTimeout(() => this.mountCardElement(), 150);
@@ -192,6 +196,7 @@ export class BookingsComponent implements OnInit, OnDestroy {
     this.payingReservation.set(null);
     this.stripeError.set(null);
     this.paymentSuccess.set(false);
+    this.mobilePending.set(false);
   }
 
   selectMethod(method: PayMethod): void {
@@ -266,10 +271,19 @@ export class BookingsComponent implements OnInit, OnDestroy {
     }
 
     // 2 — create payment record
-    this.paymentsService.createPayment({ reservation_id: reservation.id, method }).subscribe({
+    const payload: any = { reservation_id: reservation.id, method };
+    if (method === 'mobile_money') {
+      payload.phone_number = this.mobileForm.value.phoneNumber;
+      payload.operator = this.selectedOperator();
+    }
+
+    this.paymentsService.createPayment(payload).subscribe({
       next: async payment => {
         if (method === 'card') {
           await this.handleStripePayment(payment);
+        } else if (method === 'mobile_money') {
+          this.isProcessingPayment.set(false);
+          this.mobilePending.set(true);
         } else {
           this.isProcessingPayment.set(false);
           this.closePaymentModal();
