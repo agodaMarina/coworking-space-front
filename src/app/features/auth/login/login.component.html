@@ -1,0 +1,105 @@
+<div class="min-h-screen flex">
+
+  <!-- Left: brand panel -->
+  <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-black flex-col">
+    <img
+      src="https://picsum.photos/seed/cowork-login/900/1200.jpg"
+      alt=""
+      class="absolute inset-0 w-full h-full object-cover opacity-40">
+    <div class="relative z-10 flex flex-col h-full p-12">
+      <a routerLink="/home" class="text-white font-bold text-xl tracking-tight">Cowork</a>
+      <div class="mt-auto">
+        <p class="text-white/80 text-lg font-medium leading-relaxed max-w-sm font-general mb-6">
+          "Un espace de travail qui s'adapte à vous — et non l'inverse."
+        </p>
+        <div class="flex items-center gap-3">
+          <img
+            src="https://picsum.photos/seed/auth-face1/40/40.jpg"
+            class="w-10 h-10 rounded-full object-cover flex-shrink-0"
+            alt="">
+          <div>
+            <p class="text-white text-sm font-semibold">Sarah K.</p>
+            <p class="text-white/50 text-xs font-general">Product Designer, Lomé</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: form -->
+  <div class="flex-1 flex flex-col items-center justify-center px-6 py-12 lg:px-16 xl:px-24 bg-white">
+    <div class="w-full max-w-md">
+
+      <!-- Mobile logo -->
+      <a routerLink="/home" class="lg:hidden inline-block mb-10 text-black font-bold text-xl tracking-tight">
+        Cowork
+      </a>
+
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-black mb-3">Bienvenue </h1>
+      <p class="text-zinc-500 text-sm font-general mb-10">
+        Connectez-vous pour accéder à votre compte et gérer vos réservations.
+      </p>
+
+      <form [formGroup]="loginForm" (ngSubmit)="submit()" class="flex flex-col gap-5">
+
+        <!-- Email -->
+        <div class="flex flex-col gap-2">
+          <label class="text-xs font-bold uppercase tracking-[.15em] text-zinc-500">Email</label>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="votre@email.com"
+            class="w-full px-4 py-3.5 rounded-xl border text-sm font-medium text-black placeholder:text-zinc-300 focus:outline-none transition-colors bg-white"
+            [class.border-red-300]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+            [class.border-zinc-200]="!(loginForm.get('email')?.invalid && loginForm.get('email')?.touched)">
+        </div>
+
+        <!-- Password -->
+        <div class="flex flex-col gap-2">
+          <label class="text-xs font-bold uppercase tracking-[.15em] text-zinc-500">Mot de Passe</label>
+          <div class="relative">
+            <input
+              [type]="showPassword() ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="••••••••"
+              class="w-full px-4 py-3.5 pr-12 rounded-xl border text-sm font-medium text-black placeholder:text-zinc-300 focus:outline-none transition-colors bg-white"
+              [class.border-red-300]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+              [class.border-zinc-200]="!(loginForm.get('password')?.invalid && loginForm.get('password')?.touched)">
+            <button
+              type="button"
+              (click)="showPassword.set(!showPassword())"
+              class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-black transition-colors">
+              <span class="iconify"
+                [attr.data-icon]="showPassword() ? 'lucide:eye-off' : 'lucide:eye'"
+                data-width="16"></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Error message -->
+        @if (error()) {
+          <p class="text-sm text-red-600 font-medium font-general -mt-1">{{ error() }}</p>
+        }
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          [disabled]="submitting()"
+          class="w-full py-4 rounded-full bg-black text-white text-sm font-bold hover:bg-zinc-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-1">
+          @if (submitting()) {
+            <span class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          }
+          {{ submitting() ? 'Se connecter…' : 'Se connecter' }}
+        </button>
+
+      </form>
+
+      <p class="text-sm text-zinc-500 font-general mt-8 text-center">
+        Vous n'avez pas de compte?
+        <a routerLink="/register" class="font-semibold text-black hover:underline">Créez-en un</a>
+      </p>
+
+    </div>
+  </div>
+
+</div>

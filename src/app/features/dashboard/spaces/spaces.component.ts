@@ -1,0 +1,97 @@
+import { CurrencyPipe, NgClass, NgIf } from '@angular/common';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { TableComponent } from '../../../shared/components/table/table.component';
+import { ColumnComponent } from '../../../shared/components/table/column.component';
+import { Space } from '../../../core/dtos/space';
+import { SpacesService } from '../../../core/services/spaces.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { MessageService } from 'primeng/api';
+
+@Component({
+  standalone: true,
+  selector: 'app-dashboard-spaces',
+  imports: [NgClass, NgIf, CurrencyPipe, RouterLink, TableComponent, ColumnComponent],
+  templateUrl: './spaces.component.html',
+  providers:[MessageService]
+})
+export class DashboardSpacesComponent implements OnInit {
+  private readonly spacesService = inject(SpacesService);
+  private readonly router        = inject(Router);
+  private readonly toast         = inject(ToastService);
+
+  readonly spaces         = signal<Space[]>([]);
+  readonly isLoading      = this.spacesService.isLoading;
+  readonly search         = signal('');
+  readonly filterType     = signal<string | null>(null);
+  readonly selectedSpace  = signal<Space | null>(null);
+  readonly showDetailModal = signal(false);
+
+  readonly typeOptions = [
+    { label: 'Tous les types', value: null },
+    { label: 'Bureau partagé', value: 'desk' },
+    { label: 'Open Space', value: 'open_space' },
+    { label: 'Salle de réunion', value: 'meeting_room' },
+    { label: 'Bureau privé', value: 'private' },
+    { label: 'Conférence', value: 'conference' },
+  ];
+
+  readonly filtered = computed(() => {
+    const q = this.search().toLowerCase();
+    const t = this.filterType();
+    return this.spaces().filter(s =>
+      (!q || s.name.toLowerCase().includes(q) || s.address.toLowerCase().includes(q)) &&
+      (!t || s.space_type === t)
+    );
+  });
+
+  readonly stats = computed(() => {
+    const all = this.spaces();
+    return {
+      total: all.length,
+      available: all.filter(s => s.is_available).length,
+      unavailable: all.filter(s => !s.is_available).length,
+    };
+  });
+
+  private readonly typeBadgeColors: Record<string, string> = {
+    desk: 'bg-[#CEF09D] text-black',
+    open_space: 'bg-[#AEE9F4] text-black',
+    meeting_room: 'bg-[#FBCBE3] text-black',
+    private: 'bg-[#FDD5AB] text-black',
+    conference: 'bg-[#E2F89C] text-black',
+  };
+
+  typeBadge(type: string): string {
+    return this.typeBadgeColors[type] ?? 'bg-zinc-100 text-zinc-600';
+  }
+
+  ngOnInit(): void {
+    this.spacesService.disableMocks();
+    this.spacesService.getSpaces().subscribe({
+      next: spaces => this.spaces.set(spaces),
+      error: () => this.toast.showError('Impossible de charger les espaces.'),
+    });
+  }
+
+  toggleAvailability(space: Space): void {
+    this.spaces.update(list =>
+      list.map(s => s.id === space.id ? { ...s, is_available: !s.is_available } : s)
+    );
+  }
+
+  onRowClick(space: Space): void {
+    this.selectedSpace.set(space);
+    this.showDetailModal.set(true);
+  }
+
+  closeDetailModal(): void {
+    this.showDetailModal.set(false);
+    this.selectedSpace.set(null);
+  }
+
+  bookSpace(spaceId: number): void {
+    this.closeDetailModal();
+    this.router.navigate(['/booking'], { queryParams: { spaceId } });
+  }
+}

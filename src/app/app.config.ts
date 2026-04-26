@@ -1,10 +1,12 @@
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, LOCALE_ID, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
-import { AuthInterceptor } from './core/auth.interceptor';
+import { MessageService } from 'primeng/api';
+import Aura from '@primeng/themes/aura';
 
 import { routes } from './app.routes';
+import { AuthInterceptor } from './core/interceptor/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -18,6 +20,9 @@ export const appConfig: ApplicationConfig = {
     },
     providePrimeNG({
       ripple: true,
+      theme: { preset: Aura },
     }),
+    MessageService,
+    { provide: LOCALE_ID, useValue: 'fr' },
   ],
 };

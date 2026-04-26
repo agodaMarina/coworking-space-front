@@ -1,0 +1,77 @@
+<div class="relative">
+  <!-- Trigger -->
+  <button
+    type="button"
+    (click)="isOpen.set(!isOpen())"
+    class="w-full flex items-center gap-2 px-3 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-left focus:outline-none focus:ring-2 focus:ring-zinc-300 transition-colors"
+    [class.text-zinc-400]="!displayValue()"
+    [class.text-zinc-800]="displayValue()"
+  >
+    <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+      <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+    </svg>
+    <span class="flex-1 truncate">{{ displayValue() || placeholder }}</span>
+    <svg class="w-4 h-4 text-zinc-400 shrink-0 transition-transform duration-200" [class.rotate-180]="isOpen()" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
+  </button>
+
+  <!-- Backdrop -->
+  @if (isOpen()) {
+    <div class="fixed inset-0 z-20" (click)="isOpen.set(false)"></div>
+
+    <!-- Calendar panel -->
+    <div class="absolute z-30 mt-2 w-72 bg-white border border-zinc-200 rounded-2xl shadow-lg p-4">
+
+      <!-- Month/Year navigation -->
+      <div class="flex items-center justify-between mb-3">
+        <button type="button" (click)="prevMonth()"
+          class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-zinc-100 transition-colors">
+          <svg class="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+        <span class="text-sm font-semibold text-zinc-800">
+          {{ MONTHS[viewMonth()] }} {{ viewYear() }}
+        </span>
+        <button type="button" (click)="nextMonth()"
+          class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-zinc-100 transition-colors">
+          <svg class="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Day headers -->
+      <div class="grid grid-cols-7 mb-1">
+        @for (day of DAYS; track day) {
+          <div class="text-center text-xs font-medium text-zinc-400 py-1">{{ day }}</div>
+        }
+      </div>
+
+      <!-- Day cells -->
+      <div class="grid grid-cols-7 gap-y-1">
+        @for (cell of cells(); track $index) {
+          @if (cell === null) {
+            <div></div>
+          } @else {
+            <button
+              type="button"
+              (click)="selectDay(cell)"
+              [disabled]="isDisabled(cell)"
+              class="h-8 w-8 mx-auto flex items-center justify-center rounded-lg text-sm transition-colors"
+              [ngClass]="{
+                'bg-zinc-900 text-white font-semibold': isSelected(cell),
+                'bg-[#AEE9F4] text-zinc-800 font-medium': isToday(cell) && !isSelected(cell),
+                'text-zinc-300 cursor-not-allowed': isDisabled(cell),
+                'hover:bg-zinc-100 text-zinc-700': !isSelected(cell) && !isToday(cell) && !isDisabled(cell)
+              }"
+            >{{ cell }}</button>
+          }
+        }
+      </div>
+
+    </div>
+  }
+</div>

@@ -7,7 +7,7 @@ import { ToastContainerComponent } from './shared/components/toast-container/toa
   selector: 'app-root',
   imports: [RouterOutlet, ToastContainerComponent],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
 })
 export class App {
   protected readonly title = signal('coworking-front');

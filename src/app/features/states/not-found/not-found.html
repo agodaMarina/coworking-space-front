@@ -1,0 +1,35 @@
+<main class="relative z-10 flex flex-col lg:flex-row items-center justify-between px-6 lg:px-16 xl:px-24 pt-8 lg:pt-4 pb-16 min-h-[calc(100vh-80px)]">
+
+        <!-- Left Content -->
+        <div class="flex-1 max-w-lg lg:max-w-xl z-10 text-center lg:text-left">
+            <!-- 404 Badge -->
+            <div class="inline-flex items-center gap-2 bg-red-50 text-brand px-4 py-2 rounded-full mb-6">
+                <span class="w-2 h-2 rounded-full"> <i class="pi pi-error"></i></span>
+                <span class="text-xs font-semibold uppercase tracking-widest">Error 404</span>
+            </div>
+
+            <!-- Heading -->
+            <h1 class="text-4xl sm:text-5xl lg:text-[3.5rem] xl:text-[4rem] font-extrabold text-dark leading-[1.1] tracking-tight mb-6">
+                Ooops...<br/>
+            </h1>
+            <span class="text-brand ">Ressource non trouvée</span>
+
+            <!-- Description -->
+            <p class="text-muted text-base lg:text-lg leading-relaxed mb-10 max-w-md mx-auto lg:mx-0">
+              La ressource que vous recherchez n'existe pas.
+            </p>
+
+            <!-- CTA Button -->
+            <a routerLink="/home" class="inline-flex items-center gap-2.5 bg-brand bg-brand-dark text-white font-semibold text-sm px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group">
+                Retour à l'accueil
+                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                </svg>
+            </a>
+        </div>
+
+        <!-- Right Illustration -->
+        <div class="flex-1 flex items-center justify-center relative mt-10 lg:mt-0">
+            <img src="/icons/404.svg" alt="404 Error Illustration" class="w-full max-w-md lg:max-w-lg">
+        </div>
+    </main>

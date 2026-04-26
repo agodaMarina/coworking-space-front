@@ -1,0 +1,113 @@
+<div class="min-h-full bg-white">
+
+  <div class="px-4 md:px-8 pt-6 md:pt-10 pb-6 md:pb-8 border-b border-zinc-100">
+    <p class="text-xs font-medium text-zinc-400 mb-1">Dashboard</p>
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Espaces</h1>
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="relative">
+          <span class="iconify absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" data-icon="lucide:search" data-width="13"></span>
+          <input type="text" placeholder="Rechercher…" [value]="search()" (input)="search.set($any($event.target).value)"
+            class="pl-8 pr-3 py-2 text-sm bg-white border border-zinc-200 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition-colors w-40">
+        </div>
+        <select [value]="filterType()" (change)="filterType.set($any($event.target).value || null)"
+          class="text-sm bg-white border border-zinc-200 rounded-lg px-3 py-2 text-zinc-600 focus:outline-none focus:border-zinc-400 transition-colors">
+          @for (opt of typeOptions; track opt.value) {
+            <option [value]="opt.value ?? ''">{{ opt.label }}</option>
+          }
+        </select>
+        <a routerLink="/spaces"
+          class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-zinc-200 text-sm font-medium text-zinc-600 hover:border-zinc-400 hover:text-zinc-900 transition-colors">
+          <span class="iconify" data-icon="lucide:external-link" data-width="13"></span>
+          <span class="hidden sm:inline">Public</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="px-4 md:px-8 py-6 md:py-8">
+
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-px bg-zinc-100 rounded-xl overflow-hidden border border-zinc-100 mb-8">
+      <div class="bg-white px-4 md:px-6 py-5">
+        <p class="text-xs text-zinc-400 mb-3">Total espaces</p>
+        <p class="text-2xl md:text-3xl font-semibold text-zinc-900 tracking-tight">{{ stats().total }}</p>
+      </div>
+      <div class="bg-white px-4 md:px-6 py-5">
+        <p class="text-xs text-zinc-400 mb-3">Disponibles</p>
+        <div class="flex items-baseline gap-1.5">
+          <p class="text-2xl md:text-3xl font-semibold text-zinc-900 tracking-tight">{{ stats().available }}</p>
+          <span class="text-xs text-zinc-400 hidden sm:inline">libre(s)</span>
+        </div>
+      </div>
+      <div class="bg-white px-4 md:px-6 py-5">
+        <p class="text-xs text-zinc-400 mb-3">Indisponibles</p>
+        <p class="text-2xl md:text-3xl font-semibold text-zinc-900 tracking-tight">{{ stats().unavailable }}</p>
+      </div>
+    </div>
+
+    @if (isLoading()) {
+      <div class="border border-zinc-100 rounded-xl overflow-hidden divide-y divide-zinc-100">
+        @for (_ of [1,2,3,4,5]; track $index) {
+          <div class="flex items-center gap-4 px-5 py-4">
+            <div class="w-40 h-3 bg-zinc-100 rounded animate-pulse"></div>
+            <div class="w-20 h-3 bg-zinc-100 rounded animate-pulse ml-auto"></div>
+          </div>
+        }
+      </div>
+    } @else {
+      <app-table [rows]="filtered()" emptyMessage="Aucun espace ne correspond à votre recherche.">
+
+        <app-column label="Nom" flex="1">
+          <ng-template let-space>
+            <div class="min-w-0 pr-4">
+              <p class="text-sm font-medium text-zinc-900 truncate">{{ space.name }}</p>
+              <p class="text-xs text-zinc-400 truncate">{{ space.address }}</p>
+            </div>
+          </ng-template>
+        </app-column>
+
+        <app-column label="Type" width="130px">
+          <ng-template let-space>
+            <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit" [ngClass]="typeBadge(space.space_type)">
+              {{ space.space_type_display }}
+            </span>
+          </ng-template>
+        </app-column>
+
+        <app-column label="Capacité" width="80px">
+          <ng-template let-space>
+            <p class="text-sm text-zinc-500">{{ space.capacity }} pax</p>
+          </ng-template>
+        </app-column>
+
+        <app-column label="Prix / jour" width="90px">
+          <ng-template let-space>
+            <p class="text-sm font-medium text-zinc-900">{{ space.price_per_day }} XOF</p>
+          </ng-template>
+        </app-column>
+
+        <app-column label="Statut" width="70px">
+          <ng-template let-space>
+            <div class="flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                [ngClass]="space.is_available ? 'bg-emerald-400' : 'bg-zinc-300'"></span>
+              <span class="text-sm text-zinc-500">{{ space.is_available ? 'Ouvert' : 'Fermé' }}</span>
+            </div>
+          </ng-template>
+        </app-column>
+
+        <app-column label="Action" width="70px" align="right">
+          <ng-template let-space>
+            <button (click)="toggleAvailability(space)"
+              class="text-xs font-medium text-zinc-400 hover:text-zinc-900 transition-colors">
+              {{ space.is_available ? 'Fermer' : 'Ouvrir' }}
+            </button>
+          </ng-template>
+        </app-column>
+
+      </app-table>
+    }
+
+  </div>
+</div>

@@ -1,0 +1,174 @@
+<div class="min-h-full bg-white">
+
+  <!-- Header -->
+  <div class="px-4 md:px-8 pt-6 md:pt-10 pb-6 md:pb-8 border-b border-zinc-100">
+    <p class="text-xs font-medium text-zinc-400 mb-1">Admin</p>
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Équipements</h1>
+      <div class="flex flex-wrap items-center gap-2">
+        <!-- Recherche -->
+        <div class="relative">
+          <span class="iconify absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" data-icon="lucide:search" data-width="13"></span>
+          <input type="text" placeholder="Rechercher un équipement…" [value]="search()" (input)="search.set($any($event.target).value)"
+            class="pl-8 pr-3 py-2 text-sm bg-white border border-zinc-200 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition-colors w-44">
+        </div>
+        <button (click)="openCreate()"
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition-colors">
+          <span class="iconify" data-icon="lucide:plus" data-width="13"></span>
+          Ajouter un équipement
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="px-4 md:px-8 py-6 md:py-8">
+
+    <!-- Stats -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+      <div class="bg-[#AEE9F4] rounded-xl px-6 py-5">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Total équipements</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().total }}</p>
+      </div>
+      <div class="bg-[#CEF09D] rounded-xl px-6 py-5">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Résultats de recherche</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ filtered().length }}</p>
+      </div>
+      <div class="bg-[#FBCBE3] rounded-xl px-6 py-5">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Page actuelle</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ paginated().length }}</p>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <app-table [rows]="paginated()" emptyMessage="Aucun équipement trouvé.">
+
+      <app-column label="Icône" width="64px">
+        <ng-template let-a>
+          <span class="inline-flex w-8 h-8 items-center justify-center rounded-lg bg-zinc-100 text-zinc-600">
+            <span class="iconify" [attr.data-icon]="a.icon || 'lucide:sparkles'" data-width="15"></span>
+          </span>
+        </ng-template>
+      </app-column>
+
+      <app-column label="Nom" flex="1">
+        <ng-template let-a>
+          <p class="text-sm font-medium text-zinc-900 truncate pr-4">{{ a.name }}</p>
+        </ng-template>
+      </app-column>
+
+      <app-column label="Clé d'icône" flex="1">
+        <ng-template let-a>
+          <code class="text-xs text-zinc-400 font-mono">{{ a.icon || '—' }}</code>
+        </ng-template>
+      </app-column>
+
+      <app-column label="Actions" width="80px" align="right">
+        <ng-template let-a>
+          <button (click)="askDelete(a.id)"
+            class="text-xs text-zinc-400 hover:text-red-500 transition-colors font-medium">Supprimer</button>
+        </ng-template>
+      </app-column>
+
+    </app-table>
+
+    <app-pagination [total]="filtered().length" [pageSize]="pageSize" [current]="page()" (pageChange)="page.set($event)"></app-pagination>
+
+  </div>
+</div>
+
+<!-- Confirmer la suppression -->
+@if (pendingDeleteId() !== null) {
+  <app-confirm-dialog
+    title="Supprimer l'équipement ?"
+    message="Cet équipement sera supprimé de l'interface. Les espaces qui y font référence pourraient être affectés."
+    confirmLabel="Supprimer"
+    (confirmed)="confirmDelete()"
+    (cancelled)="cancelDelete()">
+  </app-confirm-dialog>
+}
+
+<!-- Drawer -->
+@if (showModal()) {
+  <div class="fixed inset-0 z-40 flex flex-col justify-end md:flex-row md:justify-end">
+    <div class="absolute inset-0 bg-black/20 backdrop-blur-[1px]" (click)="closeModal()"></div>
+
+    <div class="relative z-50 w-full max-h-[90vh] rounded-t-2xl md:rounded-none md:max-h-full md:max-w-md md:h-full bg-white shadow-2xl flex flex-col overflow-hidden">
+
+      <!-- Drawer header -->
+      <div class="px-5 md:px-8 pt-6 md:pt-8 pb-5 md:pb-6 border-b border-zinc-100 flex items-center justify-between flex-shrink-0">
+        <div>
+          <p class="text-xs font-medium text-zinc-400 mb-0.5">Admin · Équipements</p>
+          <h2 class="text-xl font-semibold text-zinc-900 tracking-tight">Nouvel équipement</h2>
+        </div>
+        <button (click)="closeModal()" class="text-zinc-400 hover:text-zinc-700 transition-colors">
+          <span class="iconify" data-icon="lucide:x" data-width="18"></span>
+        </button>
+      </div>
+
+      <!-- Drawer body -->
+      <div class="flex-1 overflow-y-auto px-5 md:px-8 py-5 md:py-6 space-y-6" [formGroup]="form">
+
+        <!-- Name -->
+        <div>
+          <label class="block text-sm font-medium text-zinc-700 mb-1.5">
+            Nom <span class="text-red-400">*</span>
+          </label>
+          <app-input formControlName="name" placeholder="ex. Wi-Fi, Projecteur, Café…" icon="lucide:tag"></app-input>
+        </div>
+
+        <!-- Icon picker -->
+        <div>
+          <label class="block text-sm font-medium text-zinc-700 mb-3">Icône</label>
+
+          <!-- Aperçu -->
+          <div class="flex items-center gap-3 mb-4 p-3 rounded-xl border border-zinc-200 bg-zinc-50">
+            <span class="inline-flex w-10 h-10 rounded-xl items-center justify-center bg-white border border-zinc-200 text-zinc-700 shadow-sm">
+              <span class="iconify" [attr.data-icon]="selectedIcon()" data-width="18"></span>
+            </span>
+            <div>
+              <p class="text-sm font-medium text-zinc-800">Icône sélectionnée</p>
+              <code class="text-xs text-zinc-400 font-mono">{{ selectedIcon() }}</code>
+            </div>
+          </div>
+
+          <!-- Sélection rapide -->
+          <div class="grid grid-cols-5 gap-2">
+            @for (icon of iconOptions; track icon.key) {
+              <button
+                type="button"
+                (click)="selectIcon(icon.key)"
+                class="flex items-center justify-center h-10 rounded-xl border transition-all"
+                [ngClass]="selectedIcon() === icon.key
+                  ? 'bg-zinc-900 border-zinc-900 text-white'
+                  : 'bg-white border-zinc-200 text-zinc-500 hover:border-zinc-400 hover:text-zinc-900'">
+                <span class="iconify" [attr.data-icon]="icon.key" data-width="16"></span>
+              </button>
+            }
+          </div>
+
+          <!-- Saisie manuelle -->
+          <div class="mt-3">
+            <app-input formControlName="icon" placeholder="lucide:sparkles" icon="lucide:link"></app-input>
+            <p class="mt-1.5 text-xs text-zinc-400">
+              Toute clé d'icône <a href="https://lucide.dev/icons/" target="_blank" rel="noopener" class="underline hover:text-zinc-700">Lucide</a> est acceptée. ex. <code class="font-mono">lucide:wifi</code>
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Drawer footer -->
+      <div class="px-5 md:px-8 py-4 md:py-5 border-t border-zinc-100 flex items-center justify-end gap-3 flex-shrink-0 bg-white">
+        <button (click)="closeModal()" class="px-4 py-2 text-sm font-medium text-zinc-600 hover:text-zinc-900 transition-colors">
+          Annuler
+        </button>
+        <button (click)="saveForm()"
+          [disabled]="form.invalid || isSaving()"
+          class="px-5 py-2 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+          {{ isSaving() ? 'Création…' : 'Créer l\'équipement' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

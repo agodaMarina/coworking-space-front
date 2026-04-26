@@ -1,0 +1,183 @@
+<div class="min-h-screen bg-white flex flex-col">
+  <app-header></app-header>
+
+  <main class="flex-grow pt-36 pb-32">
+    <div class="site-container">
+
+      <!-- Filtres -->
+      <section class="mb-14 pb-10 border-b border-zinc-100">
+
+        <div class="flex flex-wrap items-center gap-3 mb-5">
+          <span class="text-xs font-bold uppercase tracking-[.2em] text-zinc-400 w-20 flex-shrink-0">Type</span>
+          <button
+            (click)="selectType(null)"
+            class="px-4 py-2 rounded-full border text-sm font-semibold transition-all duration-200"
+            [ngClass]="selectedType() === null
+              ? 'bg-black text-white border-black'
+              : 'bg-white text-zinc-500 border-zinc-200 hover:border-zinc-400 hover:text-black'">
+            Tous
+          </button>
+          @for (opt of typeOptions; track opt.value) {
+            <button
+              (click)="selectType(opt.value)"
+              class="px-4 py-2 rounded-full border text-sm font-semibold transition-all duration-200"
+              [ngClass]="selectedType() === opt.value
+                ? 'bg-black text-white border-black'
+                : 'bg-white text-zinc-500 border-zinc-200 hover:border-zinc-400 hover:text-black'">
+              {{ opt.label }}
+            </button>
+          }
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="text-xs font-bold uppercase tracking-[.2em] text-zinc-400 w-20 flex-shrink-0">Capacité</span>
+          @for (cap of capacityOptions; track cap.value) {
+            <button
+              (click)="selectCapacity(cap.value)"
+              class="px-4 py-2 rounded-full border text-sm font-semibold transition-all duration-200"
+              [ngClass]="selectedCapacityMin() === cap.value
+                ? 'bg-black text-white border-black'
+                : 'bg-white text-zinc-500 border-zinc-200 hover:border-zinc-400 hover:text-black'">
+              {{ cap.label }}
+            </button>
+          }
+        </div>
+
+        <div class="flex items-center justify-between mt-7">
+          <p class="text-sm text-zinc-400 font-general">
+            <strong class="text-black">{{ filteredSpaces().length }}</strong>
+            espace{{ filteredSpaces().length !== 1 ? 's' : '' }}
+          </p>
+          @if (selectedType() !== null || selectedCapacityMin() > 0) {
+            <button
+              (click)="resetFilters()"
+              class="text-xs font-bold uppercase tracking-[.1em] text-zinc-400 hover:text-black transition-colors flex items-center gap-1.5">
+              <span class="iconify" data-icon="lucide:x" data-width="12"></span>
+              Effacer
+            </button>
+          }
+        </div>
+      </section>
+
+      <!-- Grille -->
+      <section class="relative min-h-[400px]">
+
+        @if (spacesService.isLoading()) {
+          <div class="absolute inset-0 z-10 bg-white/80 backdrop-blur-sm flex items-center justify-center">
+            <p-progressSpinner strokeWidth="4" fill="transparent" animationDuration=".5s"></p-progressSpinner>
+          </div>
+        }
+
+        @if (!spacesService.isLoading() && filteredSpaces().length === 0) {
+          <div class="text-center py-32">
+            <p class="text-zinc-400 text-sm font-general mb-4">Aucun espace ne correspond à vos filtres.</p>
+            <button (click)="resetFilters()" class="text-sm font-semibold text-black hover:text-zinc-500 transition-colors">
+              Effacer les filtres
+            </button>
+          </div>
+        }
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          @for (space of filteredSpaces(); track space.id; let i = $index) {
+
+            <!-- Carte vedette — première carte en grand -->
+            @if (i === 0) {
+              <article
+                (click)="openDetail(space)"
+                class="group cursor-pointer flex flex-col md:flex-row md:col-span-2 rounded-[24px] overflow-hidden shadow-sm bg-zinc-50">
+
+                <!-- Image -->
+                <div class="md:w-[58%] overflow-hidden aspect-[4/3] md:aspect-auto relative flex-shrink-0">
+                  <img
+                    [src]="getSpaceImage(space)"
+                    [alt]="space.name"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
+                  <div class="absolute bottom-4 right-4">
+                    <span class="px-3 py-1.5 rounded-md bg-black/75 backdrop-blur-md text-white text-xs font-bold">
+                      {{ space.price_per_day | currency:'XOF':'symbol':'1.0-0':'fr' }}/jour
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Contenu -->
+                <div class="flex-1 flex flex-col p-7 md:p-8">
+                  <div class="flex items-center gap-3 mb-6">
+                    <span class="px-3 py-1 rounded-md text-black text-xs font-bold"
+                      [ngClass]="getTypeBadgeColor(space.space_type)">
+                      {{ space.space_type_display }}
+                    </span>
+                    @if (space.is_available) {
+                      <span class="flex items-center gap-1.5 text-xs font-medium text-green-600">
+                        <span class="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>Disponible
+                      </span>
+                    }
+                  </div>
+
+                  <h3 class="text-2xl md:text-3xl font-bold tracking-tight text-black mb-4 leading-snug group-hover:text-zinc-600 transition-colors duration-300">
+                    {{ space.name }}
+                  </h3>
+
+                  <p class="text-sm text-zinc-500 font-general leading-relaxed line-clamp-3 mb-auto">
+                    {{ space.description || 'Un espace de travail moderne et entièrement équipé, conçu pour vous inspirer.' }}
+                  </p>
+
+                  <div class="mt-7 pt-5 border-t border-zinc-200">
+                    <span class="text-sm font-general text-black flex items-center gap-1 group-hover:gap-2 transition-all">
+                      {{ space.capacity }} pers. · Voir l'espace
+                      <span class="iconify" data-icon="mdi:chevron-right" data-width="20"></span>
+                    </span>
+                  </div>
+                </div>
+              </article>
+
+            } @else {
+              <!-- Carte standard -->
+              <article (click)="openDetail(space)" class="group cursor-pointer flex flex-col">
+
+                <div class="rounded-[24px] overflow-hidden mb-6 aspect-[4/3] shadow-sm relative">
+                  <img
+                    [src]="getSpaceImage(space)"
+                    [alt]="space.name"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
+                  <div class="absolute bottom-3 right-3">
+                    <span class="px-2.5 py-1 rounded-md bg-black/75 backdrop-blur-md text-white text-xs font-bold">
+                      {{ space.price_per_day | currency:'XOF':'symbol':'1.0-0':'fr' }}/jour
+                    </span>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-3 mb-4">
+                  <span class="px-3 py-1 rounded-md text-black text-xs font-bold"
+                    [ngClass]="getTypeBadgeColor(space.space_type)">
+                    {{ space.space_type_display }}
+                  </span>
+                  @if (space.is_available) {
+                    <span class="flex items-center gap-1.5 text-xs font-medium text-green-600">
+                      <span class="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>Disponible
+                    </span>
+                  }
+                </div>
+
+                <h3 class="text-xl md:text-[22px] font-bold tracking-tight text-black mb-6 leading-snug group-hover:text-zinc-600 transition-colors duration-300 flex-grow">
+                  {{ space.name }}
+                </h3>
+
+                <div class="mt-auto">
+                  <span class="text-sm font-general text-black flex items-center gap-1 group-hover:gap-2 transition-all">
+                    {{ space.capacity }} pers. · Voir l'espace
+                    <span class="iconify" data-icon="mdi:chevron-right" data-width="20"></span>
+                  </span>
+                </div>
+
+              </article>
+            }
+
+          }
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <app-footer></app-footer>
+</div>

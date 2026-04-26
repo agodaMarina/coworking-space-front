@@ -1,14 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AuthService } from '../../core/auth.service';
+import { AuthService } from '../../core/services/auth/auth.service';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
 import { HeaderComponent } from '../../shared/components/header/header.component';
+import { MessageService } from 'primeng/api';
 
 @Component({
   standalone: true,
   selector: 'app-profile-page',
   imports: [CommonModule, HeaderComponent, FooterComponent, RouterLink],
+  providers:[MessageService],
   template: `
     <div class="page-shell">
       <app-header></app-header>
@@ -20,7 +22,7 @@ import { HeaderComponent } from '../../shared/components/header/header.component
         <section class="profile-card">
           <div *ngIf="user(); else loading">
             <p class="profile-label">Nom complet</p>
-            <h2>{{ user()?.name }}</h2>
+            <h2>{{ user()?.full_name ?? (user()?.first_name + ' ' + user()?.last_name) }}</h2>
             <p class="profile-label">Email</p>
             <p>{{ user()?.email }}</p>
             <a routerLink="/booking" class="primary-button">Voir mes réservations</a>

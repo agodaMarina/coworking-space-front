@@ -1,0 +1,113 @@
+<div class="min-h-full bg-white">
+
+  <!-- Header -->
+  <div class="px-4 md:px-8 pt-6 md:pt-10 pb-6 md:pb-8 border-b border-zinc-100">
+    <p class="text-xs font-medium text-zinc-400 mb-1">Admin</p>
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Vue d'ensemble</h1>
+      <div class="flex flex-wrap items-center gap-2">
+        <!-- Filtre par date -->
+        <div class="flex items-center gap-1.5">
+          <input type="date" [(ngModel)]="dateFrom"
+            class="px-2.5 py-2 text-sm border border-zinc-200 rounded-lg text-zinc-900 focus:outline-none focus:border-zinc-400 transition-colors">
+          <span class="text-xs text-zinc-400">au</span>
+          <input type="date" [(ngModel)]="dateTo"
+            class="px-2.5 py-2 text-sm border border-zinc-200 rounded-lg text-zinc-900 focus:outline-none focus:border-zinc-400 transition-colors">
+          <button (click)="applyDateFilter()"
+            class="px-3 py-2 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition-colors">
+            <span class="iconify" data-icon="lucide:filter" data-width="13"></span>
+          </button>
+        </div>
+        <!-- Export -->
+        <button (click)="exportCsv()"
+          [disabled]="isExporting()"
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-zinc-200 text-sm font-medium text-zinc-700 hover:border-zinc-400 transition-colors disabled:opacity-40">
+          <span class="iconify" data-icon="lucide:download" data-width="13"></span>
+          {{ isExporting() ? 'Export en cours…' : 'Exporter CSV' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="px-4 md:px-8 py-6 md:py-8">
+
+    <!-- Stats principales -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+      <div class="bg-[#AEE9F4] rounded-xl px-5 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Total réservations</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().total_bookings }}</p>
+      </div>
+      <div class="bg-[#CEF09D] rounded-xl px-5 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Confirmées</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().confirmed_bookings }}</p>
+      </div>
+      <div class="bg-[#FDD5AB] rounded-xl px-5 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Réservations du jour</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().today_reservations }}</p>
+      </div>
+      <div class="bg-[#FBCBE3] rounded-xl px-5 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Revenu</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().total_revenue }} <span class="text-sm font-normal text-zinc-600">FCFA</span></p>
+      </div>
+    </div>
+
+    <!-- Stats secondaires -->
+    <div class="grid grid-cols-3 gap-3 mb-8">
+      <div class="border border-zinc-100 rounded-xl px-5 py-4">
+        <p class="text-xs text-zinc-400 font-medium mb-2">Annulées</p>
+        <p class="text-xl font-bold text-zinc-900">{{ stats().cancelled_bookings }}</p>
+      </div>
+      <div class="border border-zinc-100 rounded-xl px-5 py-4">
+        <p class="text-xs text-zinc-400 font-medium mb-2">Terminées</p>
+        <p class="text-xl font-bold text-zinc-900">{{ stats().completed_bookings }}</p>
+      </div>
+      <div class="border border-zinc-100 rounded-xl px-5 py-4">
+        <p class="text-xs text-zinc-400 font-medium mb-2">Taux d'occupation</p>
+        <p class="text-xl font-bold text-zinc-900">{{ stats().occupancy_rate }}%</p>
+      </div>
+    </div>
+
+    <!-- Réservations récentes -->
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-sm font-semibold text-zinc-900">Réservations récentes</h2>
+      <a routerLink="/admin/reservations" class="text-xs text-zinc-400 hover:text-zinc-700 transition-colors">Voir tout →</a>
+    </div>
+
+    <app-table [rows]="recentReservations()" emptyMessage="Aucune réservation pour le moment.">
+
+      <app-column label="Utilisateur" flex="1">
+        <ng-template let-r>
+          <p class="text-sm font-medium text-zinc-900 truncate pr-4">{{ r.user_detail?.email }}</p>
+        </ng-template>
+      </app-column>
+
+      <app-column label="Espace" flex="1">
+        <ng-template let-r>
+          <p class="text-sm text-zinc-500 truncate">{{ r.space_detail?.name }}</p>
+        </ng-template>
+      </app-column>
+
+      <app-column label="Date" width="120px">
+        <ng-template let-r>
+          <p class="text-sm text-zinc-400">{{ r.start_datetime | date:'d MMM y' }}</p>
+        </ng-template>
+      </app-column>
+
+      <app-column label="Statut" width="100px">
+        <ng-template let-r>
+          <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit capitalize" [ngClass]="statusBadge(r.status)">
+            {{ r.status_display }}
+          </span>
+        </ng-template>
+      </app-column>
+
+      <app-column label="Montant" width="100px" align="right">
+        <ng-template let-r>
+          <p class="text-sm font-semibold text-zinc-900 whitespace-nowrap">{{ r.total_price }} FCFA</p>
+        </ng-template>
+      </app-column>
+
+    </app-table>
+
+  </div>
+</div>

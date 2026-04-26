@@ -1,0 +1,450 @@
+<div class="min-h-full bg-white">
+
+  <!-- Header -->
+  <div class="px-4 md:px-8 pt-6 md:pt-10 pb-6 md:pb-8 border-b border-zinc-100">
+    <p class="text-xs font-medium text-zinc-400 mb-1">Admin</p>
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Espaces</h1>
+      <div class="flex flex-wrap items-center gap-2">
+        <!-- Recherche -->
+        <div class="relative">
+          <span class="iconify absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" data-icon="lucide:search" data-width="13"></span>
+          <input type="text" placeholder="Rechercher…" [value]="search()" (input)="search.set($any($event.target).value)"
+            class="pl-8 pr-3 py-2 text-sm bg-white border border-zinc-200 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition-colors w-44">
+        </div>
+        <!-- Filtre par type -->
+        <div class="w-44">
+          <app-select [formControl]="filterControl" [options]="filterOptions" placeholder="Tous les types"></app-select>
+        </div>
+        <button (click)="openCreate()"
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition-colors">
+          <span class="iconify" data-icon="lucide:plus" data-width="13"></span>
+          Ajouter un espace
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="px-4 md:px-8 py-6 md:py-8">
+    <!-- Stats -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+      <div class="bg-[#AEE9F4] rounded-xl px-6 py-5">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Total espaces</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().total }}</p>
+      </div>
+      <div class="bg-[#CEF09D] rounded-xl px-6 py-5">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Disponibles</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().available }}</p>
+      </div>
+      <div class="bg-[#FBCBE3] rounded-xl px-6 py-5">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Indisponibles</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().unavailable }}</p>
+      </div>
+    </div>
+
+    <!-- Tableau -->
+    <app-table [rows]="paginated()" emptyMessage="Aucun espace trouvé.">
+
+      <app-column label="Nom" flex="1">
+        <ng-template let-s>
+          <button (click)="openPreview(s)"
+            class="min-w-0 pr-4 flex items-center gap-3 text-left w-full group">
+            <div class="w-11 h-11 rounded-xl overflow-hidden bg-zinc-100 border border-zinc-200 flex items-center justify-center flex-shrink-0">
+              @if (primaryPhoto(s)) {
+                <img [src]="primaryPhoto(s)" [alt]="s.name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              } @else {
+                <span class="iconify text-zinc-300 group-hover:text-zinc-500 transition-colors" data-icon="lucide:image" data-width="16"></span>
+              }
+            </div>
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-zinc-900 truncate group-hover:text-zinc-600 transition-colors">{{ s.name }}</p>
+              <p class="text-xs text-zinc-400 truncate">{{ s.address }}</p>
+            </div>
+          </button>
+        </ng-template>
+      </app-column>
+
+      <app-column label="Type" width="130px">
+        <ng-template let-s>
+          <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit" [ngClass]="typeBadge(s.space_type)">
+            {{ s.space_type_display }}
+          </span>
+        </ng-template>
+      </app-column>
+
+      <app-column label="Capacité" width="80px">
+        <ng-template let-s>
+          <p class="text-sm text-zinc-500">{{ s.capacity }} pers.</p>
+        </ng-template>
+      </app-column>
+
+      <app-column label="Prix / h" width="90px">
+        <ng-template let-s>
+          <p class="text-sm font-medium text-zinc-900 whitespace-nowrap">{{ s.price_per_hour }} F/h</p>
+        </ng-template>
+      </app-column>
+
+      <app-column label="Prix / j" width="90px">
+        <ng-template let-s>
+          <p class="text-sm font-medium text-zinc-900 whitespace-nowrap">{{ s.price_per_day }} F/j</p>
+        </ng-template>
+      </app-column>
+
+      <app-column label="Statut" width="80px">
+        <ng-template let-s>
+          <div class="flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" [ngClass]="s.is_available ? 'bg-emerald-400' : 'bg-zinc-300'"></span>
+            <span class="text-sm text-zinc-500">{{ s.is_available ? 'Ouvert' : 'Fermé' }}</span>
+          </div>
+        </ng-template>
+      </app-column>
+
+      <app-column label="Actions" width="120px" align="right">
+        <ng-template let-s>
+          <div class="flex items-center gap-2">
+            <button (click)="openEdit(s)" class="text-xs text-zinc-400 hover:text-zinc-900 transition-colors font-medium">Modifier</button>
+            <button (click)="toggleAvailability(s)"
+              class="text-xs font-medium transition-colors"
+              [ngClass]="s.is_available ? 'text-zinc-400 hover:text-red-500' : 'text-zinc-400 hover:text-emerald-600'">
+              {{ s.is_available ? 'Fermer' : 'Ouvrir' }}
+            </button>
+            <button (click)="askDelete(s.id)" class="text-xs text-zinc-400 hover:text-red-500 transition-colors font-medium">Suppr.</button>
+          </div>
+        </ng-template>
+      </app-column>
+
+    </app-table>
+
+    <app-pagination [total]="filtered().length" [pageSize]="pageSize" [current]="page()" (pageChange)="page.set($event)"></app-pagination>
+
+  </div>
+</div>
+
+<!-- Aperçu de l'espace -->
+@if (showPreview()) {
+  @let s = previewSpace();
+  @if (s) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8">
+      <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" (click)="closePreview()"></div>
+
+      <div class="relative z-10 w-full max-w-lg bg-white shadow-2xl overflow-hidden">
+
+        <!-- Photo -->
+        <div class="relative w-full aspect-video overflow-hidden bg-zinc-100">
+          <img [src]="previewPhotoUrl(s)" [alt]="s.name" class="w-full h-full object-cover">
+
+          <!-- Dégradé bas -->
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+
+          <!-- Bouton fermer -->
+          <button (click)="closePreview()"
+            class="absolute top-4 right-4 w-8 h-8 bg-black/40 hover:bg-black/60 backdrop-blur-sm flex items-center justify-center text-white transition-colors">
+            <span class="iconify" data-icon="lucide:x" data-width="15"></span>
+          </button>
+
+          <!-- Infos bas de photo -->
+          <div class="absolute bottom-4 left-5 right-5 flex items-end justify-between gap-3">
+            <div>
+              <span class="inline-flex px-2.5 py-1 text-xs font-bold text-black mb-2 w-fit"
+                [ngClass]="typeBadge(s.space_type)">
+                {{ s.space_type_display }}
+              </span>
+              <h2 class="text-xl font-bold text-white leading-tight tracking-tight">{{ s.name }}</h2>
+            </div>
+            <span class="flex-shrink-0 px-3 py-1.5 bg-white text-zinc-900 text-sm font-bold">
+              {{ s.price_per_day }} FCFA<span class="font-normal text-zinc-500">/jour</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Corps -->
+        <div class="px-6 py-5">
+
+          <!-- Statut + adresse -->
+          <div class="flex items-center justify-between mb-4 pb-4 border-b border-zinc-100">
+            @if (s.is_available) {
+              <span class="flex items-center gap-2 text-sm font-medium text-emerald-600">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>Disponible à la réservation
+              </span>
+            } @else {
+              <span class="flex items-center gap-2 text-sm font-medium text-zinc-400">
+                <span class="w-2 h-2 rounded-full bg-zinc-300"></span>Actuellement indisponible
+              </span>
+            }
+            @if (s.address) {
+              <span class="flex items-center gap-1 text-xs text-zinc-400 truncate max-w-[180px]">
+                <span class="iconify flex-shrink-0" data-icon="lucide:map-pin" data-width="11"></span>
+                {{ s.address }}
+              </span>
+            }
+          </div>
+
+          <!-- Description -->
+          @if (s.description) {
+            <p class="text-sm text-zinc-500 leading-relaxed line-clamp-2 mb-5">{{ s.description }}</p>
+          }
+
+          <!-- Chiffres clés -->
+          <div class="grid grid-cols-3 gap-px bg-zinc-100 mb-5">
+            <div class="bg-white px-4 py-3 text-center">
+              <p class="text-[11px] text-zinc-400 uppercase tracking-wide mb-1">Capacité</p>
+              <p class="text-lg font-bold text-zinc-900">{{ s.capacity }}<span class="text-xs font-normal text-zinc-400 ml-0.5">pers.</span></p>
+            </div>
+            <div class="bg-white px-4 py-3 text-center">
+              <p class="text-[11px] text-zinc-400 uppercase tracking-wide mb-1">Par heure</p>
+              <p class="text-lg font-bold text-zinc-900">{{ s.price_per_hour }}<span class="text-xs font-normal text-zinc-400 ml-0.5">FCFA</span></p>
+            </div>
+            <div class="bg-white px-4 py-3 text-center">
+              <p class="text-[11px] text-zinc-400 uppercase tracking-wide mb-1">Par jour</p>
+              <p class="text-lg font-bold text-zinc-900">{{ s.price_per_day }}<span class="text-xs font-normal text-zinc-400 ml-0.5">FCFA</span></p>
+            </div>
+          </div>
+
+          <!-- Équipements -->
+          @if (s.amenities.length) {
+            <div class="flex flex-wrap gap-2 mb-5">
+              @for (a of s.amenities; track a.id) {
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-50 border border-zinc-200 text-xs font-medium text-zinc-700">
+                  <span class="iconify" [attr.data-icon]="a.icon || 'lucide:sparkles'" data-width="11"></span>
+                  {{ a.name }}
+                </span>
+              }
+            </div>
+          }
+
+          <!-- Actions admin -->
+          <div class="flex items-center gap-2 pt-4 border-t border-zinc-100">
+            <button (click)="closePreview(); openEdit(s)"
+              class="flex-1 py-2.5 bg-zinc-900 text-white text-sm font-semibold hover:bg-zinc-700 transition-colors">
+              Modifier l'espace
+            </button>
+            <button (click)="closePreview(); toggleAvailability(s)"
+              class="py-2.5 px-5 border border-zinc-200 text-sm font-semibold text-zinc-600 hover:border-zinc-400 hover:text-zinc-900 transition-colors">
+              {{ s.is_available ? 'Fermer' : 'Ouvrir' }}
+            </button>
+            <button (click)="closePreview(); askDelete(s.id)"
+              class="py-2.5 px-4 border border-red-100 text-sm font-semibold text-red-400 hover:border-red-300 hover:text-red-600 transition-colors">
+              <span class="iconify" data-icon="lucide:trash-2" data-width="14"></span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  }
+}
+
+<!-- Confirmer la suppression -->
+@if (pendingDeleteId() !== null) {
+  <app-confirm-dialog
+    title="Supprimer l'espace ?"
+    message="Cet espace et toutes ses données seront définitivement supprimés."
+    confirmLabel="Supprimer"
+    (confirmed)="confirmDelete()"
+    (cancelled)="cancelDelete()">
+  </app-confirm-dialog>
+}
+
+<!-- Drawer -->
+@if (showModal()) {
+  <div class="fixed inset-0 z-40 flex flex-col justify-end md:flex-row md:justify-end">
+    <div class="absolute inset-0 bg-black/20 backdrop-blur-[1px]" (click)="closeModal()"></div>
+
+    <div class="relative z-50 w-full max-h-[90vh] rounded-t-2xl md:rounded-none md:max-h-full md:max-w-lg md:h-full bg-white shadow-2xl flex flex-col overflow-hidden">
+      <input #photoInput type="file" accept="image/*" class="hidden" (change)="onPhotoSelected($event)">
+
+      <!-- Drawer header -->
+      <div class="px-5 md:px-8 pt-6 md:pt-8 pb-5 md:pb-6 border-b border-zinc-100 flex items-center justify-between flex-shrink-0">
+        <div>
+          <p class="text-xs font-medium text-zinc-400 mb-0.5">Admin · Espaces</p>
+          <h2 class="text-xl font-semibold text-zinc-900 tracking-tight">{{ modalTitle() }}</h2>
+        </div>
+        <button (click)="closeModal()" class="text-zinc-400 hover:text-zinc-700 transition-colors">
+          <span class="iconify" data-icon="lucide:x" data-width="18"></span>
+        </button>
+      </div>
+
+      <!-- Drawer body -->
+      <div class="flex-1 overflow-y-auto px-5 md:px-8 py-5 md:py-6" [formGroup]="form">
+        @if (isLoadingDetails()) {
+          <div class="mb-5 rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 flex items-center gap-3">
+            <span class="iconify text-zinc-400" data-icon="lucide:loader-circle" data-width="16"></span>
+            <p class="text-sm text-zinc-500">Chargement des détails de l'espace…</p>
+          </div>
+        }
+
+        <!-- Informations de base -->
+        <p class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-4">Informations de base</p>
+        <div class="space-y-4 mb-6">
+
+          <div>
+            <label class="block text-sm font-medium text-zinc-700 mb-1.5">
+              Nom <span class="text-red-400">*</span>
+            </label>
+            <app-input formControlName="name" placeholder="ex. Open Space A" icon="lucide:layout"></app-input>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-zinc-700 mb-1.5">
+              Type <span class="text-red-400">*</span>
+            </label>
+            <app-select formControlName="space_type" [options]="typeOptions" placeholder="Choisir un type…"></app-select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-zinc-700 mb-1.5">
+              Adresse <span class="text-red-400">*</span>
+            </label>
+            <app-input formControlName="address" placeholder="ex. 12 Rue du Cowork" icon="lucide:map-pin"></app-input>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-zinc-700 mb-1.5">Description</label>
+            <app-textarea formControlName="description" placeholder="Brève description de l'espace…" [rows]="3"></app-textarea>
+          </div>
+
+        </div>
+
+        <!-- Capacité & tarifs -->
+        <p class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-4">Capacité & tarifs</p>
+        <div class="space-y-4 mb-6">
+
+          <div>
+            <label class="block text-sm font-medium text-zinc-700 mb-1.5">Capacité (personnes)</label>
+            <app-input formControlName="capacity" type="number" placeholder="0" icon="lucide:users"></app-input>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-zinc-700 mb-1.5">Prix / heure (FCFA)</label>
+              <app-input formControlName="price_per_hour" type="number" placeholder="0" icon="lucide:clock"></app-input>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-zinc-700 mb-1.5">Prix / jour (FCFA)</label>
+              <app-input formControlName="price_per_day" type="number" placeholder="0" icon="lucide:sun"></app-input>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Équipements -->
+        <p class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-4">Équipements</p>
+        <div class="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          @for (amenity of amenities(); track amenity.id) {
+            <label class="flex items-center gap-3 rounded-xl border border-zinc-200 px-3 py-3 cursor-pointer hover:border-zinc-300 transition-colors"
+              [ngClass]="isAmenitySelected(amenity.id) ? 'bg-zinc-900 text-white border-zinc-900' : 'bg-white text-zinc-700'">
+              <input
+                type="checkbox"
+                class="sr-only"
+                [checked]="isAmenitySelected(amenity.id)"
+                (change)="onAmenityToggle(amenity.id, $any($event.target).checked)">
+              <span class="inline-flex w-8 h-8 rounded-lg items-center justify-center"
+                [ngClass]="isAmenitySelected(amenity.id) ? 'bg-white/15 text-white' : 'bg-zinc-100 text-zinc-500'">
+                <span class="iconify" [attr.data-icon]="amenity.icon || 'lucide:sparkles'" data-width="14"></span>
+              </span>
+              <span class="text-sm font-medium">{{ amenity.name }}</span>
+            </label>
+          }
+        </div>
+
+        <!-- Disponibilité -->
+        <p class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-4">Disponibilité</p>
+        <div class="mb-6">
+          <app-toggle formControlName="is_available" label="Espace disponible à la réservation"></app-toggle>
+        </div>
+
+        <!-- Photos -->
+        <p class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-4">Photos</p>
+        <div class="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 mb-6">
+          <div class="flex items-start justify-between gap-3 mb-4">
+            <div>
+              <p class="text-sm font-medium text-zinc-900">Galerie média</p>
+              <p class="text-xs text-zinc-500">Choisissez une photo maintenant. Elle sera téléversée lors de la sauvegarde.</p>
+            </div>
+            <button
+              type="button"
+              (click)="photoInput.click()"
+              class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white border border-zinc-200 text-sm font-medium text-zinc-700 hover:border-zinc-300 transition-colors">
+              <span class="iconify" data-icon="lucide:upload" data-width="14"></span>
+              Sélectionner une photo
+            </button>
+          </div>
+
+          @if (selectedPhotoPreview()) {
+            <div class="mb-4 rounded-2xl overflow-hidden border border-zinc-200 bg-white">
+              <img [src]="selectedPhotoPreview()" alt="Aperçu" class="w-full h-44 object-cover">
+              <div class="px-4 py-3 flex items-center justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-zinc-900 truncate">{{ selectedPhotoName() }}</p>
+                  <p class="text-xs text-zinc-500">Prête à être téléversée lors de la prochaine sauvegarde.</p>
+                </div>
+                <button type="button" (click)="removeSelectedPhoto()" class="text-xs font-medium text-zinc-400 hover:text-red-500 transition-colors">
+                  Supprimer
+                </button>
+              </div>
+            </div>
+            <label class="mb-4 flex items-center gap-3 rounded-xl border border-zinc-200 bg-white px-3 py-3 cursor-pointer hover:border-zinc-300 transition-colors">
+              <input
+                type="checkbox"
+                class="sr-only"
+                [checked]="selectedPhotoIsPrimary()"
+                (change)="selectedPhotoIsPrimary.set($any($event.target).checked)">
+              <span class="inline-flex w-9 h-9 rounded-xl items-center justify-center"
+                [ngClass]="selectedPhotoIsPrimary() ? 'bg-zinc-900 text-white' : 'bg-zinc-100 text-zinc-500'">
+                <span class="iconify" data-icon="lucide:star" data-width="15"></span>
+              </span>
+              <div>
+                <p class="text-sm font-medium text-zinc-900">Définir comme photo principale</p>
+                <p class="text-xs text-zinc-500">Cette image sera l'aperçu principal de l'espace.</p>
+              </div>
+            </label>
+          }
+
+          @if (currentSpace()?.photos?.length) {
+            <div class="grid grid-cols-2 gap-3">
+              @for (photo of currentSpace()?.photos ?? []; track photo.id) {
+                <div class="rounded-2xl overflow-hidden border border-zinc-200 bg-white">
+                  <div class="relative">
+                    <img [src]="photo.url" [alt]="currentSpace()?.name || 'Photo'" class="w-full h-32 object-cover">
+                    @if (photo.is_primary) {
+                      <span class="absolute left-3 top-3 inline-flex px-2 py-1 rounded-full bg-black/70 text-white text-[11px] font-medium">Principale</span>
+                    }
+                  </div>
+                  <div class="px-3 py-2 flex items-center justify-between gap-2">
+                    <span class="text-xs text-zinc-500 truncate">Photo #{{ photo.id }}</span>
+                    <button
+                      type="button"
+                      (click)="deletePhoto(photo)"
+                      class="text-xs font-medium text-zinc-400 hover:text-red-500 transition-colors">
+                      Supprimer
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="rounded-2xl border border-dashed border-zinc-200 bg-white px-4 py-8 text-center">
+              <span class="iconify mx-auto text-zinc-300 mb-2" data-icon="lucide:image-plus" data-width="20"></span>
+              <p class="text-sm font-medium text-zinc-700">Aucune photo téléversée</p>
+              <p class="text-xs text-zinc-500 mt-1">Ajoutez-en une pour améliorer l'aperçu dans l'admin et le catalogue public.</p>
+            </div>
+          }
+        </div>
+
+      </div>
+
+      <!-- Drawer footer -->
+      <div class="px-5 md:px-8 py-4 md:py-5 border-t border-zinc-100 flex items-center justify-end gap-3 flex-shrink-0 bg-white">
+        <button (click)="closeModal()" class="px-4 py-2 text-sm font-medium text-zinc-600 hover:text-zinc-900 transition-colors">
+          Annuler
+        </button>
+        <button (click)="saveForm()"
+          [disabled]="form.invalid || isSaving() || isUploadingPhoto()"
+          class="px-5 py-2 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+          {{ isSaving() || isUploadingPhoto() ? 'Enregistrement…' : submitLabel() }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

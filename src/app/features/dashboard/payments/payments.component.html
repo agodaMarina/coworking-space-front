@@ -1,0 +1,85 @@
+<div class="min-h-full bg-white">
+
+  <div class="px-4 md:px-8 pt-6 md:pt-10 pb-6 md:pb-8 border-b border-zinc-100">
+    <p class="text-xs font-medium text-zinc-400 mb-1">Dashboard</p>
+    <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Paiements</h1>
+  </div>
+
+  <div class="px-4 md:px-8 py-6 md:py-8">
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 gap-3 mb-8">
+      <div class="bg-[#CEF09D] rounded-xl px-4 md:px-6 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Payés</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().paid }}</p>
+      </div>
+      <div class="bg-[#FDD5AB] rounded-xl px-4 md:px-6 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <p class="text-xs text-zinc-600 font-medium mb-3">En attente</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().pending }}</p>
+      </div>
+      <div class="bg-[#AEE9F4] rounded-xl px-4 md:px-6 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 col-span-2">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Total dépensé</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().totalSpent }} FCFA</p>
+      </div>
+    </div>
+
+    @if (isLoading()) {
+      <div class="border border-zinc-100 rounded-xl overflow-hidden divide-y divide-zinc-100">
+        @for (_ of [1,2,3,4]; track $index) {
+          <div class="flex items-center gap-4 px-5 py-4">
+            <div class="w-32 h-3 bg-zinc-100 rounded animate-pulse"></div>
+            <div class="w-20 h-3 bg-zinc-100 rounded animate-pulse ml-auto"></div>
+          </div>
+        }
+      </div>
+    } @else {
+      <app-table [rows]="payments()" emptyMessage="Aucun paiement pour l'instant.">
+
+        <app-column label="ID" width="80px">
+          <ng-template let-p>
+            <p class="text-sm font-mono text-zinc-400">#{{ p.id }}</p>
+          </ng-template>
+        </app-column>
+
+        <app-column label="Méthode" width="130px">
+          <ng-template let-p>
+            <p class="text-sm text-zinc-700">{{ methodLabel(p.method) }}</p>
+          </ng-template>
+        </app-column>
+
+        <app-column label="Date" width="120px">
+          <ng-template let-p>
+            <p class="text-sm text-zinc-400">{{ p.created_at | date:'MMM d, y' }}</p>
+          </ng-template>
+        </app-column>
+
+        <app-column label="Statut" width="90px">
+          <ng-template let-p>
+            <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit capitalize" [ngClass]="statusBadge(p.status)">
+              {{ p.status_display }}
+            </span>
+          </ng-template>
+        </app-column>
+
+        <app-column label="Montant" width="100px" align="right">
+          <ng-template let-p>
+            <p class="text-sm font-semibold text-zinc-900">{{ p.amount }} {{ p.currency }}</p>
+          </ng-template>
+        </app-column>
+
+        <app-column label="" width="70px" align="right">
+          <ng-template let-p>
+            @if (p.status === 'completed') {
+              <button (click)="downloadInvoice(p)"
+                class="text-xs font-medium text-zinc-400 hover:text-zinc-700 transition-colors">
+                Facture
+              </button>
+            }
+          </ng-template>
+        </app-column>
+
+      </app-table>
+    }
+
+  </div>
+</div>

@@ -1,0 +1,97 @@
+<div class="min-h-full bg-white">
+
+  <div class="px-4 md:px-8 pt-6 md:pt-10 pb-6 md:pb-8 border-b border-zinc-100">
+    <p class="text-xs font-medium text-zinc-400 mb-1">Dashboard</p>
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">
+        Bonjour, {{ (user()?.full_name ?? user()?.first_name ?? 'là').split(' ')[0] }}
+      </h1>
+      <a routerLink="/spaces"
+        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition-colors">
+        <span class="iconify" data-icon="lucide:plus" data-width="14"></span>
+        Nouvelle réservation
+      </a>
+    </div>
+  </div>
+
+  <div class="px-4 md:px-8 py-6 md:py-8">
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+      <div class="bg-[#AEE9F4] rounded-xl px-4 md:px-6 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Total réservations</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().total }}</p>
+      </div>
+      <div class="bg-[#CEF09D] rounded-xl px-4 md:px-6 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Actives</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().active }}</p>
+      </div>
+      <div class="bg-[#FDD5AB] rounded-xl px-4 md:px-6 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <p class="text-xs text-zinc-600 font-medium mb-3">À venir</p>
+        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().upcoming }}</p>
+      </div>
+      <div class="bg-[#FBCBE3] rounded-xl px-4 md:px-6 py-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <p class="text-xs text-zinc-600 font-medium mb-3">Total dépensé</p>
+        <p class="text-2xl md:text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().spent | currency:'XOF':'symbol':'1.0-0' }}</p>
+      </div>
+    </div>
+
+    <!-- Recent bookings -->
+    <div class="mb-3 flex items-center justify-between">
+      <p class="text-sm font-semibold text-zinc-900">Réservations récentes</p>
+      <a routerLink="../bookings" class="text-xs text-zinc-400 hover:text-zinc-900 font-medium transition-colors">Voir tout →</a>
+    </div>
+
+    @if (isLoading()) {
+      <div class="divide-y divide-zinc-100 border border-zinc-100 rounded-xl overflow-hidden">
+        @for (_ of [1,2,3,4]; track $index) {
+          <div class="flex items-center gap-4 px-5 py-4">
+            <div class="w-32 h-3 bg-zinc-100 rounded animate-pulse"></div>
+            <div class="w-20 h-3 bg-zinc-100 rounded animate-pulse ml-auto"></div>
+          </div>
+        }
+      </div>
+    } @else if (recentBookings().length === 0) {
+      <div class="border border-zinc-100 rounded-xl py-16 text-center">
+        <p class="text-sm text-zinc-400">Aucune réservation pour l'instant.</p>
+        <a routerLink="/spaces" class="mt-3 inline-flex text-sm font-medium text-zinc-900 underline underline-offset-2">Parcourir les espaces</a>
+      </div>
+    } @else {
+      <app-table [rows]="recentBookings()" emptyMessage="Aucune réservation récente.">
+
+        <app-column label="Espace" flex="1">
+          <ng-template let-r>
+            <p class="text-sm font-medium text-zinc-900 truncate pr-4">{{ r.space_detail?.name }}</p>
+          </ng-template>
+        </app-column>
+
+        <app-column label="Date" width="130px">
+          <ng-template let-r>
+            <p class="text-sm text-zinc-400">{{ r.start_datetime | date:'MMM d, y' }}</p>
+          </ng-template>
+        </app-column>
+
+        <app-column label="Statut" width="90px">
+          <ng-template let-r>
+            <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit"
+              [ngClass]="{
+                'bg-[#CEF09D] text-zinc-800': r.status === 'confirmed',
+                'bg-[#FDD5AB] text-zinc-800': r.status === 'pending',
+                'bg-zinc-100 text-zinc-500':  r.status === 'cancelled'
+              }">
+              {{ r.status_display }}
+            </span>
+          </ng-template>
+        </app-column>
+
+        <app-column label="Montant" width="80px" align="right">
+          <ng-template let-r>
+            <p class="text-sm font-semibold text-zinc-900">{{ r.total_price | currency:'XOF':'symbol':'1.0-0' }}</p>
+          </ng-template>
+        </app-column>
+
+      </app-table>
+    }
+
+  </div>
+</div>

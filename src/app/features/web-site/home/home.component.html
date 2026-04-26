@@ -1,0 +1,282 @@
+<app-header></app-header>
+
+<section class="pt-24 pb-12 md:pt-32 md:pb-20 flex items-center relative overflow-hidden bg-white">
+  <div class="relative z-10 site-container w-full">
+    <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+
+      <div class="w-full max-w-[640px]">
+        <h1 class="anim d2 text-5xl sm:text-6xl md:text-7xl lg:text-[96px] font-bold leading-[0.95] tracking-tight mb-6 text-black">
+          Boostez Votre <br> Productivité avec
+          <span class="relative inline-block">
+            Cowork
+            <svg class="absolute -bottom-2 left-0 w-full text-brand-green" viewBox="0 0 200 20" fill="none" stroke="currentColor" stroke-width="4">
+              <path d="M5,15 Q100,0 195,15" />
+            </svg>
+          </span>
+        </h1>
+        <p class="anim d3 text-xs md:text-sm text-[#1D1E1C] leading-[180%] w-full max-w-[500px] mb-8 font-general">
+          Bienvenue sur Cowork — là où l'innovation rencontre la collaboration au cœur de la productivité !
+          Libérez 🚀 votre potentiel dans nos espaces de coworking soigneusement conçus,
+          pensés pour stimuler la créativité et favoriser les échanges.
+        </p>
+
+        <div class="anim d4 flex flex-wrap gap-4">
+          <a routerLink="/booking" class="inline-flex items-center justify-center gap-2 text-sm font-semibold px-8 py-3.5 rounded-full bg-black text-white hover:bg-zinc-800 transition-all duration-300 shadow-lg shadow-black/10">
+            Réserver votre spot
+          </a>
+        </div>
+      </div>
+
+      <div class="anim d5 relative img-hover flex w-full justify-center md:justify-end">
+        <div class="rounded-3xl overflow-hidden w-full max-w-[320px] sm:max-w-[420px] md:max-w-[640px] aspect-square">
+          <img src="/images/hero-section.png" alt="Modern coworking space" class="w-full h-full object-cover" loading="eager">
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="about" class="py-24 md:py-28 relative bg-white flex flex-col items-center gap-20">
+  <div class="site-container text-center mb-16">
+    <div class="reveal flex flex-wrap justify-center items-center gap-3 md:gap-4">
+      <h2 class="text-[32px] md:text-[48px] font-bold tracking-tight text-black">Pourquoi Choisir</h2>
+      <div class="w-[120px] h-[40px] md:w-[160px] md:h-[50px] rounded-full bg-zinc-100 overflow-hidden inline-block align-middle">
+        <img src="/icons/why-choose-cowork.svg" alt="" class="w-full h-full object-cover">
+      </div>
+      <h2 class="text-[32px] md:text-[48px] font-bold tracking-tight text-black">Cowork?</h2>
+    </div>
+  </div>
+
+  <div class="site-container grid sm:grid-cols-2 lg:grid-cols-3 gap-12">
+    <div *ngFor="let feature of features" class="reveal w-full flex flex-col items-center text-center group gap-6">
+      <div class="w-14 h-14 rounded-2xl bg-[#E8F5E9] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+        <span class="iconify text-2xl text-green-700" data-icon="mdi:home-city-outline"></span>
+      </div>
+      <div class="w-full flex flex-col items-center text-center group gap-6">
+        <h3 class="text-xl font-bold tracking-tight text-black">{{ feature.title }}</h3>
+        <p class="w-full text-sm text-zinc-500 leading-relaxed font-general">
+          {{ feature.desc }}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="spaces" class="py-24 md:py-28 relative bg-white">
+  <div class="site-container flex flex-col items-center gap-20">
+    <div class="reveal text-center flex flex-col items-center">
+      <span class="text-xs font-bold uppercase tracking-[.2em] text-black mb-4 block">Une visite virtuel</span>
+      <div class="flex flex-col items-center gap-1 md:gap-2 mb-6">
+        <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-black">Explorez Cowork à travers notre</h2>
+        <div class="flex flex-row justify-center items-center gap-3">
+          <div class="w-[90px] h-[36px] md:w-[130px] md:h-[46px] rounded-full overflow-hidden inline-block align-middle">
+            <img src="/icons/cowork.svg" alt="" class="w-full h-full object-cover">
+          </div>
+          <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-black">Objectif</h2>
+        </div>
+      </div>
+      <p class="text-gray-700 text-xs md:text-sm max-w-3xl mx-auto mb-6 leading-relaxed font-general">
+        Découvrez l'essence de Cowork avant même de franchir nos portes. Notre visite vidéo immersive vous offre un aperçu de l'atmosphère dynamique, des équipements de pointe et de l'énergie collaborative qui définissent l'expérience Cowork.
+      </p>
+      <a routerLink="/spaces" class="inline-flex items-center justify-center px-6 py-3 mt-10 rounded-full border border-black text-sm font-semibold text-black hover:bg-black hover:text-white transition-colors duration-300">
+        Explorer les espaces
+      </a>
+    </div>
+
+    <div class="reveal relative rounded-[48px] overflow-hidden img-hover group cursor-pointer shadow-2xl shadow-black/5 w-full aspect-[1312/700]">
+      <img src="/images/space.png" alt="Coworking space virtual tour" class="w-full h-full object-cover">
+      <div class="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-500 flex items-center justify-center">
+        <div class="relative w-16 h-16 md:w-24 md:h-24 rounded-2xl bg-black/80 backdrop-blur-sm flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+          <span class="iconify text-white" data-icon="mdi:play" data-width="40"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-24 md:py-28 relative bg-white">
+  <div class="site-container flex flex-col md:flex-row items-center justify-between gap-[80px]">
+
+    <div class="w-full md:w-[616px] flex-shrink-0">
+      <span class="reveal text-xs font-bold font-space uppercase text-bold mb-4 block">Cowork en chiffres</span>
+      <h2 class="reveal text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-black mb-12 leading-tight">
+        Des chiffres qui parlent d'eux-mêmes
+      </h2>
+
+      <div class="grid grid-cols-2 gap-x-8 gap-y-12">
+        <div *ngFor="let stat of stats" class="reveal" [style.transition-delay]="stat.delay">
+          <div class="relative inline-block mb-2">
+              <div class="absolute -bottom-1 right-2 w-10 h-10 rounded-full z-0" [style.background]="stat.color"></div>
+              <p class="stat-num relative z-10 text-4xl md:text-5xl font-bold text-black" [attr.data-target]="stat.target" [attr.data-suffix]="stat.suffix">0{{ stat.suffix }}</p>
+            </div>
+          <p class="text-sm font-general text-gray-500">{{ stat.label }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal w-full md:w-[616px] h-[400px] md:h-[640px] rounded-[32px] overflow-hidden flex-shrink-0">
+       <img src="/images/office.png" alt="Meeting room" class="w-full h-full object-cover">
+    </div>
+  </div>
+</section>
+
+<section class="py-20 md:py-28 relative bg-white overflow-hidden">
+  <div class="site-container">
+    <div class="reveal text-center mb-16 md:mb-24">
+      <span class="text-xs font-bold uppercase tracking-[.2em] text-black mb-3 block">Cowork en quelques mots</span>
+      <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-black">Nos clients s'expriment</h2>
+    </div>
+
+    <div class="flex flex-col items-center md:block gap-6">
+
+      <div class="w-full md:w-auto flex flex-col items-center md:flex-row gap-6 md:gap-0 md:justify-center md:items-start">
+        <ng-container *ngFor="let t of testimonialsTop">
+
+          <div *ngIf="!t.isOffset" class="reveal w-full sm:w-[calc(50%-12px)] lg:w-[350px] rounded-3xl p-8 flex flex-col items-center text-center gap-6" [ngClass]="t.bg">
+            <div class="flex justify-center mb-6">
+              <img [src]="'https://picsum.photos/seed/' + t.img + '/64/64.jpg'" class="w-14 h-14 rounded-full object-cover shadow-sm" [alt]="t.name">
+            </div>
+            <p class="text-sm text-black font-medium leading-relaxed flex-grow">{{ t.quote }}</p>
+            <div class="mt-auto">
+              <p class="text-[11px] font-bold text-black uppercase tracking-wide">{{ t.name }}</p>
+              <p class="text-xs text-black/70 mt-1">{{ t.role }}</p>
+            </div>
+          </div>
+
+          <div *ngIf="t.isOffset" class="reveal w-full md:w-auto flex flex-col items-center md:block md:translate-y-12 md:mr-6 md:ml-6" style="transition-delay: .1s">
+            <div class="w-full sm:w-[calc(50%-12px)] lg:w-[350px] rounded-3xl p-8 flex flex-col items-center text-center gap-6" [ngClass]="t.bg">
+              <div class="flex justify-center mb-6">
+                <img [src]="'https://picsum.photos/seed/' + t.img + '/64/64.jpg'" class="w-14 h-14 rounded-full object-cover shadow-sm" [alt]="t.name">
+              </div>
+              <p class="text-sm text-black font-medium leading-relaxed flex-grow">{{ t.quote }}</p>
+              <div class="mt-auto">
+                <p class="text-[11px] font-bold text-black uppercase tracking-wide">{{ t.name }}</p>
+                <p class="text-xs text-black/70 mt-1">{{ t.role }}</p>
+              </div>
+            </div>
+          </div>
+
+        </ng-container>
+      </div>
+
+      <div class="w-full md:w-auto flex flex-col items-center md:flex-row gap-6 md:gap-6 md:justify-center md:items-start mt-6 md:mt-24">
+        <div *ngFor="let t of testimonialsBottom" class="reveal w-full sm:w-[calc(50%-12px)] lg:w-[350px] rounded-3xl p-8 flex flex-col items-center text-center gap-6" [ngClass]="t.bg">
+          <div class="flex justify-center mb-6">
+            <img [src]="'https://picsum.photos/seed/' + t.img + '/64/64.jpg'" class="w-14 h-14 rounded-full object-cover shadow-sm" [alt]="t.name">
+          </div>
+          <p class="text-sm text-black font-medium leading-relaxed flex-grow">{{ t.quote }}</p>
+          <div class="mt-auto">
+            <p class="text-[11px] font-bold text-black uppercase tracking-wide">{{ t.name }}</p>
+            <p class="text-xs text-black/70 mt-1">{{ t.role }}</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="py-20 md:py-28 relative bg-white border-t border-zinc-100">
+  <div class="site-container">
+    <div class="grid md:grid-cols-12 gap-12 md:gap-20 items-start">
+
+      <div class="reveal md:col-span-5 md:sticky md:top-24">
+        <span class="text-xs font-bold uppercase tracking-[.05em] text-black mb-6 block">Questions Fréquentes</span>
+        <h2 class="text-4xl sm:text-5xl lg:text-[56px] font-bold tracking-tight text-black mb-8 leading-[1.1]">
+          Tout ce que vous<br>devez savoir
+        </h2>
+        <p class="text-zinc-600 text-sm md:text-base leading-relaxed max-w-sm font-general">
+          Les questions les plus fréquentes, classées par popularité. Trouvez rapidement les réponses à vos interrogations avant de vous lancer.
+        </p>
+      </div>
+
+      <div class="md:col-span-7 flex flex-col pt-2 md:pt-0">
+        <div *ngFor="let faq of faqs; let i = index" class="reveal faq-item group">
+          <button (click)="toggleFaq(i)" class="w-full flex items-start justify-between pb-6 text-left hover:opacity-70 transition-opacity">
+            <span class="text-lg font-bold text-black pr-8 mt-1">{{ faq.question }}</span>
+            <span class="flex-shrink-0 w-8 h-8 rounded-full border border-black flex items-center justify-center transition-transform duration-300">
+              <span class="iconify text-black" [attr.data-icon]="faq.isOpen ? 'mdi:chevron-up' : 'mdi:chevron-down'" data-width="24"></span>
+            </span>
+          </button>
+          <div class="pb-8" [class.hidden]="!faq.isOpen" [class.block]="faq.isOpen">
+            <p class="text-sm md:text-base text-zinc-600 leading-relaxed max-w-xl font-general">
+              {{ faq.answer }}
+            </p>
+          </div>
+          <div class="w-40 h-[1px] bg-black/30 mb-8"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="book" class="py-20 md:py-28 relative bg-white">
+  <div class="reveal relative site-container text-center">
+    <div>
+      <div class="flex flex-wrap justify-center items-center gap-3 md:gap-4 mb-4">
+        <h2 class="text-4xl sm:text-5xl md:text-6xl lg:text-[96px] font-bold tracking-tight text-black leading-none">Saisissez</h2>
+        <div class="w-[120px] h-[40px] md:w-[160px] md:h-[60px] lg:w-[220px] lg:h-[80px] rounded-full overflow-hidden inline-block align-middle">
+          <img src="/icons/seize.svg" alt="" class="w-full h-full object-cover">
+        </div>
+        <h2 class="text-4xl sm:text-5xl md:text-6xl lg:text-[96px] font-bold tracking-tight text-black leading-none">l'Instant —</h2>
+      </div>
+      <h2 class="text-4xl sm:text-5xl md:text-6xl lg:text-[96px] font-bold tracking-tight text-black mb-10 leading-none">Rejoignez Cowork !</h2>
+      <p class="text-sm md:text-base text-zinc-500 max-w-lg mx-auto mb-10 font-general">
+        Votre futur espace de travail vous attend. Réservez en quelques minutes et rejoignez une communauté qui réinvente la façon de travailler.
+      </p>
+      <a href="#" class="inline-flex items-center justify-center gap-2 text-sm font-semibold px-10 py-4 rounded-full bg-black text-white hover:bg-zinc-800 transition-all duration-300 shadow-xl shadow-black/10">
+        Visiter
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="blog" class="py-16 md:py-24 bg-white">
+  <div class="site-container">
+    <div class="reveal text-center mb-16 md:mb-20 flex flex-col items-center">
+      <span class="text-xs font-bold uppercase tracking-[.15em] text-black mb-4 block">Cowork Chronicles</span>
+      <div class="flex flex-col items-center mb-6">
+        <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-bold tracking-tight text-black leading-tight">Conseils, Innovation et</h2>
+        <div class="flex justify-center items-center gap-3 md:gap-4 mt-2">
+          <div class="w-[90px] h-[36px] md:w-[140px] md:h-[48px] rounded-full overflow-hidden inline-block align-middle">
+            <img src="/icons/inspiration.svg" alt="" class="w-full h-full object-cover">
+          </div>
+          <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-bold tracking-tight text-black leading-tight">Inspiration</h2>
+        </div>
+      </div>
+      <p class="text-zinc-500 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+        Restez informé des dernières tendances du coworking, des conseils de productivité et des témoignages qui définissent l'expérience Cowork.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8">
+      <article *ngFor="let blog of blogs" class="reveal group cursor-pointer flex flex-col" [style.transition-delay]="blog.delay">
+        <div class="rounded-[24px] overflow-hidden mb-6 aspect-[4/3] shadow-sm">
+          <img [src]="blog.img" alt="Blog Image" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
+        </div>
+        <div class="flex items-center gap-3 mb-4">
+          <span class="px-3 py-1 rounded-md text-black text-xs font-bold" [ngClass]="blog.badgeColor">{{ blog.badge }}</span>
+          <span class="text-xs text-zinc-500 font-medium">{{ blog.time }}</span>
+        </div>
+        <h3 class="text-xl md:text-[22px] font-bold tracking-tight text-black mb-6 leading-snug group-hover:text-zinc-600 transition-colors duration-300 flex-grow">
+          {{ blog.title }}
+        </h3>
+        <div class="mt-auto">
+          <a [href]="blog.link" class="text-sm font-general text-black flex items-center gap-1 group-hover:gap-2 transition-all">
+            Lire la suite <span class="iconify" data-icon="mdi:chevron-right" data-width="20"></span>
+          </a>
+        </div>
+      </article>
+    </div>
+
+    <div class="mt-16 text-center">
+      <a routerLink="/home" class="inline-flex items-center justify-center px-10 py-3 rounded-full border border-black text-sm font-semibold text-black hover:bg-black hover:text-white transition-colors duration-300">
+        Voir plus
+      </a>
+    </div>
+  </div>
+</section>
+
+<app-footer></app-footer>

@@ -1,0 +1,164 @@
+<!-- Desktop -->
+<aside class="hidden md:flex w-52 flex-shrink-0 bg-white border-r border-zinc-100 flex-col h-full">
+
+  <div class="px-5 h-14 flex items-center justify-between border-b border-zinc-100 flex-shrink-0">
+    <a routerLink="/home" class="text-sm font-bold text-zinc-900 tracking-tight">Cowork</a>
+
+    <!-- Bell button + dropdown -->
+    <div class="relative">
+      <button (click)="toggleBell()"
+        class="relative w-8 h-8 flex items-center justify-center rounded-lg hover:bg-zinc-50 transition-colors text-zinc-400 hover:text-zinc-900">
+        <span class="iconify" data-icon="lucide:bell" data-width="15"></span>
+        @if (unreadCount() > 0) {
+          <span class="absolute -top-0.5 -right-0.5 min-w-[14px] h-[14px] px-[3px] bg-zinc-900 text-white text-[8px] font-bold rounded-full flex items-center justify-center leading-none">
+            {{ unreadCount() > 9 ? '9+' : unreadCount() }}
+          </span>
+        }
+      </button>
+
+      @if (showBell()) {
+        <!-- Backdrop -->
+        <div class="fixed inset-0 z-40" (click)="closeBell()"></div>
+
+        <!-- Panel -->
+        <div class="absolute top-full left-0 mt-2 w-80 bg-white rounded-xl border border-zinc-100 shadow-xl z-50 overflow-hidden">
+
+          <div class="px-4 py-3 border-b border-zinc-100 flex items-center justify-between">
+            <p class="text-sm font-semibold text-zinc-900">Notifications</p>
+            @if (unreadCount() > 0) {
+              <button (click)="markAllRead()" class="text-xs text-zinc-400 hover:text-zinc-700 transition-colors">
+                Tout marquer lu
+              </button>
+            }
+          </div>
+
+          @if (recentNotifications().length === 0) {
+            <div class="px-4 py-8 text-center">
+              <span class="iconify mx-auto text-zinc-200 mb-2" data-icon="lucide:bell-off" data-width="24"></span>
+              <p class="text-xs text-zinc-400">Aucune notification</p>
+            </div>
+          } @else {
+            <div class="max-h-72 overflow-y-auto divide-y divide-zinc-50">
+              @for (n of recentNotifications(); track n.id) {
+                <div class="px-4 py-3 flex items-start gap-3 hover:bg-zinc-50 transition-colors"
+                  [ngClass]="{ 'bg-zinc-50/60': n.status !== 'sent' }">
+
+                  <span class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                    [ngClass]="typeBg(n.notification_type)">
+                    <span class="iconify text-zinc-700" [attr.data-icon]="typeIcon(n.notification_type)" data-width="13"></span>
+                  </span>
+
+                  <div class="flex-1 min-w-0">
+                    <p class="text-xs text-zinc-900 truncate"
+                      [ngClass]="n.status !== 'sent' ? 'font-semibold' : 'font-medium'">
+                      {{ n.type_display }}
+                    </p>
+                    <p class="text-[11px] text-zinc-500 line-clamp-2 mt-0.5 leading-relaxed">{{ n.message }}</p>
+                    <p class="text-[10px] text-zinc-400 mt-1">
+                      {{ (n.sent_at ?? n.created_at) | date:'d MMM – HH:mm' }}
+                    </p>
+                  </div>
+
+                  @if (n.status !== 'sent') {
+                    <span class="w-1.5 h-1.5 rounded-full bg-zinc-900 flex-shrink-0 mt-2"></span>
+                  }
+                </div>
+              }
+            </div>
+
+            <a routerLink="/dashboard/notifications" (click)="closeBell()"
+              class="block px-4 py-3 text-center text-xs font-medium text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 border-t border-zinc-100 transition-colors">
+              Voir toutes les notifications →
+            </a>
+          }
+
+        </div>
+      }
+    </div>
+  </div>
+
+  <nav class="flex-1 px-3 py-4 flex flex-col gap-0.5 overflow-y-auto">
+    @for (item of navItems; track item.path) {
+      <a [routerLink]="item.path"
+        [routerLinkActive]="item.activeClass"
+        class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 transition-all text-sm">
+        <span class="iconify flex-shrink-0" [attr.data-icon]="item.icon" data-width="15"></span>
+        <span class="flex-1">{{ item.label }}</span>
+        @if (item.path === '/dashboard/notifications' && unreadCount() > 0) {
+          <span class="bg-[#CEF09D] text-zinc-900 border border-zinc-900/10 text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 shadow-sm transition-all duration-300">
+            {{ unreadCount() > 99 ? '99+' : unreadCount() }}
+          </span>
+        }
+      </a>
+    }
+
+    <div class="my-3 border-t border-zinc-100"></div>
+
+    @for (item of bottomItems; track item.path) {
+      <a [routerLink]="item.path"
+        class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-50 transition-all text-sm">
+        <span class="iconify flex-shrink-0" [attr.data-icon]="item.icon" data-width="14"></span>
+        {{ item.label }}
+      </a>
+    }
+  </nav>
+
+  <div class="px-3 py-3 border-t border-zinc-100 flex-shrink-0">
+    <div class="flex items-center gap-2.5 px-3 py-2 mb-0.5">
+      <div class="w-6 h-6 rounded-md bg-[#CEF09D] flex items-center justify-center text-zinc-900 text-[9px] font-bold flex-shrink-0">
+        {{ userInitials() }}
+      </div>
+      <div class="min-w-0 flex-1">
+        <p class="text-xs font-medium text-zinc-900 truncate">{{ user()?.full_name ?? (user()?.first_name + ' ' + user()?.last_name) }}</p>
+        <p class="text-[10px] text-zinc-400 truncate">{{ user()?.email }}</p>
+      </div>
+    </div>
+    <button (click)="logout()"
+      class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-400 hover:text-red-500 hover:bg-red-50 transition-all text-sm">
+      <span class="iconify" data-icon="lucide:log-out" data-width="14"></span>
+      Déconnexion
+    </button>
+  </div>
+</aside>
+
+<!-- Mobile top bar -->
+<div class="md:hidden fixed top-0 inset-x-0 z-50 h-12 bg-white border-b border-zinc-100 flex items-center justify-between px-5">
+  <span class="text-sm font-bold text-zinc-900">Cowork</span>
+  <button (click)="mobileOpen.set(!mobileOpen())" class="text-zinc-500 hover:text-zinc-900 transition-colors">
+    <span class="iconify" [attr.data-icon]="mobileOpen() ? 'lucide:x' : 'lucide:menu'" data-width="18"></span>
+  </button>
+</div>
+
+<!-- Mobile drawer -->
+@if (mobileOpen()) {
+  <div class="md:hidden fixed inset-0 z-40 flex">
+    <div class="absolute inset-0 bg-black/20 backdrop-blur-sm" (click)="mobileOpen.set(false)"></div>
+    <aside class="relative w-52 bg-white flex flex-col h-full border-r border-zinc-100">
+      <div class="px-5 h-12 flex items-center border-b border-zinc-100">
+        <span class="text-sm font-bold text-zinc-900">Cowork</span>
+      </div>
+      <nav class="flex-1 px-3 py-4 flex flex-col gap-0.5">
+        @for (item of navItems; track item.path) {
+          <a [routerLink]="item.path" (click)="mobileOpen.set(false)"
+            [routerLinkActive]="item.activeClass"
+            class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 transition-all text-sm">
+            <span class="iconify flex-shrink-0" [attr.data-icon]="item.icon" data-width="15"></span>
+            <span class="flex-1">{{ item.label }}</span>
+            @if (item.path === '/dashboard/notifications' && unreadCount() > 0) {
+              <span class="bg-[#CEF09D] text-zinc-900 border border-zinc-900/10 text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 shadow-sm transition-all duration-300">
+                {{ unreadCount() > 99 ? '99+' : unreadCount() }}
+              </span>
+            }
+          </a>
+        }
+      </nav>
+      <div class="px-3 py-3 border-t border-zinc-100">
+        <button (click)="logout()"
+          class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-400 hover:text-red-500 transition-all text-sm">
+          <span class="iconify" data-icon="lucide:log-out" data-width="14"></span>
+          Déconnexion
+        </button>
+      </div>
+    </aside>
+  </div>
+}
