@@ -2,8 +2,8 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth/auth.service';
 
-// Protège les routes réservées aux ADMIN uniquement
-export const adminGuard: CanActivateFn = () => {
+// Protège les routes accessibles aux ADMIN et MANAGER (gestion des salles, équipements)
+export const managerGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
@@ -11,7 +11,8 @@ export const adminGuard: CanActivateFn = () => {
     return router.createUrlTree(['/login']);
   }
 
-  if (authService.user()?.role === 'ADMIN') {
+  const role = authService.user()?.role;
+  if (role === 'ADMIN' || role === 'MANAGER') {
     return true;
   }
 

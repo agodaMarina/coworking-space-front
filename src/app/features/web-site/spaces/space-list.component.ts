@@ -1,112 +1,100 @@
-import { CurrencyPipe, NgClass } from '@angular/common';
-import { Component, computed, OnInit, signal } from '@angular/core';
+import { NgClass } from '@angular/common';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { Space } from '../../../core/dtos/space';
-import { SpacesService } from '../../../core/services/spaces.service';
+import { FormsModule } from '@angular/forms';
+import { Room, RoomListParams } from '../../../core/dtos/room';
+import { RoomsService } from '../../../core/services/rooms.service';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
-import { MessageService } from 'primeng/api';
 
 @Component({
-    standalone: true,
-    selector: 'app-space-list-page',
-    imports: [
-        NgClass,
-        CurrencyPipe,
-        HeaderComponent,
-        FooterComponent,
-        ProgressSpinnerModule,
-    ],
-    templateUrl: './space-list.component.html',
-    styleUrl: './space-list.component.css',
-    providers:[MessageService]
+  standalone: true,
+  selector: 'app-space-list-page',
+  imports: [NgClass, FormsModule, HeaderComponent, FooterComponent, ProgressSpinnerModule],
+  templateUrl: './space-list.component.html',
+  styleUrl: './space-list.component.css',
+  providers: [MessageService],
 })
 export class SpaceListPageComponent implements OnInit {
-    spaces = signal<Space[]>([]);
+  readonly roomsService = inject(RoomsService);
+  private readonly router = inject(Router);
 
-    selectedType = signal<string | null>(null);
-    selectedCapacityMin = signal<number>(0);
+  readonly rooms      = signal<Room[]>([]);
+  readonly nextCursor = signal<string | null>(null);
+  readonly hasMore    = signal(false);
 
-    typeOptions = [
-        { label: 'Bureau partagé', value: 'desk' },
-        { label: 'Open Space', value: 'open_space' },
-        { label: 'Salle de réunion', value: 'meeting_room' },
-        { label: 'Bureau privé', value: 'private' },
-        { label: 'Salle de conférence', value: 'conference' },
-    ];
+  // Filtres
+  readonly searchName         = signal('');
+  readonly selectedCapacityMin = signal<number>(0);
 
-    private readonly typeBadgeColors: Record<string, string> = {
-        desk:         'bg-[#CEF09D]',
-        open_space:   'bg-[#AEE9F4]',
-        meeting_room: 'bg-[#F8C8E1]',
-        private:      'bg-[#FDD5AB]',
-        conference:   'bg-[#E2F89C]',
+  readonly capacityOptions = [
+    { label: 'Tous', value: 0 },
+    { label: '5+',   value: 5 },
+    { label: '10+',  value: 10 },
+    { label: '20+',  value: 20 },
+    { label: '50+',  value: 50 },
+  ];
+
+  readonly filteredRooms = computed(() => {
+    const minCap = this.selectedCapacityMin();
+    return this.rooms().filter(r => r.capacity >= minCap);
+  });
+
+  ngOnInit(): void {
+    this.loadRooms();
+  }
+
+  loadRooms(append = false): void {
+    const params: RoomListParams = {
+      limit: 20,
+      ...(append && this.nextCursor() ? { cursor: this.nextCursor()! } : {}),
+      ...(this.searchName() ? { name: this.searchName() } : {}),
+      ...(this.selectedCapacityMin() > 0 ? { min_capacity: this.selectedCapacityMin() } : {}),
     };
 
-    getTypeBadgeColor(type: string): string {
-        return this.typeBadgeColors[type] ?? 'bg-zinc-100';
-    }
-
-    capacityOptions = [
-        { label: 'Tous', value: 0 },
-        { label: '5+', value: 5 },
-        { label: '10+', value: 10 },
-        { label: '20+', value: 20 },
-        { label: '50+', value: 50 },
-    ];
-
-    filteredSpaces = computed(() => {
-        const type = this.selectedType();
-        const minCap = this.selectedCapacityMin();
-
-        return this.spaces().filter(space => {
-            const typeMatch = !type || space.space_type === type;
-            const capacityMatch = space.capacity >= minCap;
-            return typeMatch && capacityMatch;
-        });
+    this.roomsService.getRooms(params).subscribe({
+      next: (res) => {
+        this.rooms.set(append ? [...this.rooms(), ...res.items] : res.items);
+        this.nextCursor.set(res.next_cursor);
+        this.hasMore.set(res.has_more);
+      },
+      error: (err) => console.error('Erreur chargement des salles', err),
     });
+  }
 
-    constructor(public spacesService: SpacesService, private router: Router) {}
+  loadMore(): void {
+    if (this.hasMore()) this.loadRooms(true);
+  }
 
-    ngOnInit() {
-        this.spacesService.disableMocks();
-        this.loadSpaces();
-    }
+  applyFilters(): void {
+    this.nextCursor.set(null);
+    this.loadRooms();
+  }
 
-    loadSpaces() {
-        this.spacesService.getSpaces().subscribe({
-            next: (spaces) => this.spaces.set(spaces),
-            error: (error) => console.error('Error loading spaces:', error)
-        });
-    }
+  selectCapacity(value: number): void {
+    this.selectedCapacityMin.set(value);
+    this.applyFilters();
+  }
 
-    selectType(value: string | null) {
-        this.selectedType.set(value);
-    }
+  resetFilters(): void {
+    this.searchName.set('');
+    this.selectedCapacityMin.set(0);
+    this.nextCursor.set(null);
+    this.loadRooms();
+  }
 
-    selectCapacity(value: number) {
-        this.selectedCapacityMin.set(value);
-    }
+  openDetail(room: Room): void {
+    this.router.navigate(['/rooms', room.id]);
+  }
 
-    resetFilters() {
-        this.selectedType.set(null);
-        this.selectedCapacityMin.set(0);
-    }
+  goToBooking(room: Room): void {
+    this.router.navigate(['/booking'], { queryParams: { roomId: room.id } });
+  }
 
-    openDetail(space: Space) {
-        this.router.navigate(['/spaces', space.id]);
-    }
-
-    goToBooking(space: Space) {
-        this.router.navigate(['/booking'], { queryParams: { spaceId: space.id } });
-    }
-
-    getSpaceImage(space: Space): string {
-        if (space.photo) return space.photo;
-        const primary = space.photos?.find((p: any) => p.is_primary);
-        if (primary?.url) return primary.url;
-        if (space.photos?.length) return space.photos[0].url;
-        return 'icons/space-placeholder.svg';
-    }
+  activeReservationsCount(room: Room): number {
+    const now = new Date();
+    return room.reservations?.filter(r => new Date(r.end_time) > now).length ?? 0;
+  }
 }

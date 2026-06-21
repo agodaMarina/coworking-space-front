@@ -1,60 +1,68 @@
-export interface User {
-    id: string;
-    email: string;
-    username: string;
-    first_name: string;
-    last_name: string;
-    full_name?: string;
-    phone?: string | null;
-    avatar?: string | null;
-    role?: string;
-    is_verified?: boolean;
-    is_active?: boolean;
-    created_at?: string;
-}
+// DTOs liés à l'authentification Flask ShareRoom API
+// Roles utilisés par l'API Flask (toujours en majuscules)
+export type UserRole = 'CLIENT' | 'MANAGER' | 'ADMIN';
 
-export interface AuthTokens {
-    access: string;
-    refresh: string;
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  is_active: boolean;
+  created_at: string;
 }
 
 export interface LoginPayload {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
+}
+
+// L'API Flask retourne uniquement un access_token (pas de refresh)
+export interface LoginResponse {
+  access_token: string;
+  user_id: string;
+  role: UserRole;
 }
 
 export interface RegisterPayload {
-    first_name: string;
-    last_name: string;
-    username: string;
-    email: string;
-    password: string;
-    password_confirm: string;
-    role?: string;
+  name: string;
+  email: string;
+  password: string;
 }
 
-export interface AuthResponse {
-    message: string;
-    user: User;
-    tokens: AuthTokens;
+// Réponse 201 — utilisateur créé (pas de token, redirection vers login)
+export interface RegisterResponse {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
 }
 
-export interface AdminUserPayload {
-    email: string;
-    username: string;
-    first_name: string;
-    last_name: string;
-    phone?: string;
-    role: 'client' | 'admin' | 'manager';
-    password: string;
-    password_confirm: string;
+export interface UserUpdatePayload {
+  name?: string;
+  email?: string;
 }
 
-export interface AdminUserUpdatePayload {
-    email?: string;
-    username?: string;
-    first_name?: string;
-    last_name?: string;
-    phone?: string;
-    role?: 'client' | 'admin' | 'manager';
+export interface ForgotPasswordPayload {
+  email: string;
+}
+
+export interface ResetPasswordPayload {
+  token: string;
+  new_password: string;
+}
+
+export interface UserRolePayload {
+  role: UserRole;
+}
+
+// Réponse générique de l'API Flask pour les messages simples
+export interface ApiMessageResponse {
+  message: string;
+}
+
+// Format standard d'erreur Flask
+export interface FlaskApiError {
+  error_code: string;
+  message: string;
+  detail?: Record<string, unknown>;
 }

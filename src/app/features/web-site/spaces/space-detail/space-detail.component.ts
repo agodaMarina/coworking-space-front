@@ -1,71 +1,74 @@
-import { CurrencyPipe, NgClass } from '@angular/common';
-import { Component, OnInit, signal } from '@angular/core';
+import { DatePipe, NgClass } from '@angular/common';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { Space } from '../../../../core/dtos/space';
-import { SpacesService } from '../../../../core/services/spaces.service';
+import { Room, RoomReservation } from '../../../../core/dtos/room';
+import { AuthService } from '../../../../core/services/auth/auth.service';
+import { RoomsService } from '../../../../core/services/rooms.service';
 import { FooterComponent } from '../../../../shared/components/footer/footer.component';
 import { HeaderComponent } from '../../../../shared/components/header/header.component';
-import { MessageService } from 'primeng/api';
 
 @Component({
   standalone: true,
   selector: 'app-space-detail-page',
-  imports: [NgClass, CurrencyPipe, HeaderComponent, FooterComponent, ProgressSpinnerModule],
+  imports: [NgClass, DatePipe, HeaderComponent, FooterComponent, ProgressSpinnerModule],
   templateUrl: './space-detail.component.html',
   styleUrls: ['./space-detail.component.css'],
-  providers:[MessageService]
+  providers: [MessageService],
 })
 export class SpaceDetailPageComponent implements OnInit {
-  space = signal<Space | null>(null);
-  loading = signal(false);
-  activePhotoIndex = signal(0);
+  private readonly route        = inject(ActivatedRoute);
+  private readonly router       = inject(Router);
+  private readonly roomsService = inject(RoomsService);
+  private readonly authService  = inject(AuthService);
 
-  constructor(
-    private route: ActivatedRoute,
-    private spacesService: SpacesService,
-    private router: Router
-  ) {}
+  readonly room    = signal<Room | null>(null);
+  readonly loading = signal(false);
 
   ngOnInit(): void {
-    this.spacesService.disableMocks();
     this.route.paramMap.subscribe(params => {
-      const id = Number(params.get('id'));
+      const id = params.get('id');
       if (!id) return;
       this.loading.set(true);
-      this.spacesService.getSpace(id).subscribe({
-        next: (s) => {
-          this.space.set(s);
-          const primaryIndex = s.photos?.findIndex((p: any) => p.is_primary);
-          this.activePhotoIndex.set(primaryIndex > 0 ? primaryIndex : 0);
-        },
-        error: (e) => console.error('Error loading space detail', e),
-        complete: () => this.loading.set(false)
+      this.roomsService.getRoom(id).subscribe({
+        next:     (r)   => { this.room.set(r); this.loading.set(false); },
+        error:    (err) => { console.error('Erreur chargement salle', err); this.loading.set(false); },
       });
     });
   }
 
   goBack(): void {
-    this.router.navigate(['/spaces']);
-  }
-
-  getActivePhotoUrl(s: Space): string {
-    const photos = s.photos ?? [];
-    if (photos.length) return photos[this.activePhotoIndex()]?.url ?? 'icons/space-placeholder.svg';
-    return s.photo ?? 'icons/space-placeholder.svg';
-  }
-
-  getPhotoUrl(photo: any): string {
-    return photo?.url ?? 'icons/space-placeholder.svg';
-  }
-
-  selectPhoto(index: number): void {
-    this.activePhotoIndex.set(index);
+    this.router.navigate(['/rooms']);
   }
 
   goToBooking(): void {
-    const s = this.space();
-    if (!s) return;
-    this.router.navigate(['/booking'], { queryParams: { spaceId: s.id } });
+    const r = this.room();
+    if (!r) return;
+    this.router.navigate(['/booking'], { queryParams: { roomId: r.id } });
+  }
+
+  // Réservations à venir uniquement
+  upcomingReservations(): RoomReservation[] {
+    const now = new Date();
+    return (this.room()?.reservations ?? [])
+      .filter(r => new Date(r.end_time) > now)
+      .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
+  }
+
+  // Vérifie si l'annulation est encore possible pour un créneau
+  canCancelReservation(res: RoomReservation): boolean {
+    const room = this.room();
+    if (!room?.cancellation_allowed) return false;
+    const userId = this.authService.user()?.id;
+    if (res.created_by !== userId) return false;
+    const deadline = room.cancellation_deadline_hours ?? 0;
+    const hoursUntilStart = (new Date(res.start_time).getTime() - Date.now()) / 3_600_000;
+    return hoursUntilStart >= deadline;
+  }
+
+  // Retourne les initiales de l'utilisateur qui a fait la réservation (masqué si ce n'est pas nous)
+  isMyReservation(res: RoomReservation): boolean {
+    return res.created_by === this.authService.user()?.id;
   }
 }

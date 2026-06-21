@@ -1,7 +1,6 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth/auth.service';
-import { NotificationsService } from '../../../core/services/admin/notifications.service';
 
 @Component({
   standalone: true,
@@ -10,32 +9,15 @@ import { NotificationsService } from '../../../core/services/admin/notifications
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
+  private readonly authService = inject(AuthService);
+  private readonly router      = inject(Router);
 
-  private readonly authService   = inject(AuthService);
-  private readonly router        = inject(Router);
-  readonly notifService          = inject(NotificationsService);
+  readonly isAuthenticated  = this.authService.isAuthenticated;
+  readonly isMobileMenuOpen = signal(false);
 
-  isAuthenticated: any;
-  isMobileMenuOpen   = false;
-  showNotifPanel     = signal(false);
-
-  toggleMenu()  { this.isMobileMenuOpen = !this.isMobileMenuOpen; }
-  closeMenu()   { this.isMobileMenuOpen = false; }
-
-  toggleNotifications(): void {
-    this.showNotifPanel.update(v => !v);
-  }
-
-  markAllRead(): void {
-    this.notifService.markAllAsRead().subscribe();
-  }
-
-  ngOnInit(): void {
-    this.isAuthenticated = this.authService.isAuthenticated;
-    this.notifService.disableMocks();
-    this.notifService.startPolling();
-  }
+  toggleMenu(): void  { this.isMobileMenuOpen.update(v => !v); }
+  closeMenu(): void   { this.isMobileMenuOpen.set(false); }
 
   logout(): void {
     this.authService.logout();

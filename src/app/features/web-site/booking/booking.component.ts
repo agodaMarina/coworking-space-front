@@ -1,94 +1,143 @@
-import { CommonModule, NgClass } from '@angular/common';
-import { Component, OnInit, signal } from '@angular/core';
+import { DatePipe, NgClass } from '@angular/common';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { Room } from '../../../core/dtos/room';
+import { CreateReservationPayload } from '../../../core/dtos/reservation';
 import { ReservationsService } from '../../../core/services/reservations.service';
-import { SpacesService } from '../../../core/services/spaces.service';
+import { RoomsService } from '../../../core/services/rooms.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
-import { DatePickerComponent } from '../../../shared/components/date-picker/date-picker.component';
-import { ToastService } from '../../../core/services/toast.service';
 
 type BookingStep = 'details' | 'success';
-
-interface BookingSpace {
-  id:            number;
-  name:          string;
-  space_type:    string;
-  price_per_day: number;
-  capacity:      number;
-  photo?:        string;
-  photos?:       any[];
-  address?:      string;
-}
 
 @Component({
   standalone: true,
   selector: 'app-booking-page',
-  imports: [CommonModule, NgClass, FormsModule, ReactiveFormsModule,
-            RouterLink, HeaderComponent, FooterComponent, DatePickerComponent, ToastModule],
+  imports: [NgClass, DatePipe, FormsModule, ReactiveFormsModule,
+            RouterLink, HeaderComponent, FooterComponent, ToastModule],
   templateUrl: './booking.component.html',
   styleUrls: ['./booking.component.css'],
   providers: [MessageService],
 })
 export class BookingPageComponent implements OnInit {
+  private readonly fb                  = inject(FormBuilder);
+  private readonly roomsService        = inject(RoomsService);
+  private readonly reservationsService = inject(ReservationsService);
+  private readonly route               = inject(ActivatedRoute);
+  private readonly router              = inject(Router);
+  private readonly toastService        = inject(ToastService);
+
+  readonly currentStep   = signal<BookingStep>('details');
+  readonly isSubmitting  = signal(false);
+  readonly selectedRoom  = signal<Room | null>(null);
+  readonly availableRooms = signal<Room[]>([]);
+  readonly roomDropdownOpen = signal(false);
+  readonly nextCursor    = signal<string | null>(null);
+  readonly hasMore       = signal(false);
+
   bookingForm!: FormGroup;
 
-  currentStep        = signal<BookingStep>('details');
-  isSubmitting       = signal(false);
-  spaceDropdownOpen  = signal(false);
-  isSpacePreSelected = signal(false);
-  recurrenceDropdownOpen = signal(false);
-
-  availableSpaces = signal<BookingSpace[]>([]);
-
-  recurrenceOptions = [
-    { label: 'Quotidien',             value: 'daily'    },
-    { label: 'Hebdomadaire',          value: 'weekly'   },
-    { label: 'Toutes les 2 semaines', value: 'biweekly' },
-    { label: 'Mensuel',               value: 'monthly'  },
-  ];
-
-  constructor(
-    private fb:                  FormBuilder,
-    public  spacesService:       SpacesService,
-    public  reservationsService: ReservationsService,
-    private route:               ActivatedRoute,
-    private toastService:        ToastService,
-  ) {}
+  // Créneaux déjà occupés dans la salle sélectionnée (à venir)
+  readonly takenSlots = computed(() => {
+    const room = this.selectedRoom();
+    if (!room) return [];
+    const now = new Date();
+    return room.reservations.filter(r => new Date(r.end_time) > now);
+  });
 
   ngOnInit(): void {
-    this.spacesService.disableMocks();
-    this.reservationsService.disableMocks();
     this.initializeForm();
-    this.loadSpaces();
+    this.loadRooms();
 
     this.route.queryParams.subscribe(params => {
-      const spaceId = params['spaceId'];
-      if (spaceId) {
-        this.isSpacePreSelected.set(true);
-        this.bookingForm.patchValue({ spaceId: Number(spaceId) });
+      const roomId = params['roomId'];
+      if (roomId) {
+        this.roomsService.getRoom(roomId).subscribe({
+          next: (room) => {
+            this.selectedRoom.set(room);
+            this.bookingForm.patchValue({ roomId: room.id });
+          },
+        });
       }
     });
   }
 
-  // ─── Formulaire ────────────────────────────────────────────────────────────
-
   initializeForm(): void {
     this.bookingForm = this.fb.group({
-      spaceId:           ['', Validators.required],
-      startDate:         ['', Validators.required],
-      endDate:           ['', Validators.required],
-      billingType:       ['daily', Validators.required],
-      startTime:         ['09:00'],
-      endTime:           ['17:00'],
-      isRecurring:       [false],
-      recurrencePattern: ['weekly'],
-      recurrenceEnd:     [''],
-      specialRequests:   [''],
+      roomId:    ['', Validators.required],
+      startDate: ['', Validators.required],
+      startTime: ['09:00', Validators.required],
+      endDate:   ['', Validators.required],
+      endTime:   ['10:00', Validators.required],
     });
+  }
+
+  loadRooms(append = false): void {
+    this.roomsService.getRooms({ limit: 20, ...(append && this.nextCursor() ? { cursor: this.nextCursor()! } : {}) })
+      .subscribe({
+        next: (res) => {
+          this.availableRooms.set(append ? [...this.availableRooms(), ...res.items] : res.items);
+          this.nextCursor.set(res.next_cursor);
+          this.hasMore.set(res.has_more);
+        },
+      });
+  }
+
+  selectRoom(room: Room): void {
+    this.selectedRoom.set(room);
+    this.bookingForm.patchValue({ roomId: room.id });
+    this.roomDropdownOpen.set(false);
+  }
+
+  submitBooking(): void {
+    if (this.bookingForm.invalid) {
+      this.bookingForm.markAllAsTouched();
+      return;
+    }
+
+    const fv = this.bookingForm.value;
+
+    // Construire les dates ISO 8601 UTC
+    const startDt = this.buildISODate(fv.startDate, fv.startTime);
+    const endDt   = this.buildISODate(fv.endDate,   fv.endTime);
+
+    if (!startDt || !endDt) {
+      this.toastService.showError('Dates invalides. Vérifiez les champs.');
+      return;
+    }
+
+    if (startDt >= endDt) {
+      this.toastService.showError('L\'heure de début doit être avant l\'heure de fin.');
+      return;
+    }
+
+    const payload: CreateReservationPayload = {
+      start_time: startDt,
+      end_time:   endDt,
+    };
+
+    this.isSubmitting.set(true);
+    this.reservationsService.createReservation(fv.roomId, payload).subscribe({
+      next: () => {
+        this.isSubmitting.set(false);
+        this.currentStep.set('success');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+      error: () => {
+        this.isSubmitting.set(false);
+        // Le message d'erreur (RESERVATION_OVERLAP, etc.) est géré par l'intercepteur
+      },
+    });
+  }
+
+  resetFlow(): void {
+    this.bookingForm.reset({ startTime: '09:00', endTime: '10:00' });
+    this.selectedRoom.set(null);
+    this.currentStep.set('details');
   }
 
   isFieldInvalid(field: string): boolean {
@@ -96,120 +145,43 @@ export class BookingPageComponent implements OnInit {
     return !!(f && f.invalid && f.touched);
   }
 
-  // ─── Soumission — crée la réservation sans paiement ────────────────────────
-
-  submitBooking(): void {
-    if (this.bookingForm.invalid) { this.bookingForm.markAllAsTouched(); return; }
-
-    this.isSubmitting.set(true);
-
-    const fv    = this.bookingForm.value;
-    const start = new Date(fv.startDate);
-    const end   = new Date(fv.endDate);
-    if (fv.startTime) { const [h, m] = fv.startTime.split(':'); start.setHours(+h, +m); }
-    if (fv.endTime)   { const [h, m] = fv.endTime.split(':');   end.setHours(+h, +m);   }
-
-    this.reservationsService.createReservation({
-      space_id:        Number(fv.spaceId),
-      start_datetime:  start.toISOString(),
-      end_datetime:    end.toISOString(),
-      billing_type:    fv.billingType,
-      is_recurring:    fv.isRecurring,
-      recurrence_rule: fv.isRecurring ? fv.recurrencePattern : 'none',
-      notes:           fv.specialRequests,
-    }).subscribe({
-      next: () => {
-        this.isSubmitting.set(false);
-        this.currentStep.set('success');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      },
-      error: err => {
-        this.isSubmitting.set(false);
-        this.toastService.showError(this.extractErrorMessage(err));
-      },
-    });
-  }
-
-  resetFlow(): void {
-    this.bookingForm.reset({ billingType: 'daily', startTime: '09:00', endTime: '17:00', isRecurring: false, recurrencePattern: 'weekly' });
-    this.currentStep.set('details');
-  }
-
-  private extractErrorMessage(err: any): string {
-    if (err?.error?.non_field_errors?.length) return err.error.non_field_errors[0];
-    if (err?.error?.error)                    return err.error.error;
-    if (typeof err?.error === 'object') {
-      const firstKey = Object.keys(err.error)[0];
-      if (firstKey && Array.isArray(err.error[firstKey])) return err.error[firstKey][0];
-    }
-    return err?.message || 'Une erreur est survenue lors de la réservation.';
-  }
-
-  // ─── Helpers ───────────────────────────────────────────────────────────────
-
-  selectSpace(space: BookingSpace): void {
-    this.bookingForm.get('spaceId')?.setValue(space.id);
-    this.spaceDropdownOpen.set(false);
-  }
-
-  selectRecurrence(value: string): void {
-    this.bookingForm.get('recurrencePattern')?.setValue(value);
-    this.recurrenceDropdownOpen.set(false);
-  }
-
-  getRecurrenceLabel(): string {
-    const val = this.bookingForm.get('recurrencePattern')?.value;
-    return this.recurrenceOptions.find(o => o.value === val)?.label ?? 'Choisir une fréquence…';
-  }
-
-  onRecurringChange(): void {
-    const isRecurring    = this.bookingForm.get('isRecurring')?.value;
-    const recurrenceEnd  = this.bookingForm.get('recurrenceEnd');
-    isRecurring ? recurrenceEnd?.setValidators([Validators.required]) : recurrenceEnd?.clearValidators();
-    recurrenceEnd?.updateValueAndValidity();
-  }
-
-  getDurationDays(): number {
-    const start = this.bookingForm.get('startDate')?.value;
-    const end   = this.bookingForm.get('endDate')?.value;
-    if (!start || !end) return 0;
-    return Math.ceil(Math.abs(new Date(end).getTime() - new Date(start).getTime()) / 86_400_000) + 1;
-  }
-
-  getSelectedSpace(): BookingSpace | null {
-    const id = this.bookingForm.get('spaceId')?.value;
-    return id ? (this.availableSpaces().find(s => s.id === Number(id)) ?? null) : null;
-  }
-
-  calculateTotal(): number {
-    const space = this.getSelectedSpace();
-    return space ? space.price_per_day * this.getDurationDays() : 0;
-  }
-
-  getSpaceImage(space: BookingSpace): string {
-    if (space.photo) return space.photo;
-    const primary = space.photos?.find((p: any) => p.is_primary);
-    if (primary?.url) return primary.url;
-    if (space.photos?.length) return space.photos[0].url;
-    return 'icons/space-placeholder.svg';
-  }
-
-  loadSpaces(): void {
-    this.spacesService.getAvailableSpaces().subscribe({
-      next: spaces => this.availableSpaces.set(spaces.map(s => ({
-        id:            s.id,
-        name:          s.name,
-        space_type:    s.space_type,
-        price_per_day: s.price_per_day,
-        capacity:      s.capacity,
-        photo:         s.photo,
-        photos:        s.photos,
-        address:       s.address,
-      }))),
-    });
-  }
-
   today(): string {
     return new Date().toISOString().split('T')[0];
+  }
+
+  // Calcule la durée en heures pour l'affichage
+  durationHours(): number {
+    const fv = this.bookingForm.value;
+    const start = this.buildISODate(fv.startDate, fv.startTime);
+    const end   = this.buildISODate(fv.endDate,   fv.endTime);
+    if (!start || !end) return 0;
+    return Math.max(0, (new Date(end).getTime() - new Date(start).getTime()) / 3_600_000);
+  }
+
+  // Vérifie si le créneau saisi entre en conflit avec une réservation existante
+  hasConflict(): boolean {
+    const fv = this.bookingForm.value;
+    const start = this.buildISODate(fv.startDate, fv.startTime);
+    const end   = this.buildISODate(fv.endDate,   fv.endTime);
+    if (!start || !end) return false;
+
+    const room = this.selectedRoom();
+    const gapMs = (room?.gap_minutes ?? 0) * 60_000;
+
+    return this.takenSlots().some(slot => {
+      const slotStart = new Date(slot.start_time).getTime() - gapMs;
+      const slotEnd   = new Date(slot.end_time).getTime()   + gapMs;
+      const reqStart  = new Date(start).getTime();
+      const reqEnd    = new Date(end).getTime();
+      return reqStart < slotEnd && reqEnd > slotStart;
+    });
+  }
+
+  private buildISODate(date: string, time: string): string | null {
+    if (!date || !time) return null;
+    const [h, m] = time.split(':').map(Number);
+    const d = new Date(date);
+    d.setHours(h, m, 0, 0);
+    return isNaN(d.getTime()) ? null : d.toISOString();
   }
 }

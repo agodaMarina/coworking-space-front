@@ -12,17 +12,17 @@ import { ToastService } from '../../../core/services/toast.service';
   styleUrl: './login.component.css',
 })
 export class LoginPageComponent {
-  private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
-  private readonly fb = inject(FormBuilder);
+  private readonly authService  = inject(AuthService);
+  private readonly router       = inject(Router);
+  private readonly fb           = inject(FormBuilder);
   private readonly toastService = inject(ToastService);
 
-  readonly submitting = signal(false);
-  readonly error = signal<string | null>(null);
+  readonly submitting   = signal(false);
+  readonly error        = signal<string | null>(null);
   readonly showPassword = signal(false);
 
   readonly loginForm = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
+    email:    ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
   });
 
@@ -36,17 +36,19 @@ export class LoginPageComponent {
     this.error.set(null);
 
     this.authService.login(this.loginForm.value as { email: string; password: string }).subscribe({
-      next: (response) => {
+      next: (res) => {
         this.submitting.set(false);
         this.toastService.showSuccess('Connexion réussie.');
-        const role = response.user?.role;
-        this.router.navigate([role === 'admin' ? '/admin/overview' : '/dashboard/overview']);
+        // res.role est disponible directement dans la réponse Flask
+        const destination = (res.role === 'ADMIN' || res.role === 'MANAGER')
+          ? '/admin/overview'
+          : '/dashboard/overview';
+        this.router.navigate([destination]);
       },
-      error: (err) => {
+      error: () => {
         this.submitting.set(false);
-        const msg = err?.error?.detail ?? err?.error?.non_field_errors?.[0] ?? 'Identifiants invalides. Veuillez vérifier votre email et mot de passe.';
-        this.toastService.showError(msg);
-        this.error.set(msg);
+        // Le message est déjà affiché par l'intercepteur
+        this.error.set('Identifiants invalides. Veuillez vérifier votre email et mot de passe.');
       },
     });
   }
