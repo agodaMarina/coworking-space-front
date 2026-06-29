@@ -71,4 +71,8 @@ export class SpaceDetailPageComponent implements OnInit {
   isMyReservation(res: RoomReservation): boolean {
     return res.created_by === this.authService.user()?.id;
   }
+
+  getRoomImage(roomId: string, w = 1200, h = 600): string {
+    return `https://picsum.photos/seed/${roomId}/${w}/${h}`;
+  }
 }

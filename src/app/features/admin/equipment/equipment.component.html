@@ -4,7 +4,7 @@
   <div class="px-4 md:px-8 pt-6 md:pt-10 pb-6 md:pb-8 border-b border-zinc-100">
     <p class="text-xs font-medium text-zinc-400 mb-1">Admin</p>
     <div class="flex flex-wrap items-start justify-between gap-3">
-      <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Équipements</h1>
+      <h1 class="text-2xl font-semibold text-zinc-900 tracking-tight">Gestion des équipements</h1>
       <div class="flex flex-wrap items-center gap-2">
         <div class="relative">
           <span class="iconify absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" data-icon="lucide:search" data-width="13"></span>
@@ -23,18 +23,10 @@
   <div class="px-4 md:px-8 py-6 md:py-8">
 
     <!-- Stats -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-1 gap-3 mb-6">
       <div class="bg-[#AEE9F4] rounded-xl px-6 py-5">
         <p class="text-xs text-zinc-600 font-medium mb-3">Total équipements</p>
         <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().total }}</p>
-      </div>
-      <div class="bg-[#CEF09D] rounded-xl px-6 py-5">
-        <p class="text-xs text-zinc-600 font-medium mb-3">En bon état</p>
-        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().good }}</p>
-      </div>
-      <div class="bg-[#FBCBE3] rounded-xl px-6 py-5">
-        <p class="text-xs text-zinc-600 font-medium mb-3">En maintenance</p>
-        <p class="text-3xl font-bold text-zinc-900 tracking-tight">{{ stats().maintenance }}</p>
       </div>
     </div>
 
@@ -44,26 +36,6 @@
       <app-column label="Équipement" flex="1">
         <ng-template let-e>
           <p class="text-sm font-medium text-zinc-900 truncate pr-4">{{ e.name }}</p>
-        </ng-template>
-      </app-column>
-
-      <app-column label="Espace" width="180px">
-        <ng-template let-e>
-          <p class="text-sm text-zinc-400 truncate">{{ e.space }}</p>
-        </ng-template>
-      </app-column>
-
-      <app-column label="Qté" width="70px">
-        <ng-template let-e>
-          <p class="text-sm text-zinc-500">{{ e.quantity }}</p>
-        </ng-template>
-      </app-column>
-
-      <app-column label="État" width="120px">
-        <ng-template let-e>
-          <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit capitalize" [ngClass]="conditionBadge(e.condition)">
-            {{ conditionLabel(e.condition) }}
-          </span>
         </ng-template>
       </app-column>
 
@@ -120,25 +92,6 @@
             Nom <span class="text-red-400">*</span>
           </label>
           <app-input formControlName="name" placeholder="ex. Bureau ergonomique" icon="lucide:package"></app-input>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-zinc-700 mb-1.5">
-            Espace <span class="text-red-400">*</span>
-          </label>
-          <app-select formControlName="space" [options]="spaceOptions" placeholder="Choisir un espace…" icon="lucide:layout"></app-select>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-zinc-700 mb-1.5">Quantité</label>
-          <app-input formControlName="quantity" type="number" placeholder="1" icon="lucide:hash"></app-input>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-zinc-700 mb-1.5">
-            État <span class="text-red-400">*</span>
-          </label>
-          <app-select formControlName="condition" [options]="conditionOptions" placeholder="Choisir l'état…"></app-select>
         </div>
 
       </div>

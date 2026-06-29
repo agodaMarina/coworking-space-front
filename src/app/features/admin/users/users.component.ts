@@ -5,14 +5,12 @@ import { MessageService } from 'primeng/api';
 import { User, UserRole, UserRolePayload } from '../../../core/dtos/auth';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { InputComponent } from '../../../shared/components/input/input.component';
 import { SelectComponent, SelectOption } from '../../../shared/components/select/select.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { TableComponent } from '../../../shared/components/table/table.component';
+import { ColumnComponent } from '../../../shared/components/table/column.component';
 
-// Vue locale d'un utilisateur pour la gestion admin
-// Note : l'API Flask n'expose pas de liste d'utilisateurs.
-// On opère sur un utilisateur ciblé par son ID.
 export interface AdminUser {
   id:        string;
   name:      string;
@@ -27,7 +25,7 @@ export interface AdminUser {
   selector: 'app-admin-users',
   imports: [NgClass, DatePipe, ReactiveFormsModule,
             InputComponent, SelectComponent,
-            ConfirmDialogComponent, PaginationComponent],
+            PaginationComponent, TableComponent, ColumnComponent],
   templateUrl: './users.component.html',
   providers: [MessageService],
 })
@@ -59,9 +57,9 @@ export class AdminUsersComponent {
   });
 
   readonly roleOptions: SelectOption<UserRole>[] = [
-    { label: 'Client',  value: 'CLIENT',  badge: 'bg-[#AEE9F4] text-zinc-800' },
-    { label: 'Manager', value: 'MANAGER', badge: 'bg-[#FDD5AB] text-zinc-800' },
-    { label: 'Admin',   value: 'ADMIN',   badge: 'bg-[#FBCBE3] text-zinc-800' },
+    { label: 'Enseignant',     value: 'CLIENT',  badge: 'bg-[#AEE9F4] text-zinc-800' },
+    { label: 'Gestionnaire',   value: 'MANAGER', badge: 'bg-[#FDD5AB] text-zinc-800' },
+    { label: 'Administrateur', value: 'ADMIN',   badge: 'bg-[#FBCBE3] text-zinc-800' },
   ];
 
   readonly filtered = computed(() => {
@@ -75,6 +73,39 @@ export class AdminUsersComponent {
     const start = (this.page() - 1) * this.pageSize;
     return this.filtered().slice(start, start + this.pageSize);
   });
+
+  readonly stats = computed(() => ({
+    total:  this.users().length,
+    active: this.users().filter(u => u.is_active).length,
+    admins: this.users().filter(u => u.role === 'ADMIN' || u.role === 'MANAGER').length,
+  }));
+
+  // ── Recherche par ID ────────────────────────────────────────────────────────
+
+  lookupUser(): void {
+    const userId = this.lookupForm.value.userId as string;
+    if (!userId) return;
+    this.lookupLoading.set(true);
+    this.lookupError.set(null);
+    this.authService.loadProfile().subscribe({
+      next: (u) => {
+        this.mergeUser(u);
+        this.lookupLoading.set(false);
+        this.lookupForm.reset();
+      },
+      error: () => {
+        this.lookupLoading.set(false);
+        this.lookupError.set('Utilisateur introuvable ou accès refusé.');
+      },
+    });
+  }
+
+  applyRoleChange(): void {
+    const { userId, role } = this.roleForm.value;
+    if (!userId || !role) return;
+    this.changeRole(userId as string, role as UserRole);
+    this.roleForm.reset({ role: 'CLIENT' });
+  }
 
   // ── Activer / Désactiver ────────────────────────────────────────────────────
 

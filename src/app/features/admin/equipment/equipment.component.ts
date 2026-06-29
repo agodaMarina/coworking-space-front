@@ -49,6 +49,10 @@ export class AdminEquipmentComponent implements OnInit {
     return this.filtered().slice(start, start + this.pageSize);
   });
 
+  readonly stats = computed(() => ({
+    total: this.equipment().length,
+  }));
+
   readonly modalTitle  = computed(() => this.editingId() ? 'Modifier l\'équipement' : 'Nouvel équipement');
   readonly submitLabel = computed(() => this.editingId() ? 'Enregistrer' : 'Créer');
 

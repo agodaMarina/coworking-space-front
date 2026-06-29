@@ -97,4 +97,8 @@ export class SpaceListPageComponent implements OnInit {
     const now = new Date();
     return room.reservations?.filter(r => new Date(r.end_time) > now).length ?? 0;
   }
+
+  getRoomImage(roomId: string, w = 600, h = 400): string {
+    return `https://picsum.photos/seed/${roomId}/${w}/${h}`;
+  }
 }

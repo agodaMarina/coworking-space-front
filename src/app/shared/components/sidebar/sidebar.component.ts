@@ -22,16 +22,13 @@ export class SidebarComponent {
   });
 
   readonly navItems = [
-    { label: 'Aperçu',           icon: 'lucide:layout-dashboard', path: '/dashboard/overview', activeClass: 'bg-[#AEE9F4] text-zinc-900 font-medium' },
-    { label: 'Mes réservations', icon: 'lucide:calendar',         path: '/dashboard/bookings', activeClass: 'bg-[#CEF09D] text-zinc-900 font-medium' },
-    // Paiements et notifications réactivés lors de l'intégration paiement
-    // { label: 'Paiements',        icon: 'lucide:credit-card',      path: '/dashboard/payments',       activeClass: 'bg-[#FDD5AB] text-zinc-900 font-medium' },
-    // { label: 'Notifications',    icon: 'lucide:bell',             path: '/dashboard/notifications',  activeClass: 'bg-[#FBCBE3] text-zinc-900 font-medium' },
-    { label: 'Profil',           icon: 'lucide:user',             path: '/dashboard/profile',  activeClass: 'bg-[#FBCBE3] text-zinc-900 font-medium' },
+    { label: 'Tableau de bord',   icon: 'lucide:layout-dashboard', path: '/dashboard/overview', activeClass: 'bg-[#AEE9F4] text-zinc-900 font-medium' },
+    { label: 'Mes réservations',  icon: 'lucide:calendar',         path: '/dashboard/bookings', activeClass: 'bg-[#CEF09D] text-zinc-900 font-medium' },
+    { label: 'Mon profil',        icon: 'lucide:user',             path: '/dashboard/profile',  activeClass: 'bg-[#FBCBE3] text-zinc-900 font-medium' },
   ];
 
   readonly bottomItems = [
-    { label: 'Parcourir les salles', icon: 'lucide:arrow-up-right', path: '/rooms' },
+    { label: 'Salles disponibles', icon: 'lucide:arrow-up-right', path: '/rooms' },
   ];
 
   logout(): void {

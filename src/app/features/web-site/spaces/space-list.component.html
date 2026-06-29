@@ -4,29 +4,26 @@
   <main class="flex-grow pt-36 pb-32">
     <div class="site-container">
 
+      <!-- Titre de page -->
+      <div class="mb-10">
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-black mb-2">Salles de cours disponibles</h1>
+        <p class="text-sm text-zinc-500 font-general">Campus universitaire · Réservation instantanée</p>
+      </div>
+
       <!-- Filtres -->
       <section class="mb-14 pb-10 border-b border-zinc-100">
 
-        <div class="flex flex-wrap items-center gap-3 mb-5">
-          <span class="text-xs font-bold uppercase tracking-[.2em] text-zinc-400 w-20 flex-shrink-0">Type</span>
-          <button
-            (click)="selectType(null)"
-            class="px-4 py-2 rounded-full border text-sm font-semibold transition-all duration-200"
-            [ngClass]="selectedType() === null
-              ? 'bg-black text-white border-black'
-              : 'bg-white text-zinc-500 border-zinc-200 hover:border-zinc-400 hover:text-black'">
-            Tous
+        <div class="flex flex-wrap items-center gap-4 mb-5">
+          <div class="relative flex-1 min-w-[200px]">
+            <span class="iconify absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" data-icon="lucide:search" data-width="15"></span>
+            <input type="text" placeholder="Rechercher une salle…"
+              [ngModel]="searchName()" (ngModelChange)="searchName.set($event)"
+              class="w-full pl-10 pr-4 py-2.5 text-sm border border-zinc-200 rounded-full text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition-colors bg-white">
+          </div>
+          <button (click)="applyFilters()"
+            class="px-5 py-2.5 rounded-full bg-black text-white text-sm font-semibold hover:bg-zinc-800 transition-colors">
+            Rechercher
           </button>
-          @for (opt of typeOptions; track opt.value) {
-            <button
-              (click)="selectType(opt.value)"
-              class="px-4 py-2 rounded-full border text-sm font-semibold transition-all duration-200"
-              [ngClass]="selectedType() === opt.value
-                ? 'bg-black text-white border-black'
-                : 'bg-white text-zinc-500 border-zinc-200 hover:border-zinc-400 hover:text-black'">
-              {{ opt.label }}
-            </button>
-          }
         </div>
 
         <div class="flex flex-wrap items-center gap-3">
@@ -45,10 +42,10 @@
 
         <div class="flex items-center justify-between mt-7">
           <p class="text-sm text-zinc-400 font-general">
-            <strong class="text-black">{{ filteredSpaces().length }}</strong>
-            espace{{ filteredSpaces().length !== 1 ? 's' : '' }}
+            <strong class="text-black">{{ filteredRooms().length }}</strong>
+            salle{{ filteredRooms().length !== 1 ? 's' : '' }}
           </p>
-          @if (selectedType() !== null || selectedCapacityMin() > 0) {
+          @if (selectedCapacityMin() > 0 || searchName()) {
             <button
               (click)="resetFilters()"
               class="text-xs font-bold uppercase tracking-[.1em] text-zinc-400 hover:text-black transition-colors flex items-center gap-1.5">
@@ -62,15 +59,15 @@
       <!-- Grille -->
       <section class="relative min-h-[400px]">
 
-        @if (spacesService.isLoading()) {
+        @if (roomsService.isLoading()) {
           <div class="absolute inset-0 z-10 bg-white/80 backdrop-blur-sm flex items-center justify-center">
             <p-progressSpinner strokeWidth="4" fill="transparent" animationDuration=".5s"></p-progressSpinner>
           </div>
         }
 
-        @if (!spacesService.isLoading() && filteredSpaces().length === 0) {
+        @if (!roomsService.isLoading() && filteredRooms().length === 0) {
           <div class="text-center py-32">
-            <p class="text-zinc-400 text-sm font-general mb-4">Aucun espace ne correspond à vos filtres.</p>
+            <p class="text-zinc-400 text-sm font-general mb-4">Aucune salle ne correspond à vos filtres.</p>
             <button (click)="resetFilters()" class="text-sm font-semibold text-black hover:text-zinc-500 transition-colors">
               Effacer les filtres
             </button>
@@ -78,95 +75,108 @@
         }
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          @for (space of filteredSpaces(); track space.id; let i = $index) {
+          @for (room of filteredRooms(); track room.id; let i = $index) {
 
-            <!-- Carte vedette — première carte en grand -->
             @if (i === 0) {
+              <!-- Carte vedette -->
               <article
-                (click)="openDetail(space)"
+                (click)="openDetail(room)"
                 class="group cursor-pointer flex flex-col md:flex-row md:col-span-2 rounded-[24px] overflow-hidden shadow-sm bg-zinc-50">
 
-                <!-- Image -->
                 <div class="md:w-[58%] overflow-hidden aspect-[4/3] md:aspect-auto relative flex-shrink-0">
-                  <img
-                    [src]="getSpaceImage(space)"
-                    [alt]="space.name"
-                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
-                  <div class="absolute bottom-4 right-4">
-                    <span class="px-3 py-1.5 rounded-md bg-black/75 backdrop-blur-md text-white text-xs font-bold">
-                      {{ space.price_per_day | currency:'XOF':'symbol':'1.0-0':'fr' }}/jour
-                    </span>
-                  </div>
+                  <img [src]="getRoomImage(room.id, 800, 600)" [alt]="room.name"
+                       class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                 </div>
 
-                <!-- Contenu -->
                 <div class="flex-1 flex flex-col p-7 md:p-8">
                   <div class="flex items-center gap-3 mb-6">
-                    <span class="px-3 py-1 rounded-md text-black text-xs font-bold"
-                      [ngClass]="getTypeBadgeColor(space.space_type)">
-                      {{ space.space_type_display }}
-                    </span>
-                    @if (space.is_available) {
-                      <span class="flex items-center gap-1.5 text-xs font-medium text-green-600">
-                        <span class="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>Disponible
-                      </span>
+                    <span class="px-3 py-1 rounded-md bg-[#AEE9F4] text-black text-xs font-bold">Salle</span>
+                    @if (room.equipments && room.equipments.length > 0) {
+                      <span class="text-xs text-zinc-400">{{ room.equipments.length }} équip.</span>
                     }
                   </div>
 
                   <h3 class="text-2xl md:text-3xl font-bold tracking-tight text-black mb-4 leading-snug group-hover:text-zinc-600 transition-colors duration-300">
-                    {{ space.name }}
+                    {{ room.name }}
                   </h3>
 
-                  <p class="text-sm text-zinc-500 font-general leading-relaxed line-clamp-3 mb-auto">
-                    {{ space.description || 'Un espace de travail moderne et entièrement équipé, conçu pour vous inspirer.' }}
+                  <p class="text-sm text-zinc-500 font-general leading-relaxed mb-auto">
+                    Capacité : <strong class="text-black">{{ room.capacity }}</strong> personnes
                   </p>
 
-                  <div class="mt-7 pt-5 border-t border-zinc-200">
+                  @if (room.equipments && room.equipments.length > 0) {
+                    <div class="flex flex-wrap gap-1 mt-4 mb-4">
+                      @for (eq of room.equipments.slice(0, 4); track eq.id) {
+                        <span class="px-2 py-0.5 rounded bg-zinc-100 text-zinc-600 text-[11px]">{{ eq.name }}</span>
+                      }
+                      @if (room.equipments.length > 4) {
+                        <span class="px-2 py-0.5 rounded bg-zinc-50 text-zinc-400 text-[11px]">+{{ room.equipments.length - 4 }}</span>
+                      }
+                    </div>
+                  }
+
+                  <div class="mt-auto pt-5 border-t border-zinc-200 flex items-center justify-between">
                     <span class="text-sm font-general text-black flex items-center gap-1 group-hover:gap-2 transition-all">
-                      {{ space.capacity }} pers. · Voir l'espace
+                      Voir la salle
                       <span class="iconify" data-icon="mdi:chevron-right" data-width="20"></span>
                     </span>
+                    <button (click)="goToBooking(room); $event.stopPropagation()"
+                      class="px-4 py-1.5 rounded-full bg-black text-white text-xs font-semibold hover:bg-zinc-700 transition-colors">
+                      Réserver
+                    </button>
                   </div>
                 </div>
               </article>
 
             } @else {
               <!-- Carte standard -->
-              <article (click)="openDetail(space)" class="group cursor-pointer flex flex-col">
+              <article (click)="openDetail(room)" class="group cursor-pointer flex flex-col">
 
-                <div class="rounded-[24px] overflow-hidden mb-6 aspect-[4/3] shadow-sm relative">
-                  <img
-                    [src]="getSpaceImage(space)"
-                    [alt]="space.name"
-                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
-                  <div class="absolute bottom-3 right-3">
-                    <span class="px-2.5 py-1 rounded-md bg-black/75 backdrop-blur-md text-white text-xs font-bold">
-                      {{ space.price_per_day | currency:'XOF':'symbol':'1.0-0':'fr' }}/jour
+                <div class="rounded-[24px] overflow-hidden mb-5 aspect-[4/3] shadow-sm relative">
+                  <img [src]="getRoomImage(room.id, 600, 400)" [alt]="room.name"
+                       class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                  <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                    <span class="px-2.5 py-1 rounded-md bg-white/90 backdrop-blur-sm text-black text-[11px] font-bold">
+                      {{ room.capacity }} pers.
                     </span>
+                    @if (room.cancellation_allowed) {
+                      <span class="px-2.5 py-1 rounded-md bg-[#CEF09D]/90 backdrop-blur-sm text-zinc-800 text-[11px] font-semibold">
+                        Annulation ✓
+                      </span>
+                    }
                   </div>
                 </div>
 
-                <div class="flex items-center gap-3 mb-4">
-                  <span class="px-3 py-1 rounded-md text-black text-xs font-bold"
-                    [ngClass]="getTypeBadgeColor(space.space_type)">
-                    {{ space.space_type_display }}
-                  </span>
-                  @if (space.is_available) {
-                    <span class="flex items-center gap-1.5 text-xs font-medium text-green-600">
-                      <span class="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>Disponible
-                    </span>
-                  }
+                <div class="flex items-center gap-2 mb-3">
+                  <span class="px-3 py-1 rounded-md bg-[#AEE9F4] text-black text-xs font-bold">Salle</span>
                 </div>
 
-                <h3 class="text-xl md:text-[22px] font-bold tracking-tight text-black mb-6 leading-snug group-hover:text-zinc-600 transition-colors duration-300 flex-grow">
-                  {{ space.name }}
+                <h3 class="text-xl md:text-[22px] font-bold tracking-tight text-black mb-3 leading-snug group-hover:text-zinc-600 transition-colors duration-300 flex-grow">
+                  {{ room.name }}
                 </h3>
 
-                <div class="mt-auto">
+                @if (room.equipments && room.equipments.length > 0) {
+                  <div class="flex flex-wrap gap-1 mb-4">
+                    @for (eq of room.equipments.slice(0, 3); track eq.id) {
+                      <span class="px-2 py-0.5 rounded bg-zinc-100 text-zinc-500 text-[11px]">{{ eq.name }}</span>
+                    }
+                    @if (room.equipments.length > 3) {
+                      <span class="px-2 py-0.5 rounded bg-zinc-50 text-zinc-400 text-[11px]">+{{ room.equipments.length - 3 }}</span>
+                    }
+                  </div>
+                }
+
+                <div class="mt-auto flex items-center justify-between">
                   <span class="text-sm font-general text-black flex items-center gap-1 group-hover:gap-2 transition-all">
-                    {{ space.capacity }} pers. · Voir l'espace
+                    Voir la salle
                     <span class="iconify" data-icon="mdi:chevron-right" data-width="20"></span>
                   </span>
+                  <button (click)="goToBooking(room); $event.stopPropagation()"
+                    class="px-4 py-1.5 rounded-full border border-zinc-200 text-xs font-semibold text-zinc-700 hover:bg-zinc-900 hover:text-white hover:border-zinc-900 transition-all">
+                    Réserver
+                  </button>
                 </div>
 
               </article>
@@ -174,6 +184,15 @@
 
           }
         </div>
+
+        @if (hasMore()) {
+          <div class="text-center mt-14">
+            <button (click)="loadMore()"
+              class="px-8 py-3 rounded-full border border-zinc-200 text-sm font-semibold text-zinc-700 hover:border-zinc-400 hover:text-black transition-all">
+              Charger plus de salles
+            </button>
+          </div>
+        }
 
       </section>
     </div>

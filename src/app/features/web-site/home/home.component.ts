@@ -25,43 +25,43 @@ export class HomePageComponent implements OnInit, AfterViewInit {
   // =========================================
 
   features = [
-    { title: 'Flexible Spaces', desc: "Whether you're a solopreneur, startup, or an established enterprise, our flexible office solutions cater to your evolving needs." },
-    { title: 'Transparent Pricing', desc: "Choose a plan that suits your budget and business objectives, and experience the value of a premium coworking space without breaking the bank." },
-    { title: 'Tailored Memberships', desc: "Whether you prefer the flexibility of a hot desk or the exclusivity of a private office, Cowork offers tailored solutions to suit every working style." }
+    { title: 'Réservez facilement', desc: "Réservez votre salle de cours en quelques clics, depuis n'importe quel appareil. Choisissez votre créneau horaire et confirmez instantanément." },
+    { title: 'Vérifiez la disponibilité', desc: "Consultez en temps réel les créneaux disponibles pour toutes les salles du campus. Filtrez par capacité, équipements et horaires selon vos besoins." },
+    { title: 'Gérez vos créneaux', desc: "Suivez et annulez vos réservations directement depuis votre tableau de bord. Les modifications sont prises en compte instantanément." }
   ];
 
   stats = [
-    { target: 240, suffix: '%', label: 'Community Growth', color: '#d9f99d', delay: '0s' },
-    { target: 99, suffix: '%', label: 'Technology Uptime', color: '#bae6fd', delay: '.1s' },
-    { target: 50, suffix: '+', label: 'Happy Members', color: '#fbcfe8', delay: '.2s' },
-    { target: 100, suffix: '%', label: 'Renewable Energy Sources', color: '#fed7aa', delay: '.3s' }
+    { target: 80, suffix: '', label: 'Salles disponibles', color: '#d9f99d', delay: '0s' },
+    { target: 99, suffix: '%', label: 'Disponibilité du service', color: '#bae6fd', delay: '.1s' },
+    { target: 200, suffix: '+', label: 'Enseignants inscrits', color: '#fbcfe8', delay: '.2s' },
+    { target: 24, suffix: 'h', label: 'Accès aux réservations', color: '#fed7aa', delay: '.3s' }
   ];
 
   // Séparé en deux pour gérer le design asymétrique (Masonry)
   testimonialsTop = [
-    { name: 'Liam Brown', role: 'Software Engineer, TechStartup Innovations', quote: "The 24/7 access and secure facilities have been incredibly convenient for my team's flexible schedules. We love the coworking space!", img: 'face1', bg: 'bg-[#E2F89C]', isOffset: false },
-    { name: 'Michael Rodriguez', role: 'Creative Director, DesignCraft Studio', quote: "The aesthetics of Cowork are inspiring. The attention to detail in the design creates an atmosphere that sparks creativity. It's a place where ideas flow effortlessly, and collaboration happens organically.", img: 'face2', bg: 'bg-[#F4F4F4]', isOffset: true },
-    { name: 'Michael Thompson', role: 'Graphic Designer, DesignCo', quote: "As a freelance designer, I was getting tired of working from home or coffee shops. The coworking space has provided me with a productive and professional environment to focus on my work.", img: 'face3', bg: 'bg-[#BDE8F4]', isOffset: false }
+    { name: 'Prof. Claire Martin', role: 'Maître de conférences, Département Informatique', quote: "Je réserve mes salles de TD en quelques secondes. Le système est fiable même le lundi matin où la concurrence est forte !", img: 'face1', bg: 'bg-[#E2F89C]', isOffset: false },
+    { name: 'Prof. Jean Dupont', role: 'Directeur pédagogique, Faculté des Sciences', quote: "La gestion des équipements par salle est très pratique. Je sais exactement dans quelle salle se trouve le vidéoprojecteur dont j'ai besoin pour mon cours magistral.", img: 'face2', bg: 'bg-[#F4F4F4]', isOffset: true },
+    { name: 'Prof. Amina Benali', role: 'Enseignante-chercheuse, Département Mathématiques', quote: "L'annulation est simple et rapide. Je peux libérer un créneau si mon cours est déplacé, et mes collègues peuvent immédiatement le réserver.", img: 'face3', bg: 'bg-[#BDE8F4]', isOffset: false }
   ];
 
   testimonialsBottom = [
-    { name: 'David Wilson', role: 'Project Manager, SoftwareSolutions LLC', quote: "The coworking space has been a wonderful resource for my team. The open floor plan and dedicated private offices allow us to collaborate and concentrate as needed.", img: 'face4', bg: 'bg-[#FBCBE3]' },
-    { name: 'Alex Nguyen', role: 'Marketing Consultant, Maverick Marketing', quote: "The flexible membership options and amenities like high-speed internet, printers, and meeting rooms have made this coworking space a perfect fit for my small business.", img: 'face5', bg: 'bg-[#FDD5AB]' }
+    { name: 'Prof. Thomas Leroy', role: 'Chargé de cours, Faculté de Droit', quote: "Le système évite les conflits de salles qui étaient fréquents auparavant. Plus de mauvaises surprises en arrivant devant une salle déjà occupée !", img: 'face4', bg: 'bg-[#FBCBE3]' },
+    { name: 'Prof. Sophie Girard', role: 'Responsable TP, Département Physique', quote: "La recherche par capacité est essentielle pour mes travaux pratiques. Je trouve rapidement les salles pouvant accueillir mes 30 étudiants avec le bon équipement.", img: 'face5', bg: 'bg-[#FDD5AB]' }
   ];
 
   faqs = [
-    { question: "How flexible are Cowork's membership plans?", answer: "Frequently asked questions ordered by popularity. Remember that if the visitor has not committed to the call to action, they may still have questions (doubts) that can be answered.", isOpen: true },
-    { question: "What kind of events and networking opportunities does Cowork provide?", answer: "We host weekly networking events, guest speakers, and skill-sharing workshops for all members.", isOpen: false },
-    { question: "Can I tour the Cowork space before committing to a membership?", answer: "Absolutely! You can book a free 30-minute guided tour through our website.", isOpen: false },
-    { question: "Is Cowork suitable for remote teams and distributed workforces?", answer: "Yes, we offer enterprise plans tailored for distributed teams with private access options.", isOpen: false },
-    { question: "What measures does Cowork take for environmental sustainability?", answer: "We use 100% renewable energy and enforce a strict zero-single-use-plastic policy.", isOpen: false },
-    { question: "Still has questions?", answer: "Contact our support team directly via email or our live chat widget.", isOpen: false }
+    { question: "Comment réserver une salle de cours ?", answer: "Connectez-vous avec votre compte enseignant, accédez à la section 'Salles disponibles', choisissez votre créneau horaire et confirmez la réservation. La confirmation est immédiate.", isOpen: true },
+    { question: "Puis-je annuler une réservation ?", answer: "Oui, les annulations sont possibles jusqu'à 2 heures avant le début du créneau. Passé ce délai, la réservation ne peut plus être annulée pour permettre aux autres enseignants de planifier.", isOpen: false },
+    { question: "Que faire si une salle est déjà réservée sur mon créneau ?", answer: "Le système affiche uniquement les salles disponibles pour le créneau que vous sélectionnez. Si aucune salle de la capacité souhaitée n'est disponible, essayez un créneau adjacent.", isOpen: false },
+    { question: "Comment filtrer les salles par équipement ?", answer: "Utilisez les filtres de recherche pour sélectionner les équipements nécessaires (projecteur, tableau blanc interactif, laboratoire informatique, etc.). Seules les salles équipées s'afficheront.", isOpen: false },
+    { question: "Qui peut créer un compte sur la plateforme ?", answer: "La plateforme est réservée aux enseignants et personnels du campus. Les inscriptions sont vérifiées par les administrateurs. Contactez le service informatique pour tout accès.", isOpen: false },
+    { question: "Encore des questions ?", answer: "Contactez le service de gestion des salles par email ou en personne à l'accueil de l'administration centrale.", isOpen: false }
   ];
 
   blogs = [
-    { badge: 'Trending', badgeColor: 'bg-[#AEE9F4]', time: '7 min read', title: 'Navigating the Future: Trends in Modern Coworking Spaces', img: '/images/desktop.png', delay: '0s', link:'' },
-    { badge: 'Productivity', badgeColor: 'bg-[#F8C8E1]', time: '5 min read', title: "Mastering Productivity: Tips from Cowork's High Achievers", img: '/images/image-desktop.png', delay: '.1s',link:'' },
-    { badge: 'Talk', badgeColor: 'bg-[#CEF09D]', time: '10 min read', title: "Tech Talk: The Backbone of Cowork's Seamless Experience", img: '/images/view-modern-office.jpg', delay: '.2s',link:'' }
+    { badge: 'Actualité', badgeColor: 'bg-[#AEE9F4]', time: '5 min', title: 'Comment optimiser l\'occupation des salles pendant le pic du lundi matin', img: '/images/desktop.png', delay: '0s', link:'' },
+    { badge: 'Conseils', badgeColor: 'bg-[#F8C8E1]', time: '4 min', title: "Bien planifier ses cours : guide de réservation pour les enseignants", img: '/images/image-desktop.png', delay: '.1s',link:'' },
+    { badge: 'Technique', badgeColor: 'bg-[#CEF09D]', time: '6 min', title: "Verrouillage et réservations simultanées : comment le système garantit l'intégrité", img: '/images/view-modern-office.jpg', delay: '.2s',link:'' }
   ];
 
   // =========================================

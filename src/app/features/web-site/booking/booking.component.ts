@@ -1,4 +1,4 @@
-import { DatePipe, NgClass } from '@angular/common';
+import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -17,7 +17,7 @@ type BookingStep = 'details' | 'success';
 @Component({
   standalone: true,
   selector: 'app-booking-page',
-  imports: [NgClass, DatePipe, FormsModule, ReactiveFormsModule,
+  imports: [NgClass, DatePipe, DecimalPipe, FormsModule, ReactiveFormsModule,
             RouterLink, HeaderComponent, FooterComponent, ToastModule],
   templateUrl: './booking.component.html',
   styleUrls: ['./booking.component.css'],
@@ -35,7 +35,8 @@ export class BookingPageComponent implements OnInit {
   readonly isSubmitting  = signal(false);
   readonly selectedRoom  = signal<Room | null>(null);
   readonly availableRooms = signal<Room[]>([]);
-  readonly roomDropdownOpen = signal(false);
+  readonly roomDropdownOpen    = signal(false);
+  readonly isSpacePreSelected  = computed(() => !!this.selectedRoom() && !!this.route.snapshot.queryParams['roomId']);
   readonly nextCursor    = signal<string | null>(null);
   readonly hasMore       = signal(false);
 
@@ -175,6 +176,10 @@ export class BookingPageComponent implements OnInit {
       const reqEnd    = new Date(end).getTime();
       return reqStart < slotEnd && reqEnd > slotStart;
     });
+  }
+
+  getRoomImage(roomId: string, w = 400, h = 280): string {
+    return `https://picsum.photos/seed/${roomId}/${w}/${h}`;
   }
 
   private buildISODate(date: string, time: string): string | null {

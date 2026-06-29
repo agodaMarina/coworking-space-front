@@ -1,4 +1,4 @@
-import { DatePipe, NgClass } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
@@ -11,13 +11,16 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
 import { InputComponent } from '../../../shared/components/input/input.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { ToggleComponent } from '../../../shared/components/toggle/toggle.component';
+import { TableComponent } from '../../../shared/components/table/table.component';
+import { ColumnComponent } from '../../../shared/components/table/column.component';
 
 @Component({
   standalone: true,
   selector: 'app-admin-spaces',
-  imports: [NgClass, DatePipe, ReactiveFormsModule,
+  imports: [NgClass, ReactiveFormsModule,
             InputComponent, ToggleComponent,
-            ConfirmDialogComponent, PaginationComponent],
+            ConfirmDialogComponent, PaginationComponent,
+            TableComponent, ColumnComponent],
   templateUrl: './spaces.component.html',
   providers: [MessageService],
 })

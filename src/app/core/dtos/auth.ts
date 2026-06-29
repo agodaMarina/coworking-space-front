@@ -1,3 +1,4 @@
+
 // DTOs liés à l'authentification Flask ShareRoom API
 // Roles utilisés par l'API Flask (toujours en majuscules)
 export type UserRole = 'CLIENT' | 'MANAGER' | 'ADMIN';

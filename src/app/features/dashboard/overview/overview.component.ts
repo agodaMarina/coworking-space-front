@@ -29,6 +29,13 @@ export class OverviewComponent implements OnInit {
   readonly user        = this.authService.user;
   readonly myBookings  = signal<MyBookingView[]>([]);
   readonly isLoading   = signal(false);
+  isUpcoming(endTime: string): boolean {
+    return new Date(endTime) > new Date();
+  }
+
+  getRoomImage(roomId: string, w = 80, h = 60): string {
+    return `https://picsum.photos/seed/${roomId}/${w}/${h}`;
+  }
 
   readonly stats = computed(() => {
     const now      = new Date();

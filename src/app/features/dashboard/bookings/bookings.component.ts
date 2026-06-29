@@ -162,4 +162,8 @@ export class BookingsComponent implements OnInit {
     this.activeFilter.set(f);
     this.page.set(1);
   }
+
+  getRoomImage(roomId: string, w = 80, h = 60): string {
+    return `https://picsum.photos/seed/${roomId}/${w}/${h}`;
+  }
 }

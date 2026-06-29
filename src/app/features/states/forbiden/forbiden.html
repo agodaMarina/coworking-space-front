@@ -1,1 +1,34 @@
-<p>forbiden works!</p>
+<main class="relative z-10 flex flex-col lg:flex-row items-center justify-between px-6 lg:px-16 xl:px-24 pt-8 lg:pt-4 pb-16 min-h-[calc(100vh-80px)]">
+
+  <!-- Left Content -->
+  <div class="flex-1 max-w-lg lg:max-w-xl z-10 text-center lg:text-left">
+
+    <div class="inline-flex items-center gap-2 bg-orange-50 text-orange-600 px-4 py-2 rounded-full mb-6">
+      <span class="w-2 h-2 rounded-full bg-orange-400"></span>
+      <span class="text-xs font-semibold uppercase tracking-widest">Erreur 403</span>
+    </div>
+
+    <h1 class="text-4xl sm:text-5xl lg:text-[3.5rem] xl:text-[4rem] font-extrabold text-dark leading-[1.1] tracking-tight mb-4">
+      Accès refusé
+    </h1>
+    <span class="text-orange-500 font-semibold text-lg">Vous n'avez pas les droits nécessaires.</span>
+
+    <p class="text-muted text-base lg:text-lg leading-relaxed mb-10 max-w-md mx-auto lg:mx-0 mt-4">
+      Cette page est réservée aux administrateurs. Si vous pensez qu'il s'agit d'une erreur, contactez le responsable de votre établissement.
+    </p>
+
+    <a routerLink="/home" class="inline-flex items-center gap-2.5 bg-zinc-900 text-white font-semibold text-sm px-8 py-4 rounded-xl shadow-lg hover:bg-zinc-700 hover:shadow-xl transition-all duration-300 group">
+      Retour à l'accueil
+      <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+      </svg>
+    </a>
+  </div>
+
+  <!-- Right Illustration -->
+  <div class="flex-1 flex items-center justify-center relative mt-10 lg:mt-0">
+    <div class="w-64 h-64 lg:w-80 lg:h-80 bg-orange-50 rounded-full flex items-center justify-center">
+      <span class="text-[120px] lg:text-[160px] font-black text-orange-100 select-none">403</span>
+    </div>
+  </div>
+</main>

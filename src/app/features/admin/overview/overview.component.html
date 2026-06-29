@@ -75,35 +75,29 @@
 
     <app-table [rows]="recentReservations()" emptyMessage="Aucune réservation pour le moment.">
 
-      <app-column label="Utilisateur" flex="1">
+      <app-column label="Salle" flex="1">
         <ng-template let-r>
-          <p class="text-sm font-medium text-zinc-900 truncate pr-4">{{ r.user_detail?.email }}</p>
+          <p class="text-sm font-medium text-zinc-900 truncate pr-4">{{ r.roomName }}</p>
         </ng-template>
       </app-column>
 
-      <app-column label="Espace" flex="1">
+      <app-column label="Créé par" flex="1">
         <ng-template let-r>
-          <p class="text-sm text-zinc-500 truncate">{{ r.space_detail?.name }}</p>
+          <p class="text-sm text-zinc-500 truncate">{{ r.createdBy }}</p>
         </ng-template>
       </app-column>
 
-      <app-column label="Date" width="120px">
+      <app-column label="Début" width="120px">
         <ng-template let-r>
-          <p class="text-sm text-zinc-400">{{ r.start_datetime | date:'d MMM y' }}</p>
+          <p class="text-sm text-zinc-400">{{ r.startTime | date:'d MMM y' }}</p>
         </ng-template>
       </app-column>
 
       <app-column label="Statut" width="100px">
         <ng-template let-r>
-          <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit capitalize" [ngClass]="statusBadge(r.status)">
-            {{ r.status_display }}
+          <span class="inline-flex px-2 py-0.5 rounded text-[11px] font-medium w-fit" [ngClass]="statusBadge(r.isUpcoming)">
+            {{ r.isUpcoming ? 'À venir' : 'Passée' }}
           </span>
-        </ng-template>
-      </app-column>
-
-      <app-column label="Montant" width="100px" align="right">
-        <ng-template let-r>
-          <p class="text-sm font-semibold text-zinc-900 whitespace-nowrap">{{ r.total_price }} FCFA</p>
         </ng-template>
       </app-column>
 

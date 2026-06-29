@@ -7,10 +7,10 @@
       alt=""
       class="absolute inset-0 w-full h-full object-cover opacity-40">
     <div class="relative z-10 flex flex-col h-full p-12">
-      <a routerLink="/home" class="text-white font-bold text-xl tracking-tight">Cowork</a>
+      <a routerLink="/home" class="text-white font-bold text-xl tracking-tight">ShareRoom</a>
       <div class="mt-auto">
         <p class="text-white/80 text-lg font-medium leading-relaxed max-w-sm font-general mb-6">
-          "Depuis que j'ai rejoint Cowork, ma productivité a triplé. Les espaces sont vraiment inspirants."
+          "Je réserve mes salles de TD en quelques secondes. Fini les conflits de créneaux le lundi matin !"
         </p>
         <div class="flex items-center gap-3">
           <img
@@ -18,8 +18,8 @@
             class="w-10 h-10 rounded-full object-cover flex-shrink-0"
             alt="">
           <div>
-            <p class="text-white text-sm font-semibold">Marcus T.</p>
-            <p class="text-white/50 text-xs font-general">Fondateur de startup, Lomé</p>
+            <p class="text-white text-sm font-semibold">Prof. Thomas L.</p>
+            <p class="text-white/50 text-xs font-general">Chargé de cours, Faculté de Droit</p>
           </div>
         </div>
       </div>
@@ -32,50 +32,29 @@
 
       <!-- Logo mobile -->
       <a routerLink="/home" class="lg:hidden inline-block mb-10 text-black font-bold text-xl tracking-tight">
-        Cowork
+        ShareRoom
       </a>
 
-      <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-black mb-3">Créer votre compte</h1>
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-black mb-3">Créer un compte enseignant</h1>
       <p class="text-zinc-500 text-sm font-general mb-10">
-        Rejoignez Cowork et réservez votre espace de travail idéal en quelques minutes.
+        Rejoignez le campus universitaire et réservez vos salles de cours en quelques minutes.
       </p>
 
       <form [formGroup]="registerForm" (ngSubmit)="submit()" class="flex flex-col gap-5">
 
-        <!-- Prénom / Nom -->
-        <div class="flex gap-4">
-          <div class="flex flex-col gap-2 flex-1">
-            <label class="text-xs font-bold uppercase tracking-[.15em] text-zinc-500">Prénom</label>
-            <input
-              type="text"
-              formControlName="first_name"
-              placeholder="Aminata"
-              class="w-full px-4 py-3.5 rounded-xl border text-sm font-medium text-black placeholder:text-zinc-300 focus:outline-none transition-colors bg-white"
-              [ngClass]="registerForm.get('first_name')?.invalid && registerForm.get('first_name')?.touched
-                ? 'border-red-300' : 'border-zinc-200'">
-          </div>
-          <div class="flex flex-col gap-2 flex-1">
-            <label class="text-xs font-bold uppercase tracking-[.15em] text-zinc-500">Nom</label>
-            <input
-              type="text"
-              formControlName="last_name"
-              placeholder="Diallo"
-              class="w-full px-4 py-3.5 rounded-xl border text-sm font-medium text-black placeholder:text-zinc-300 focus:outline-none transition-colors bg-white"
-              [ngClass]="registerForm.get('last_name')?.invalid && registerForm.get('last_name')?.touched
-                ? 'border-red-300' : 'border-zinc-200'">
-          </div>
-        </div>
-
-        <!-- Nom d'utilisateur -->
+        <!-- Nom complet -->
         <div class="flex flex-col gap-2">
-          <label class="text-xs font-bold uppercase tracking-[.15em] text-zinc-500">Nom d'utilisateur</label>
+          <label class="text-xs font-bold uppercase tracking-[.15em] text-zinc-500">Nom complet</label>
           <input
             type="text"
-            formControlName="username"
-            placeholder="aminatadiallo"
+            formControlName="name"
+            placeholder="Aminata Diallo"
             class="w-full px-4 py-3.5 rounded-xl border text-sm font-medium text-black placeholder:text-zinc-300 focus:outline-none transition-colors bg-white"
-            [ngClass]="registerForm.get('username')?.invalid && registerForm.get('username')?.touched
+            [ngClass]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched
               ? 'border-red-300' : 'border-zinc-200'">
+          @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
+            <small class="text-red-500 text-xs">Nom requis (minimum 2 caractères)</small>
+          }
         </div>
 
         <!-- Email -->
@@ -88,64 +67,8 @@
             class="w-full px-4 py-3.5 rounded-xl border text-sm font-medium text-black placeholder:text-zinc-300 focus:outline-none transition-colors bg-white"
             [ngClass]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched
               ? 'border-red-300' : 'border-zinc-200'">
-        </div>
-
-        <!-- Téléphone -->
-        <div class="flex flex-col gap-2">
-          <label class="text-xs font-bold uppercase tracking-[.15em] text-zinc-500">Téléphone</label>
-          <div class="flex gap-2"
-            [ngClass]="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched
-              ? 'ring-1 ring-red-300 rounded-xl' : ''">
-
-            <!-- Sélecteur de pays -->
-            <div class="relative flex-shrink-0">
-              @if (phoneDropdownOpen()) {
-                <div class="fixed inset-0 z-10" (click)="phoneDropdownOpen.set(false)"></div>
-              }
-              <button
-                type="button"
-                (click)="phoneDropdownOpen.set(!phoneDropdownOpen())"
-                class="h-full flex items-center gap-2 px-3 border border-zinc-200 rounded-xl bg-white hover:border-zinc-300 transition-colors text-sm"
-                [ngClass]="phoneDropdownOpen() ? 'border-zinc-400 ring-2 ring-zinc-100' : ''">
-                <span class="text-base leading-none">{{ selectedCountry().flag }}</span>
-                <span class="font-mono text-zinc-600 text-xs">{{ selectedCountry().dial }}</span>
-                <span class="iconify text-zinc-400 transition-transform duration-200"
-                  data-icon="lucide:chevron-down" data-width="12"
-                  [style.transform]="phoneDropdownOpen() ? 'rotate(180deg)' : 'rotate(0deg)'"></span>
-              </button>
-
-              @if (phoneDropdownOpen()) {
-                <div class="absolute top-full left-0 mt-1.5 w-56 bg-white border border-zinc-200 rounded-xl shadow-lg z-20 overflow-hidden max-h-60 overflow-y-auto">
-                  @for (country of countries; track country.code; let last = $last) {
-                    <button
-                      type="button"
-                      (click)="selectCountry(country)"
-                      class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-zinc-50 transition-colors text-left text-sm"
-                      [ngClass]="{
-                        'border-b border-zinc-100': !last,
-                        'bg-zinc-50 font-semibold': selectedCountry().code === country.code
-                      }">
-                      <span class="text-base">{{ country.flag }}</span>
-                      <span class="flex-1 text-zinc-800 font-medium truncate">{{ country.name }}</span>
-                      <span class="font-mono text-xs text-zinc-400">{{ country.dial }}</span>
-                    </button>
-                  }
-                </div>
-              }
-            </div>
-
-            <!-- Champ numéro -->
-            <input
-              type="tel"
-              formControlName="phone"
-              [placeholder]="phonePlaceholder"
-              (input)="formatPhone($event)"
-              class="flex-1 px-4 py-3.5 rounded-xl border border-zinc-200 text-sm font-medium text-black placeholder:text-zinc-300 focus:outline-none focus:border-zinc-400 transition-colors bg-white"
-              [ngClass]="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched
-                ? 'border-red-300' : 'border-zinc-200'">
-          </div>
-          @if (registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched) {
-            <small class="text-red-500 text-xs">Numéro de téléphone requis</small>
+          @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
+            <small class="text-red-500 text-xs">Adresse email invalide</small>
           }
         </div>
 
@@ -169,18 +92,9 @@
                 data-width="16"></span>
             </button>
           </div>
-        </div>
-
-        <!-- Confirmer le mot de passe -->
-        <div class="flex flex-col gap-2">
-          <label class="text-xs font-bold uppercase tracking-[.15em] text-zinc-500">Confirmer le mot de passe</label>
-          <input
-            type="password"
-            formControlName="password_confirm"
-            placeholder="••••••••"
-            class="w-full px-4 py-3.5 rounded-xl border text-sm font-medium text-black placeholder:text-zinc-300 focus:outline-none transition-colors bg-white"
-            [ngClass]="registerForm.get('password_confirm')?.invalid && registerForm.get('password_confirm')?.touched
-              ? 'border-red-300' : 'border-zinc-200'">
+          @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
+            <small class="text-red-500 text-xs">Mot de passe requis (minimum 6 caractères)</small>
+          }
         </div>
 
         <!-- Message d'erreur -->

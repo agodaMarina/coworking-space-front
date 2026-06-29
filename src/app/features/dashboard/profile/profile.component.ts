@@ -38,7 +38,19 @@ export class ProfileComponent {
     email: [this.user()?.email ?? '', [Validators.required, Validators.email]],
   });
 
-  readonly savingInfo = signal(false);
+  readonly passwordForm: FormGroup = this.fb.group({
+    current: ['', Validators.required],
+    next:    ['', [Validators.required, Validators.minLength(8)]],
+    confirm: ['', Validators.required],
+  });
+
+  readonly savingInfo     = signal(false);
+  readonly savingPassword = signal(false);
+
+  readonly passwordMismatch = computed(() => {
+    const { next, confirm } = this.passwordForm.value;
+    return !!next && !!confirm && next !== confirm;
+  });
 
   saveInfo(): void {
     if (this.infoForm.invalid) return;
@@ -54,5 +66,16 @@ export class ProfileComponent {
         this.toast.showError('Impossible de mettre à jour le profil.');
       },
     });
+  }
+
+  savePassword(): void {
+    if (this.passwordForm.invalid || this.passwordMismatch()) return;
+    this.savingPassword.set(true);
+    // TODO: implémenter l'endpoint de changement de mot de passe
+    setTimeout(() => {
+      this.savingPassword.set(false);
+      this.passwordForm.reset();
+      this.toast.showSuccess('Mot de passe mis à jour.');
+    }, 500);
   }
 }
